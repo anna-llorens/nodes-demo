@@ -6,7 +6,6 @@ export const maraton: Scenario = {
   name: "Medio Maratón de València",
   shortName: "Medio Maratón",
   schedule: { start: "08:00", end: "11:30" },
-  snapshotTime: "10:15",
   center: [-0.362, 39.468],
   zoom: 13.2,
   route: [
@@ -34,7 +33,10 @@ export const maraton: Scenario = {
       short: "S01",
       lngLat: [-0.3532, 39.4603],
       areaM2: 1250,
-      snapshot: { people: 410, roadway: 290, sidewalk: 120, density: 0.6, flowIn: 30, flowOut: 45, flowBearing: 40 },
+      roadwayShare: 0.71,
+      flowBearing: 40,
+      turnover: 0.08,
+      curve: CURVE,
     },
     {
       id: "animacion",
@@ -42,7 +44,10 @@ export const maraton: Scenario = {
       short: "S02",
       lngLat: [-0.3754, 39.4797],
       areaM2: 1250,
-      snapshot: { people: 1980, roadway: 1150, sidewalk: 830, density: 2.4, flowIn: 260, flowOut: 240, flowBearing: 250 },
+      roadwayShare: 0.58,
+      flowBearing: 250,
+      turnover: 0.08,
+      curve: CURVE,
     },
     {
       id: "meta",
@@ -50,7 +55,10 @@ export const maraton: Scenario = {
       short: "S03",
       lngLat: [-0.3523, 39.4548],
       areaM2: 1250,
-      snapshot: { people: 5600, roadway: 3700, sidewalk: 1900, density: 4.8, flowIn: 420, flowOut: 210, flowBearing: 95 },
+      roadwayShare: 0.66,
+      flowBearing: 95,
+      turnover: 0.08,
+      curve: CURVE,
     },
   ],
 };

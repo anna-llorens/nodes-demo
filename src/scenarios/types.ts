@@ -7,16 +7,18 @@ export interface ScenarioNode {
   lngLat: [number, number];
   /** Área cubierta por la zona, en m² */
   areaM2: number;
-  /** Datos fijos de la Fase 1 (sustituidos por el generador en la Fase 2) */
-  snapshot: {
-    people: number;
-    roadway?: number;
-    sidewalk?: number;
-    density: number; // pers/m², máx. 7
-    flowIn: number; // pers/min
-    flowOut: number;
-    flowBearing: number; // grados, dirección principal del flujo
-  };
+  /** Curva de densidad (pers/m²) por hora "HH:MM" */
+  curve: [string, number][];
+  /** Fracción de personas que se renueva cada minuto */
+  turnover: number;
+  /** Parte en calzada (resto en aceras), estimado por zona */
+  roadwayShare?: number;
+  /** Dirección principal del flujo en grados */
+  flowBearing: number;
+}
+
+export interface LiveNode extends ScenarioNode {
+  snapshot: import("@/sim/engine").NodeState;
 }
 
 export interface Scenario {
@@ -24,7 +26,6 @@ export interface Scenario {
   name: string;
   shortName: string;
   schedule: { start: string; end: string };
-  snapshotTime: string;
   center: [number, number];
   zoom: number;
   route?: [number, number][];
@@ -44,3 +45,5 @@ export const densityLabel: Record<DensityLevel, string> = {
   alta: "Densidad alta",
   "muy-alta": "Densidad muy alta",
 };
+
+export type LiveScenario = Omit<Scenario, "nodes"> & { nodes: LiveNode[] };
