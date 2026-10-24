@@ -1,0 +1,56 @@
+import type { Scenario } from "./types";
+
+/** Medio Maratón de València · simulación (base edición 2025). Coordenadas aproximadas. */
+export const maraton: Scenario = {
+  id: "maraton",
+  name: "Medio Maratón de València",
+  shortName: "Medio Maratón",
+  schedule: { start: "08:00", end: "11:30" },
+  snapshotTime: "10:15",
+  center: [-0.362, 39.468],
+  zoom: 13.2,
+  route: [
+    [-0.3532, 39.4603],
+    [-0.3488, 39.4636],
+    [-0.3442, 39.4668],
+    [-0.3417, 39.4712],
+    [-0.3461, 39.4741],
+    [-0.3553, 39.4748],
+    [-0.3655, 39.4776],
+    [-0.3754, 39.4797],
+    [-0.3842, 39.4772],
+    [-0.3866, 39.4706],
+    [-0.3818, 39.4652],
+    [-0.3757, 39.4625],
+    [-0.3702, 39.4589],
+    [-0.3638, 39.4565],
+    [-0.3571, 39.4552],
+    [-0.3523, 39.4548],
+  ],
+  nodes: [
+    {
+      id: "salida",
+      name: "Salida",
+      short: "S01",
+      lngLat: [-0.3532, 39.4603],
+      areaM2: 1250,
+      snapshot: { people: 410, roadway: 290, sidewalk: 120, density: 0.6, flowIn: 30, flowOut: 45, flowBearing: 40 },
+    },
+    {
+      id: "animacion",
+      name: "Punto de animación",
+      short: "S02",
+      lngLat: [-0.3754, 39.4797],
+      areaM2: 1250,
+      snapshot: { people: 1980, roadway: 1150, sidewalk: 830, density: 2.4, flowIn: 260, flowOut: 240, flowBearing: 250 },
+    },
+    {
+      id: "meta",
+      name: "Meta · reencuentro",
+      short: "S03",
+      lngLat: [-0.3523, 39.4548],
+      areaM2: 1250,
+      snapshot: { people: 5600, roadway: 3700, sidewalk: 1900, density: 4.8, flowIn: 420, flowOut: 210, flowBearing: 95 },
+    },
+  ],
+};

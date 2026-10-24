@@ -1,0 +1,160 @@
+import { useEffect, useRef, useState } from "react";
+import * as maplibregl from "maplibre-gl";
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
+import "maplibre-gl/dist/maplibre-gl.css";
+import { createRoot } from "react-dom/client";
+import { ArrowUp } from "lucide-react";
+import type { Scenario } from "@/scenarios/types";
+import { heatPoints, ringsGeo } from "./geo";
+import type { MapLayers } from "./MapStage";
+
+// maplibre necesita colores literales en su paint (no lee variables CSS)
+const C = {
+  primary: "#2F9E7A",
+  ink: "#1d4a45",
+  low: "rgba(76,190,120,0)",
+  mid: "#f2d14b",
+  high: "#f08a3c",
+  crit: "#e0453a",
+};
+
+maplibregl.setWorkerUrl(workerUrl);
+
+export default function MapView({
+  scenario,
+  layers,
+  selectedId,
+  onSelect,
+  onError,
+}: {
+  scenario: Scenario;
+  layers: MapLayers;
+  selectedId: string | null;
+  onSelect: (id: string | null, point?: { x: number; y: number }) => void;
+  onError: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
+  const [ready, setReady] = useState(false);
+  const onSelectRef = useRef(onSelect);
+  onSelectRef.current = onSelect;
+
+  useEffect(() => {
+    if (!ref.current) return;
+    let failed = false;
+    const map = new maplibregl.Map({
+      container: ref.current,
+      style: "https://tiles.openfreemap.org/styles/positron",
+      center: scenario.center,
+      zoom: scenario.zoom,
+      attributionControl: { compact: true },
+    });
+    mapRef.current = map;
+    const timer = setTimeout(() => {
+      if (!map.loaded() && !map.isStyleLoaded()) {
+        failed = true;
+        onError();
+      }
+    }, 9000);
+    map.on("error", (e: { error?: unknown }) => {
+      if (!map.isStyleLoaded() && !failed) {
+        failed = true;
+        console.warn("Mapa no disponible", e.error);
+        onError();
+      }
+    });
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
+
+    map.on("load", () => {
+      clearTimeout(timer);
+      if (scenario.route) {
+        map.addSource("route", {
+          type: "geojson",
+          data: { type: "Feature", properties: {}, geometry: { type: "LineString", coordinates: scenario.route } },
+        });
+        map.addLayer({
+          id: "route",
+          type: "line",
+          source: "route",
+          paint: { "line-color": C.ink, "line-width": 3, "line-dasharray": [2, 1.6], "line-opacity": 0.75 },
+        });
+      }
+      map.addSource("heat", { type: "geojson", data: heatPoints(scenario) });
+      map.addLayer({
+        id: "heat",
+        type: "heatmap",
+        source: "heat",
+        paint: {
+          "heatmap-weight": ["get", "w"],
+          "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 12, 0.6, 17, 2],
+          "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 12, 14, 17, 60],
+          "heatmap-opacity": 0.8,
+          "heatmap-color": [
+            "interpolate", ["linear"], ["heatmap-density"],
+            0, C.low, 0.2, "rgba(76,190,120,0.6)", 0.45, C.mid, 0.7, C.high, 1, C.crit,
+          ],
+        },
+      });
+      map.addSource("r40", { type: "geojson", data: ringsGeo(scenario, 40) });
+      map.addSource("r20", { type: "geojson", data: ringsGeo(scenario, 20) });
+      map.addLayer({ id: "r40", type: "line", source: "r40", paint: { "line-color": C.primary, "line-width": 1.5, "line-dasharray": [2, 2] } });
+      map.addLayer({ id: "r20", type: "line", source: "r20", paint: { "line-color": C.primary, "line-width": 2 } });
+
+      for (const n of scenario.nodes) {
+        const el = document.createElement("button");
+        el.type = "button";
+        el.setAttribute("aria-label", n.name);
+        el.className = "grid h-7 w-7 place-items-center rounded-full border-[3px] border-card bg-primary shadow-float";
+        el.innerHTML = '<span class="h-2 w-2 rounded-full bg-card"></span>';
+        el.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          onSelectRef.current(n.id);
+        });
+        new maplibregl.Marker({ element: el }).setLngLat(n.lngLat).addTo(map);
+
+        const arrow = document.createElement("div");
+        arrow.className = "flow-arrow pointer-events-none";
+        createRoot(arrow).render(
+          <div className="grid h-6 w-6 place-items-center rounded-full bg-card text-primary shadow-card" style={{ transform: `rotate(${n.snapshot.flowBearing}deg)` }}>
+            <ArrowUp className="h-4 w-4" strokeWidth={2.5} />
+          </div>,
+        );
+        new maplibregl.Marker({ element: arrow, offset: [26, -26] }).setLngLat(n.lngLat).addTo(map);
+      }
+      map.on("click", () => onSelectRef.current(null));
+      setReady(true);
+    });
+
+    return () => {
+      clearTimeout(timer);
+      map.remove();
+      mapRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scenario]);
+
+  // Capas visibles
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    const vis = (id: string, on: boolean) => map.getLayer(id) && map.setLayoutProperty(id, "visibility", on ? "visible" : "none");
+    vis("heat", layers.heat);
+    vis("r20", layers.rings);
+    vis("r40", layers.rings);
+    vis("route", layers.route);
+    map.getContainer().querySelectorAll<HTMLElement>(".flow-arrow").forEach((el: HTMLElement) => (el.style.display = layers.flow ? "" : "none"));
+  }, [layers, ready]);
+
+  // Centrar el nodo seleccionado
+  useEffect(() => {
+    const map = mapRef.current;
+    const n = scenario.nodes.find((x) => x.id === selectedId);
+    if (map && ready && n) map.easeTo({ center: n.lngLat, duration: 500 });
+  }, [selectedId, ready, scenario]);
+
+  return (
+    <div className="absolute inset-0">
+      <div ref={ref} className="h-full w-full" />
+    </div>
+  );
+}
