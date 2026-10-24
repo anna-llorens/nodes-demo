@@ -1,7 +1,7 @@
 import { ClientOnly } from "@tanstack/react-router";
 import { lazy, Suspense, useState } from "react";
 import { Play, Users, X, ChevronDown, Info, Bell, Clock } from "lucide-react";
-import type { Scenario } from "@/scenarios/types";
+import type { LiveScenario as Scenario } from "@/scenarios/types";
 import { densityLabel, densityLevel } from "@/scenarios/types";
 import { SimBadge } from "./Logo";
 import { SchematicMap } from "./SchematicMap";

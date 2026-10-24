@@ -36,7 +36,7 @@ export const maraton: Scenario = {
       roadwayShare: 0.71,
       flowBearing: 40,
       turnover: 0.08,
-      curve: CURVE,
+      curve: [["08:00", 3.0], ["08:25", 5.4], ["08:40", 2.2], ["09:00", 0.7], ["10:00", 0.4], ["11:30", 0.3]],
     },
     {
       id: "animacion",
@@ -47,7 +47,7 @@ export const maraton: Scenario = {
       roadwayShare: 0.58,
       flowBearing: 250,
       turnover: 0.08,
-      curve: CURVE,
+      curve: [["08:00", 0.4], ["08:45", 1.4], ["09:10", 3.2], ["09:40", 2.7], ["10:15", 1.7], ["11:00", 0.6], ["11:30", 0.3]],
     },
     {
       id: "meta",
@@ -58,7 +58,7 @@ export const maraton: Scenario = {
       roadwayShare: 0.66,
       flowBearing: 95,
       turnover: 0.08,
-      curve: CURVE,
+      curve: [["08:00", 0.5], ["09:00", 1.1], ["09:30", 2.1], ["10:00", 3.4], ["10:12", 4.4], ["10:35", 5.6], ["11:00", 3.6], ["11:30", 1.5]],
     },
   ],
 };
