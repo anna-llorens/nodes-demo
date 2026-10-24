@@ -152,5 +152,9 @@ export default function MapView({
     if (map && ready && n) map.easeTo({ center: n.lngLat, duration: 500 });
   }, [selectedId, ready, scenario]);
 
-  return <div ref={ref} className="absolute inset-0" />;
+  return (
+    <div className="absolute inset-0">
+      <div ref={ref} className="h-full w-full" />
+    </div>
+  );
 }

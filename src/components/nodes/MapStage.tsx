@@ -36,8 +36,8 @@ export function MapStage({ scenario, layers }: { scenario: Scenario; layers: Map
     <div className="flex h-full min-h-0 flex-col">
       {/* Cabecera */}
       <header className="shrink-0 border-b border-border bg-card px-4 pt-3 sm:px-6">
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-          <button className="flex min-w-0 items-center gap-1.5 text-left">
+        <div className="flex flex-col-reverse items-start gap-2 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-3">
+          <button className="flex w-full min-w-0 items-center gap-1.5 text-left">
             <h1 className="truncate font-display text-lg font-bold text-brand-ink sm:text-xl">{scenario.name}</h1>
             <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
           </button>
