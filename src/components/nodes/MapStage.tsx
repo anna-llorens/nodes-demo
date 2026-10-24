@@ -46,7 +46,7 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
   const tick = Math.floor(minute * 6) / 6; // recalcula cada 10 s simulados
   const scenario: Scenario = useMemo(() => {
     const st = simulate(base, tick);
-    return { ...base, nodes: base.nodes.map((n, i) => ({ ...n, snapshot: st[i] })) };
+    return { ...base, nodes: base.nodes.map((n, i) => ({ ...n, snapshot: st[i]! })) };
   }, [base, tick]);
   const clock = fmtClock(minute);
   const [selectedId, setSelectedId] = useState<string | null>("meta");

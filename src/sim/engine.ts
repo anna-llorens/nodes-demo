@@ -6,8 +6,8 @@ export const MAX_DENSITY = 7;
 export interface NodeState {
   id: string;
   people: number;
-  roadway?: number;
-  sidewalk?: number;
+  roadway?: number | undefined;
+  sidewalk?: number | undefined;
   density: number;
   flowIn: number;
   flowOut: number;
@@ -16,7 +16,7 @@ export interface NodeState {
 }
 
 export const toMin = (hhmm: string) => {
-  const [h, m] = hhmm.split(":").map(Number);
+  const [h = 0, m = 0] = hhmm.split(":").map(Number);
   return h * 60 + m;
 };
 export const fmtClock = (min: number) => {
@@ -41,17 +41,17 @@ function noise(id: string, min: number) {
 }
 
 function curve(node: ScenarioNode, min: number) {
-  const k = node.curve;
+  const k = node.curve as [string, number][] & { 0: [string, number] };
   if (min <= toMin(k[0][0])) return k[0][1];
   for (let i = 1; i < k.length; i++) {
-    const a = toMin(k[i - 1][0]);
-    const b = toMin(k[i][0]);
+    const a = toMin(k[i - 1]![0]);
+    const b = toMin(k[i]![0]);
     if (min <= b) {
       const t = (min - a) / (b - a);
-      return k[i - 1][1] + (k[i][1] - k[i - 1][1]) * t;
+      return k[i - 1]![1] + (k[i]![1] - k[i - 1]![1]) * t;
     }
   }
-  return k[k.length - 1][1];
+  return k[k.length - 1]![1];
 }
 
 export function densityAt(node: ScenarioNode, min: number) {
