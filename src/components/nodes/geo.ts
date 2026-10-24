@@ -1,5 +1,5 @@
 import type * as GeoJSON from "geojson";
-import type { Scenario } from "@/scenarios/types";
+import type { LiveScenario as Scenario } from "@/scenarios/types";
 
 export function circlePolygon([lng, lat]: [number, number], radiusM: number, steps = 64): [number, number][] {
   const out: [number, number][] = [];

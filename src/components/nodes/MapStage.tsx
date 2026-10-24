@@ -1,7 +1,8 @@
 import { ClientOnly } from "@tanstack/react-router";
-import { lazy, Suspense, useState } from "react";
-import { Play, Users, X, ChevronDown, Info, Bell, Clock } from "lucide-react";
-import type { Scenario } from "@/scenarios/types";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { Play, Pause, Users, X, ChevronDown, Info, Bell, Clock } from "lucide-react";
+import type { LiveScenario as Scenario, Scenario as RawScenario } from "@/scenarios/types";
+import { simulate, toMin, fmtClock } from "@/sim/engine";
 import { densityLabel, densityLevel } from "@/scenarios/types";
 import { SimBadge } from "./Logo";
 import { SchematicMap } from "./SchematicMap";
@@ -25,7 +26,29 @@ export const levelDot: Record<string, string> = {
 
 const fmt = (n: number) => n.toLocaleString("es-ES");
 
-export function MapStage({ scenario, layers }: { scenario: Scenario; layers: MapLayers }) {
+export function MapStage({ scenario: base, layers }: { scenario: RawScenario; layers: MapLayers }) {
+  const start = toMin(base.schedule.start);
+  const end = toMin(base.schedule.end);
+  const [minute, setMinute] = useState(base.id === "maraton" ? toMin("10:15") : start);
+  const [playing, setPlaying] = useState(false);
+  const [speed, setSpeed] = useState(10);
+  useEffect(() => {
+    if (!playing) return;
+    const id = setInterval(() => {
+      setMinute((m) => {
+        const next = m + (speed * 0.2) / 60;
+        if (next >= end) { setPlaying(false); return end; }
+        return next;
+      });
+    }, 200);
+    return () => clearInterval(id);
+  }, [playing, speed, end]);
+  const tick = Math.floor(minute * 6) / 6; // recalcula cada 10 s simulados
+  const scenario: Scenario = useMemo(() => {
+    const st = simulate(base, tick);
+    return { ...base, nodes: base.nodes.map((n, i) => ({ ...n, snapshot: st[i]! })) };
+  }, [base, tick]);
+  const clock = fmtClock(minute);
   const [selectedId, setSelectedId] = useState<string | null>("meta");
   const [fallback, setFallback] = useState(false);
   const [tab, setTab] = useState<"mapa" | "indicadores" | "alertas">("mapa");
@@ -84,7 +107,7 @@ export function MapStage({ scenario, layers }: { scenario: Scenario; layers: Map
           {/* Hora del evento (ordenador) */}
           <div className="absolute left-4 top-4 hidden rounded-2xl bg-card/95 px-4 py-3 shadow-float backdrop-blur lg:block">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Hora del evento</p>
-            <p className="font-display text-3xl font-bold text-brand-ink">{scenario.snapshotTime}</p>
+            <p className="font-display text-3xl font-bold text-brand-ink">{clock}</p>
             <p className="text-xs text-muted-foreground">{fmt(total)} personas detectadas en zonas cubiertas</p>
           </div>
 
@@ -97,7 +120,17 @@ export function MapStage({ scenario, layers }: { scenario: Scenario; layers: Map
 
           {/* Reproductor + leyenda */}
           <div className="absolute inset-x-3 bottom-3 flex flex-col gap-2 sm:inset-x-6 sm:bottom-6 lg:left-1/2 lg:right-auto lg:w-[min(640px,calc(100%-3rem))] lg:-translate-x-1/2">
-            <Player scenario={scenario} />
+            <Player
+              start={start}
+              end={end}
+              minute={minute}
+              clock={clock}
+              playing={playing}
+              speed={speed}
+              onToggle={() => { if (minute >= end) setMinute(start); setPlaying((p) => !p); }}
+              onSeek={(m) => setMinute(m)}
+              onSpeed={setSpeed}
+            />
             <Legend />
           </div>
         </section>
@@ -153,6 +186,8 @@ function NodeBubble({ node, onClose, detailed }: { node: Scenario["nodes"][numbe
           <Stat label="En aceras" value={fmt(node.snapshot.sidewalk ?? 0)} />
           <Stat label="Entrada" value={`${node.snapshot.flowIn} pers/min`} />
           <Stat label="Salida" value={`${node.snapshot.flowOut} pers/min`} />
+          <Stat label="Variación 10 min" value={`${node.snapshot.variation10 >= 0 ? "+" : ""}${Math.round(node.snapshot.variation10 * 100)} %`} />
+          <Stat label="Velocidad media" value={`${node.snapshot.speed.toLocaleString("es-ES")} m/s`} />
           <p className="col-span-2 text-[11px] text-muted-foreground">Calzada / aceras: estimado por zona</p>
         </div>
       )}
@@ -208,22 +243,31 @@ function AlertsPlaceholder() {
   );
 }
 
-function Player({ scenario }: { scenario: Scenario }) {
+function Player(p: {
+  start: number; end: number; minute: number; clock: string; playing: boolean; speed: number;
+  onToggle: () => void; onSeek: (m: number) => void; onSpeed: (s: number) => void;
+}) {
   return (
     <div className="flex items-center gap-3 rounded-2xl bg-card px-3 py-2.5 shadow-float">
-      <button aria-label="Reproducir" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
-        <Play className="h-4 w-4 fill-current" />
+      <button onClick={p.onToggle} aria-label={p.playing ? "Pausar" : "Reproducir"} className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
+        {p.playing ? <Pause className="h-4 w-4 fill-current" /> : <Play className="h-4 w-4 fill-current" />}
       </button>
-      <span className="hidden text-xs text-muted-foreground sm:inline">{scenario.schedule.start}</span>
-      <div className="relative h-1.5 min-w-0 flex-1 rounded-full bg-muted">
-        <div className="absolute inset-y-0 left-0 w-[64%] rounded-full bg-primary" />
-        <div className="absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full border-2 border-primary bg-card" style={{ left: "calc(64% - 8px)" }} />
-      </div>
-      <span className="hidden text-xs text-muted-foreground sm:inline">{scenario.schedule.end}</span>
-      <span className="shrink-0 font-display text-sm font-bold">{scenario.snapshotTime}</span>
-      <div className="hidden shrink-0 rounded-full bg-muted p-0.5 text-xs font-semibold sm:flex">
-        {["1×", "10×", "60×"].map((s, i) => (
-          <span key={s} className={cn("rounded-full px-2 py-1", i === 0 ? "bg-card shadow-card" : "text-muted-foreground")}>{s}</span>
+      <span className="hidden text-xs text-muted-foreground sm:inline">{fmtClock(p.start)}</span>
+      <input
+        type="range"
+        aria-label="Hora del evento"
+        min={p.start}
+        max={p.end}
+        step={1}
+        value={p.minute}
+        onChange={(e) => p.onSeek(Number(e.target.value))}
+        className="h-1.5 min-w-0 flex-1 cursor-pointer accent-primary"
+      />
+      <span className="hidden text-xs text-muted-foreground sm:inline">{fmtClock(p.end)}</span>
+      <span className="w-11 shrink-0 font-display text-sm font-bold tabular-nums">{p.clock}</span>
+      <div className="flex shrink-0 rounded-full bg-muted p-0.5 text-xs font-semibold">
+        {[1, 10, 60].map((s) => (
+          <button key={s} onClick={() => p.onSpeed(s)} className={cn("rounded-full px-2 py-1", p.speed === s ? "bg-card shadow-card" : "text-muted-foreground")}>{s}×</button>
         ))}
       </div>
     </div>

@@ -4,7 +4,7 @@ import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { createRoot } from "react-dom/client";
 import { ArrowUp } from "lucide-react";
-import type { Scenario } from "@/scenarios/types";
+import type { LiveScenario as Scenario } from "@/scenarios/types";
 import { heatPoints, ringsGeo } from "./geo";
 import type { MapLayers } from "./MapStage";
 
@@ -115,7 +115,7 @@ export default function MapView({
         const arrow = document.createElement("div");
         arrow.className = "flow-arrow pointer-events-none";
         createRoot(arrow).render(
-          <div className="grid h-6 w-6 place-items-center rounded-full bg-card text-primary shadow-card" style={{ transform: `rotate(${n.snapshot.flowBearing}deg)` }}>
+          <div className="grid h-6 w-6 place-items-center rounded-full bg-card text-primary shadow-card" style={{ transform: `rotate(${n.flowBearing}deg)` }}>
             <ArrowUp className="h-4 w-4" strokeWidth={2.5} />
           </div>,
         );
@@ -131,7 +131,13 @@ export default function MapView({
       mapRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scenario]);
+  }, [scenario.id]);
+
+  // Actualiza el mapa de calor con los datos simulados
+  useEffect(() => {
+    const src = mapRef.current?.getSource("heat") as maplibregl.GeoJSONSource | undefined;
+    if (ready && src) src.setData(heatPoints(scenario));
+  }, [scenario, ready]);
 
   // Capas visibles
   useEffect(() => {
@@ -150,7 +156,7 @@ export default function MapView({
     const map = mapRef.current;
     const n = scenario.nodes.find((x) => x.id === selectedId);
     if (map && ready && n) map.easeTo({ center: n.lngLat, duration: 500 });
-  }, [selectedId, ready, scenario]);
+  }, [selectedId, ready]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="absolute inset-0">

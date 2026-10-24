@@ -1,4 +1,4 @@
-import type { Scenario } from "@/scenarios/types";
+import type { LiveScenario as Scenario } from "@/scenarios/types";
 import { densityLevel } from "@/scenarios/types";
 import { cn } from "@/lib/utils";
 

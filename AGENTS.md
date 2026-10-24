@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Simulation data comes only from src/sim/engine.ts (deterministic, fixed seed) driven by per-scenario curves in src/scenarios/*.ts; screens never hardcode figures, so the demo is reproducible and new scenarios reuse the same engine.
