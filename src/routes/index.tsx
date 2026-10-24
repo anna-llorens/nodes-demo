@@ -21,7 +21,7 @@ function Index() {
   return (
     <AppShell>
       <div className="mx-auto flex min-h-full w-full max-w-5xl flex-col px-5 py-6 sm:px-8 lg:py-12">
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between lg:hidden">
           <Logo className="text-4xl sm:text-5xl lg:hidden" />
           <SimBadge className="lg:hidden" />
         </div>
