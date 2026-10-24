@@ -56,7 +56,7 @@ export default function MapView({
         onError();
       }
     }, 9000);
-    map.on("error", (e) => {
+    map.on("error", (e: { error?: unknown }) => {
       if (!map.isStyleLoaded() && !failed) {
         failed = true;
         console.warn("Mapa no disponible", e.error);
@@ -142,7 +142,7 @@ export default function MapView({
     vis("r20", layers.rings);
     vis("r40", layers.rings);
     vis("route", layers.route);
-    map.getContainer().querySelectorAll<HTMLElement>(".flow-arrow").forEach((el) => (el.style.display = layers.flow ? "" : "none"));
+    map.getContainer().querySelectorAll<HTMLElement>(".flow-arrow").forEach((el: HTMLElement) => (el.style.display = layers.flow ? "" : "none"));
   }, [layers, ready]);
 
   // Centrar el nodo seleccionado
