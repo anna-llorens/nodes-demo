@@ -19,7 +19,7 @@ export const Route = createFileRoute("/map")({
 });
 
 function MapaPage() {
-  const [layers, setLayers] = useState<MapLayers>({ heat: true, runners: true, rings: true, flow: true, route: true, traffic: false });
+  const [layers, setLayers] = useState<MapLayers>({ heat: true, runners: true, rings: true, flow: false, route: true, traffic: false });
   const setLayer = (key: keyof MapLayers, value: boolean) => setLayers((current) => ({ ...current, [key]: value }));
   return (
     <AppShell

@@ -97,11 +97,11 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
               key={t}
               onClick={() => setTab(t)}
               className={cn(
-                "border-b-2 py-2.5 capitalize",
+                "border-b-2 py-2.5",
                 tab === t ? "border-primary text-foreground" : "border-transparent text-muted-foreground",
               )}
             >
-              {t}
+              {t === "mapa" ? "Mapa" : "Nodes"}
             </Button>
           ))}
         </div>
@@ -138,7 +138,11 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
                   <h2 className="mb-2 font-display text-sm font-bold">Capas</h2>
                   <LayerToggle label="Mapa de calor" checked={layers.heat} onChange={(value) => onLayerChange("heat", value)} />
                   <LayerToggle label="Corredores en recorrido" checked={layers.runners} onChange={(value) => onLayerChange("runners", value)} />
-                  <label className="mb-2 mt-1 flex items-center justify-between gap-2 pl-1 text-xs text-muted-foreground">
+                  <LayerToggle label="Anillos de nodo" checked={layers.rings} onChange={(value) => onLayerChange("rings", value)} />
+                  <LayerToggle label="Flechas de flujo" checked={layers.flow} onChange={(value) => onLayerChange("flow", value)} />
+                  <LayerToggle label="Recorrido" checked={layers.route} onChange={(value) => onLayerChange("route", value)} />
+                  <LayerToggle label="Tráfico" checked={showTraffic} onChange={(value) => onLayerChange("traffic", value)} />
+                  <label className="mt-2 flex items-center justify-between gap-2 border-t border-border pt-2 text-xs text-muted-foreground">
                     Gama de corredores
                     <select
                       aria-label="Gama de color de corredores"
@@ -149,10 +153,6 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
                       {PALETTES.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
                     </select>
                   </label>
-                  <LayerToggle label="Anillos de nodo" checked={layers.rings} onChange={(value) => onLayerChange("rings", value)} />
-                  <LayerToggle label="Flechas de flujo" checked={layers.flow} onChange={(value) => onLayerChange("flow", value)} />
-                  <LayerToggle label="Recorrido" checked={layers.route} onChange={(value) => onLayerChange("route", value)} />
-                  <LayerToggle label="Tráfico" checked={showTraffic} onChange={(value) => onLayerChange("traffic", value)} />
                 </PopoverContent>
               </Popover>
             </div>
@@ -206,7 +206,7 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
         )}
 
         {/* Panel derecho (ordenador) */}
-        <aside className="hidden w-80 shrink-0 flex-col gap-4 overflow-y-auto border-l border-border bg-background p-4 xl:flex 2xl:w-96">
+        <aside className="hidden w-80 shrink-0 flex-col gap-4 overflow-y-auto border-l border-border bg-background p-4 lg:flex 2xl:w-96">
           {selected ? (
             <div className="rounded-2xl bg-card p-4 shadow-card">
               <NodeBubble minute={minute} node={selected} onClose={() => setSelectedId(null)} detailed />
@@ -214,6 +214,10 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
           ) : (
             <p className="rounded-2xl bg-card p-4 text-sm text-muted-foreground shadow-card">Toca un nodo del mapa para ver su zona.</p>
           )}
+          <div>
+            <h2 className="mb-2 font-display text-sm font-bold text-brand-ink">Nodes</h2>
+            <NodeList scenario={scenario} selectedId={selectedId} onSelect={setSelectedId} />
+          </div>
         </aside>
       </div>
     </div>
