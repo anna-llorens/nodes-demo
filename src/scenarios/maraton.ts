@@ -39,7 +39,7 @@ export const maraton: Scenario = {
       turnover: 0.08,
       description: "Cajones de salida y acompañantes.",
       curve: [["08:00", 3.4], ["08:25", 5.4], ["08:40", 3.2], ["09:00", 1.5], ["10:00", 0.7], ["11:30", 0.3]],
-      runnerShare: [["08:00", 0.85], ["08:30", 0.8], ["08:45", 0.2], ["09:00", 0.02]],
+      runnerShare: [["08:00", 0.8], ["08:30", 0.74], ["08:45", 0.2], ["09:00", 0.02]],
     },
     {
       id: "ayuntamiento",
