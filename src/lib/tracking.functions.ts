@@ -10,8 +10,8 @@ export const trackEvent = createServerFn({ method: "POST" })
       nodeName?: string;
       device?: string;
       label?: string;
-      visitorId?: string;
-      sessionId?: string;
+      visitorId?: string | undefined;
+      sessionId?: string | undefined;
     }) => {
       const kind = d.kind === "node_click" ? "node_click" : d.kind === "click" ? "click" : "page_view";
       const clip = (v: unknown, n: number) => (typeof v === "string" ? v.slice(0, n) : null);
