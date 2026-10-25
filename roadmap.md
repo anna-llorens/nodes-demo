@@ -1,6 +1,6 @@
 # Tasks
 - [x] Share a map link restoring scenario, enabled layers and camera; verify reopening the link.
-- [ ] Rename the published address to nodes-demo.lovable.app.
+- [x] Request publication under nodes-demo.lovable.app (deployment scheduled).
 - [x] Merge traffic and closures into one combined Capas section and remove the on-screen traffic panel.
 - [x] Explain visit analytics options and add Google Analytics tracking.
 - [x] Remove the home node list while retaining the card's configured node count.
