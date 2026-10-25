@@ -17,3 +17,5 @@
 - Home displays the marathon node count directly from the configured scenario so it stays aligned with the map.
 - AppShell owns the single simulation status strip outside the scrollable content so every page keeps it visible without duplicates.
 - Runner heat paint reads semantic CSS tokens through browser canvas color conversion so MapLibre uses the shared theme palette.
+
+- Share-map URL serialization lives in a browser-safe module; MapLibre reports its camera and the route validates saved state so shared links restore the configured scenario, layers, palette and paused simulation time without browser-storage dependencies.

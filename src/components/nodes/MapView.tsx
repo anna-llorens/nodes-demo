@@ -7,7 +7,7 @@ import { ArrowUp } from "lucide-react";
 import type { LiveScenario as Scenario } from "@/scenarios/types";
 import { heatPoints, ringsGeo, runnerHeatPoints, trafficGeo } from "./geo";
 import type { TrafficLevel } from "@/sim/engine";
-import type { MapLayers, RunnerPalette } from "./MapStage";
+import type { MapCamera, MapLayers, RunnerPalette } from "@/lib/map-share";
 
 // maplibre necesita colores literales en su paint (no lee variables CSS)
 const C = {
@@ -58,6 +58,8 @@ export default function MapView({
   traffic,
   minute,
   palette = "termica",
+  initialCamera,
+  onCameraChange,
 }: {
   traffic: { id: string; level: TrafficLevel }[];
   minute: number;
@@ -67,12 +69,16 @@ export default function MapView({
   onSelect: (id: string | null, point?: { x: number; y: number }) => void;
   onError: () => void;
   palette?: RunnerPalette;
+  initialCamera?: MapCamera;
+  onCameraChange?: (camera: MapCamera) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [ready, setReady] = useState(false);
   const onSelectRef = useRef(onSelect);
   onSelectRef.current = onSelect;
+  const cameraChangeRef = useRef(onCameraChange);
+  cameraChangeRef.current = onCameraChange;
   const trafficRef = useRef(traffic);
   trafficRef.current = traffic;
   const paletteRef = useRef(palette);
@@ -87,11 +93,19 @@ export default function MapView({
     const map = new maplibregl.Map({
       container: ref.current,
       style: "https://tiles.openfreemap.org/styles/positron",
-      center: scenario.center,
-      zoom: scenario.zoom,
+      center: initialCamera ? [initialCamera.lng, initialCamera.lat] : scenario.center,
+      zoom: initialCamera?.zoom ?? scenario.zoom,
+      bearing: initialCamera?.bearing ?? 0,
+      pitch: initialCamera?.pitch ?? 0,
       attributionControl: { compact: true },
     });
     mapRef.current = map;
+    const reportCamera = () => {
+      const center = map.getCenter();
+      cameraChangeRef.current?.({ lng: center.lng, lat: center.lat, zoom: map.getZoom(), bearing: map.getBearing(), pitch: map.getPitch() });
+    };
+    map.on("move", reportCamera);
+    reportCamera();
     const timer = setTimeout(() => {
       if (!map.loaded() && !map.isStyleLoaded()) {
         failed = true;

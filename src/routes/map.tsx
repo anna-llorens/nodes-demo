@@ -3,8 +3,10 @@ import { useState } from "react";
 import { AppShell } from "@/components/nodes/AppShell";
 import { MapStage, type MapLayers } from "@/components/nodes/MapStage";
 import { maraton } from "@/scenarios/maraton";
+import { restoreMapState, validateMapSearch } from "@/lib/map-share";
 
 export const Route = createFileRoute("/map")({
+  validateSearch: validateMapSearch,
   head: () => ({
     meta: [
       { property: "og:type", content: "website" },
@@ -19,7 +21,11 @@ export const Route = createFileRoute("/map")({
 });
 
 function MapaPage() {
-  const [layers, setLayers] = useState<MapLayers>({ heat: true, runners: true, rings: true, flow: false, route: true, traffic: false, closures: false });
+  const search = Route.useSearch();
+  // Resolve shared IDs against the configured scenarios; currently only marathon is available.
+  const scenario = maraton;
+  const initial = restoreMapState(search, scenario);
+  const [layers, setLayers] = useState<MapLayers>(initial.layers);
   const setLayer = (key: keyof MapLayers, value: boolean) => setLayers((current) => ({ ...current, [key]: value }));
   return (
     <AppShell
@@ -35,7 +41,7 @@ function MapaPage() {
         </div>
       }
     >
-      <MapStage scenario={maraton} layers={layers} onLayerChange={setLayer} />
+      <MapStage scenario={scenario} layers={layers} onLayerChange={setLayer} initialCamera={initial.camera} initialPalette={initial.palette} initialMinute={initial.time} />
     </AppShell>
   );
 }
