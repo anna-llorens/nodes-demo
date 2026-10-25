@@ -2,7 +2,7 @@ import { ClientOnly, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Play, Pause, Users, X, ChevronDown, Info, Clock, ChevronRight, Layers } from "lucide-react";
 import type { LiveScenario as Scenario, Scenario as RawScenario } from "@/scenarios/types";
-import { simulate, toMin, fmtClock, trafficAt } from "@/sim/engine";
+import { simulate, toMin, fmtClock, trafficAt, trafficTimesAt } from "@/sim/engine";
 import { densityLabel, densityLevel } from "@/scenarios/types";
 import { SchematicMap } from "./SchematicMap";
 import { cn } from "@/lib/utils";
@@ -69,6 +69,7 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
   const traffic = useMemo(() => trafficAt(base, trafficTick), [base, trafficTick]);
   const showTraffic = Boolean(layers.traffic);
   const jammed = traffic.filter((t) => t.level === 3).length;
+  const times = useMemo(() => trafficTimesAt(base, trafficTick, traffic), [base, trafficTick, traffic]);
   const [selectedId, setSelectedId] = useState<string | null>("meta");
   const [fallback, setFallback] = useState(false);
   const [tab, setTab] = useState<"mapa" | "indicadores">("mapa");
