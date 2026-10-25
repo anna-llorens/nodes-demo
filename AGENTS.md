@@ -11,4 +11,5 @@
 
 - Simulation data comes only from src/sim/engine.ts (deterministic, fixed seed) driven by per-scenario curves in src/scenarios/*.ts; screens never hardcode figures, so the demo is reproducible and new scenarios reuse the same engine.
 - Report aggregation in src/sim/reports.ts samples the engine once per minute; interval durations exclude the endpoint so totals do not overcount.
+- Runner movement samples and density-linked weights come from simulateRunnerHeat in the simulation engine; geo.ts only projects these samples onto the route.
 - English content routes are canonical; Spanish legacy URLs redirect to them to preserve existing links, and / and /home share a browser-safe HomePage component.

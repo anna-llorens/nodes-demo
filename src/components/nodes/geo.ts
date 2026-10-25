@@ -1,5 +1,6 @@
 import type * as GeoJSON from "geojson";
 import type { LiveScenario as Scenario, Scenario as BaseScenario } from "@/scenarios/types";
+import { simulateRunnerHeat } from "@/sim/engine";
 
 export function circlePolygon([lng, lat]: [number, number], radiusM: number, steps = 64): [number, number][] {
   const out: [number, number][] = [];
@@ -24,7 +25,7 @@ export function heatPoints(s: Scenario) {
       const [lng, lat] = n.lngLat;
       features.push({
         type: "Feature",
-        properties: { w: n.snapshot.density / 7 },
+        properties: { w: Math.pow(n.snapshot.density / 7, 1.6) * 0.4 },
         geometry: {
           type: "Point",
           coordinates: [
@@ -42,26 +43,29 @@ export function heatPoints(s: Scenario) {
 function routeDistances(route: [number, number][]) {
   const acc: number[] = [0];
   for (let i = 1; i < route.length; i++) {
-    const [x1, y1] = route[i - 1]!;
-    const [x2, y2] = route[i]!;
+    const previous = route[i - 1];
+    const current = route[i];
+    if (!previous || !current) continue;
+    const [x1, y1] = previous;
+    const [x2, y2] = current;
     const dx = (x2 - x1) * 111320 * Math.cos((y1 * Math.PI) / 180);
     const dy = (y2 - y1) * 111320;
-    acc.push(acc[i - 1]! + Math.hypot(dx, dy));
+    acc.push((acc[i - 1] ?? 0) + Math.hypot(dx, dy));
   }
   return acc;
 }
 
 /** Punto del recorrido a una distancia dada (m) desde la salida. */
 function pointAt(route: [number, number][], acc: number[], d: number): [number, number] {
-  const total = acc[acc.length - 1]!;
+  const total = acc[acc.length - 1] ?? 0;
   const target = Math.max(0, Math.min(total, d));
   let i = 1;
-  while (i < acc.length - 1 && acc[i]! < target) i++;
-  const a = acc[i - 1]!;
-  const b = acc[i]!;
+  while (i < acc.length - 1 && (acc[i] ?? 0) < target) i++;
+  const a = acc[i - 1] ?? 0;
+  const b = acc[i] ?? 0;
   const t = b > a ? (target - a) / (b - a) : 0;
-  const [x1, y1] = route[i - 1]!;
-  const [x2, y2] = route[i]!;
+  const [x1, y1] = route[i - 1] ?? [0, 0];
+  const [x2, y2] = route[i] ?? [x1, y1];
   return [x1 + (x2 - x1) * t, y1 + (y2 - y1) * t];
 }
 
@@ -75,30 +79,17 @@ export function runnerHeatPoints(s: BaseScenario, minute: number) {
   if (!s.route || s.route.length < 2) return { type: "FeatureCollection", features } as GeoJSON.FeatureCollection;
   const route = s.route;
   const acc = routeDistances(route);
-  const total = acc[acc.length - 1]!;
-  const startMin = 8 * 60; // salida 08:00
-  const N = 900;
-  let seed = 7;
-  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-  for (let i = 0; i < N; i++) {
-    const frac = rnd();
-    const startDelay = frac * 35;
-    const runTime = 70 + frac * 95;
-    const progress = (minute - startMin - startDelay) / runTime;
-    if (progress <= 0 || progress >= 1) continue;
+  const total = acc[acc.length - 1] ?? 0;
+  for (const { progress, weight, offsetLngM, offsetLatM } of simulateRunnerHeat(s, minute)) {
     const [lng, lat] = pointAt(route, acc, progress * total);
-    // Más peso en el pelotón central que en cabeza o cola
-    const w = Math.max(0.15, 0.35 + 0.65 * (1 - Math.abs(progress - 0.45) * 1.4));
-    const off = (rnd() - 0.5) * 16; // dispersión lateral ±8 m
-    const offLat = (rnd() - 0.5) * 10;
     features.push({
       type: "Feature",
-      properties: { w },
+      properties: { w: weight },
       geometry: {
         type: "Point",
         coordinates: [
-          lng + off / (111320 * Math.cos((lat * Math.PI) / 180)),
-          lat + offLat / 111320,
+          lng + offsetLngM / (111320 * Math.cos((lat * Math.PI) / 180)),
+          lat + offsetLatM / 111320,
         ],
       },
     });
