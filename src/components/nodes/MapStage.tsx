@@ -266,7 +266,7 @@ function Player(p: {
       <span className="hidden text-xs text-muted-foreground sm:inline">{fmtClock(p.end)}</span>
       <span className="w-11 shrink-0 font-display text-sm font-bold tabular-nums">{p.clock}</span>
       <div className="flex shrink-0 rounded-full bg-muted p-0.5 text-xs font-semibold">
-        {[1, 10, 60].map((s) => (
+        {[1, 10, 60, 100].map((s) => (
           <button key={s} onClick={() => p.onSpeed(s)} className={cn("rounded-full px-2 py-1", p.speed === s ? "bg-card shadow-card" : "text-muted-foreground")}>{s}×</button>
         ))}
       </div>
