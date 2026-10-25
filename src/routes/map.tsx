@@ -24,8 +24,22 @@ function MapaPage() {
   const search = Route.useSearch();
   // Resolve shared IDs against the configured scenarios; currently only marathon is available.
   const scenario = maraton;
-  const initial = restoreMapState(search, scenario);
+  const [initial, setInitial] = useState(() => ({ ...restoreMapState(search, scenario), speed: DEFAULT_SPEED }));
   const [layers, setLayers] = useState<MapLayers>(initial.layers);
+  const [restored, setRestored] = useState(false);
+  // Shared links win; otherwise resume the browser's cached map state after hydration.
+  useEffect(() => {
+    const hasLink = Object.values(search).some((v) => v !== undefined);
+    const cache = hasLink ? null : readMapCache();
+    if (cache) {
+      const next = restoreFromCache(cache, scenario);
+      setInitial(next);
+      setLayers(next.layers);
+    }
+    setRestored(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => { if (restored) writeMapCache({ layers }); }, [layers, restored]);
   const setLayer = (key: keyof MapLayers, value: boolean) => setLayers((current) => ({ ...current, [key]: value }));
   return (
     <AppShell
