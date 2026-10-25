@@ -143,8 +143,11 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
                   <LayerToggle label="Anillos de nodo" checked={layers.rings} onChange={(value) => onLayerChange("rings", value)} />
                   <LayerToggle label="Flechas de flujo" checked={layers.flow} onChange={(value) => onLayerChange("flow", value)} />
                   <LayerToggle label="Recorrido" checked={layers.route} onChange={(value) => onLayerChange("route", value)} />
-                  <LayerToggle label="Tráfico" checked={showTraffic} onChange={(value) => onLayerChange("traffic", value)} />
-                  <LayerToggle label="Cortes de tráfico" checked={Boolean(layers.closures)} onChange={(value) => onLayerChange("closures", value)} />
+                  <LayerToggle
+                    label="Tráfico y cortes"
+                    checked={showTraffic || Boolean(layers.closures)}
+                    onChange={(value) => { onLayerChange("traffic", value); onLayerChange("closures", value); }}
+                  />
                   <label className="mt-2 flex items-center justify-between gap-2 border-t border-border pt-2 text-xs text-muted-foreground">
                     Gama de corredores
                     <select
