@@ -55,7 +55,7 @@ function MapaPage() {
         </div>
       }
     >
-      <MapStage scenario={scenario} layers={layers} onLayerChange={setLayer} initialCamera={initial.camera} initialPalette={initial.palette} initialMinute={initial.time} />
+      {restored && <MapStage scenario={scenario} layers={layers} onLayerChange={setLayer} initialCamera={initial.camera} initialPalette={initial.palette} initialMinute={initial.time} initialSpeed={initial.speed} />}
     </AppShell>
   );
 }
