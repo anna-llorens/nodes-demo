@@ -14,6 +14,7 @@ import { Route as InformesRouteImport } from './routes/informes'
 import { Route as MapaRouteImport } from './routes/mapa'
 import { Route as MasRouteImport } from './routes/mas'
 import { Route as ZonasRouteImport } from './routes/zonas'
+import { Route as NodoIdRouteImport } from './routes/nodo.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,6 +41,11 @@ const ZonasRoute = ZonasRouteImport.update({
   path: '/zonas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NodoIdRoute = NodoIdRouteImport.update({
+  id: '/nodo/$id',
+  path: '/nodo/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/mapa': typeof MapaRoute
   '/mas': typeof MasRoute
   '/zonas': typeof ZonasRoute
+  '/nodo/$id': typeof NodoIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/mapa': typeof MapaRoute
   '/mas': typeof MasRoute
   '/zonas': typeof ZonasRoute
+  '/nodo/$id': typeof NodoIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +70,14 @@ export interface FileRoutesById {
   '/mapa': typeof MapaRoute
   '/mas': typeof MasRoute
   '/zonas': typeof ZonasRoute
+  '/nodo/$id': typeof NodoIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/informes' | '/mapa' | '/mas' | '/zonas'
+  fullPaths: '/' | '/informes' | '/mapa' | '/mas' | '/zonas' | '/nodo/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/informes' | '/mapa' | '/mas' | '/zonas'
-  id: '__root__' | '/' | '/informes' | '/mapa' | '/mas' | '/zonas'
+  to: '/' | '/informes' | '/mapa' | '/mas' | '/zonas' | '/nodo/$id'
+  id: '__root__' | '/' | '/informes' | '/mapa' | '/mas' | '/zonas' | '/nodo/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +86,7 @@ export interface RootRouteChildren {
   MapaRoute: typeof MapaRoute
   MasRoute: typeof MasRoute
   ZonasRoute: typeof ZonasRoute
+  NodoIdRoute: typeof NodoIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,6 +126,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ZonasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/nodo/$id': {
+      id: '/nodo/$id'
+      path: '/nodo/$id'
+      fullPath: '/nodo/$id'
+      preLoaderRoute: typeof NodoIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,6 +142,7 @@ const rootRouteChildren: RootRouteChildren = {
   MapaRoute: MapaRoute,
   MasRoute: MasRoute,
   ZonasRoute: ZonasRoute,
+  NodoIdRoute: NodoIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

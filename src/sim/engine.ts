@@ -112,11 +112,26 @@ function nearRoute(seg: TrafficSegment, route: [number, number][]) {
   return near;
 }
 
-/** Nivel de tráfico por tramo: 1 fluido · 2 denso · 3 congestionado (determinista). */
+const onCache = new WeakMap<TrafficSegment, boolean>();
+/** ¿El tramo forma parte del recorrido (mayoría de puntos a < 30 m)? */
+function onRoute(seg: TrafficSegment, route: [number, number][]) {
+  const c = onCache.get(seg);
+  if (c !== undefined) return c;
+  const lim = 40 / 111320;
+  const hits = seg.coords.filter(([x, y]) =>
+    route.some(([rx, ry]) => Math.abs(rx - x) * 0.77 < lim && Math.abs(ry - y) < lim),
+  ).length;
+  const on = hits / Math.max(1, seg.coords.length) >= 0.5;
+  onCache.set(seg, on);
+  return on;
+}
+
+/** Nivel de tráfico por tramo: 1 fluido · 2 denso · 3 congestionado (determinista).
+ *  Los tramos del recorrido (calles cortadas) no se devuelven. */
 export function trafficAt(s: Scenario, min: number): { id: string; level: TrafficLevel }[] {
   if (!s.traffic) return [];
   const closed = s.closure ? min >= toMin(s.closure.start) && min <= toMin(s.closure.end) : false;
-  return s.traffic.map((seg) => {
+  return s.traffic.filter((seg) => !(s.route && onRoute(seg, s.route))).map((seg) => {
     let load = seg.imv > 0 ? seg.imv / 3000 : 0.32;
     if (closed && s.route && nearRoute(seg, s.route)) load += 0.65;
     else if (closed) load += 0.12;

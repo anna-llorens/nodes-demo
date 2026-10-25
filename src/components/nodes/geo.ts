@@ -53,7 +53,7 @@ export function trafficGeo(s: Scenario, levels: { id: string; level: number }[])
   const byId = new Map(levels.map((l) => [l.id, l.level]));
   return {
     type: "FeatureCollection",
-    features: (s.traffic ?? []).map((seg) => ({
+    features: (s.traffic ?? []).filter((seg) => byId.has(seg.id)).map((seg) => ({
       type: "Feature",
       properties: { id: seg.id, name: seg.name, level: byId.get(seg.id) ?? 1 },
       geometry: { type: "LineString", coordinates: seg.coords },

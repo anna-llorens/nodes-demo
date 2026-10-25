@@ -1,6 +1,6 @@
-import { ClientOnly } from "@tanstack/react-router";
+import { ClientOnly, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
-import { Play, Pause, Users, X, ChevronDown, Info, Bell, Clock, Car, MapPin } from "lucide-react";
+import { Play, Pause, Users, X, ChevronDown, Info, Bell, Clock, Car, MapPin, ChevronRight } from "lucide-react";
 import type { LiveScenario as Scenario, Scenario as RawScenario } from "@/scenarios/types";
 import { simulate, toMin, fmtClock, trafficAt } from "@/sim/engine";
 import { densityLabel, densityLevel } from "@/scenarios/types";
@@ -137,7 +137,7 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
             </div>
             {showInfo && selected && (
               <div className="w-[min(300px,calc(100vw-2rem))] rounded-2xl bg-card p-4 shadow-float">
-                <NodeBubble node={selected} onClose={() => setShowInfo(false)} detailed />
+                <NodeBubble minute={minute} node={selected} onClose={() => setShowInfo(false)} detailed />
               </div>
             )}
           </div>
@@ -145,7 +145,7 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
           {/* Burbuja del nodo */}
           {selected && !showInfo && (
             <div className="absolute left-1/2 top-16 w-[min(260px,calc(100%-2rem))] -translate-x-1/2 rounded-2xl bg-card p-3.5 shadow-float lg:left-auto lg:right-14 lg:translate-x-0 xl:hidden">
-              <NodeBubble node={selected} onClose={() => setSelectedId(null)} />
+              <NodeBubble minute={minute} node={selected} onClose={() => setSelectedId(null)} />
             </div>
           )}
 
@@ -177,7 +177,7 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
         <aside className="hidden w-80 shrink-0 flex-col gap-4 overflow-y-auto border-l border-border bg-background p-4 xl:flex 2xl:w-96">
           {selected ? (
             <div className="rounded-2xl bg-card p-4 shadow-card">
-              <NodeBubble node={selected} onClose={() => setSelectedId(null)} detailed />
+              <NodeBubble minute={minute} node={selected} onClose={() => setSelectedId(null)} detailed />
             </div>
           ) : (
             <p className="rounded-2xl bg-card p-4 text-sm text-muted-foreground shadow-card">Toca un nodo del mapa para ver su zona.</p>
@@ -193,10 +193,13 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
   );
 }
 
-function NodeBubble({ node, onClose, detailed }: { node: Scenario["nodes"][number]; onClose: () => void; detailed?: boolean }) {
+function NodeBubble({ node, onClose, detailed, minute }: { node: Scenario["nodes"][number]; onClose: () => void; detailed?: boolean; minute: number }) {
   const lvl = densityLevel(node.snapshot.density);
   return (
     <div>
+      {node.image && (
+        <img src={node.image} alt={node.name} width={1024} height={640} loading="lazy" className="mb-2 h-24 w-full rounded-xl object-cover" />
+      )}
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="text-[11px] font-semibold text-muted-foreground">{node.short}</p>
@@ -224,6 +227,14 @@ function NodeBubble({ node, onClose, detailed }: { node: Scenario["nodes"][numbe
           <p className="col-span-2 text-[11px] text-muted-foreground">Calzada / aceras: estimado por zona</p>
         </div>
       )}
+      <Link
+        to="/nodo/$id"
+        params={{ id: node.id }}
+        search={{ t: Math.round(minute) }}
+        className="mt-3 flex items-center justify-center gap-1 rounded-full bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground"
+      >
+        Ver detalle del nodo <ChevronRight className="h-3.5 w-3.5" />
+      </Link>
     </div>
   );
 }
