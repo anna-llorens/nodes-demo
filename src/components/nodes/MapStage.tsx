@@ -11,20 +11,12 @@ import { Button } from "@/components/ui/button";
 import { LayerToggle } from "./AppShell";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { trackNodeClick } from "@/lib/analytics";
+import { buildMapShareUrl, type MapCamera, type MapLayers, type RunnerPalette } from "@/lib/map-share";
+import { ShareMapDialog } from "./ShareMapDialog";
+export type { MapLayers, RunnerPalette } from "@/lib/map-share";
 
 const MapView = lazy(() => import("./MapView"));
 
-export interface MapLayers {
-  heat: boolean;
-  runners: boolean;
-  rings: boolean;
-  flow: boolean;
-  route: boolean;
-  traffic?: boolean;
-  closures?: boolean;
-}
-
-export type RunnerPalette = "termica" | "verde" | "azul" | "terracota" | "grafito";
 const PALETTES: { id: RunnerPalette; label: string }[] = [
   { id: "termica", label: "Térmica (amarillo → rojo)" },
   { id: "verde", label: "Verde bosque" },
@@ -42,10 +34,10 @@ export const levelDot: Record<string, string> = {
 
 const fmt = (n: number) => n.toLocaleString("es-ES");
 
-export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: RawScenario; layers: MapLayers; onLayerChange: (key: keyof MapLayers, value: boolean) => void }) {
+export function MapStage({ scenario: base, layers, onLayerChange, initialCamera, initialPalette = "termica", initialMinute }: { scenario: RawScenario; layers: MapLayers; onLayerChange: (key: keyof MapLayers, value: boolean) => void; initialCamera?: MapCamera; initialPalette?: RunnerPalette; initialMinute?: number }) {
   const start = toMin(base.schedule.start);
   const end = toMin(base.schedule.end);
-  const [minute, setMinute] = useState(base.id === "maraton" ? toMin("10:15") : start);
+  const [minute, setMinute] = useState(initialMinute ?? (base.id === "maraton" ? toMin("10:15") : start));
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(10);
   useEffect(() => {
@@ -82,7 +74,8 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
   const [fallback, setFallback] = useState(false);
   const [tab, setTab] = useState<"mapa" | "indicadores">("mapa");
   const [layersOpen, setLayersOpen] = useState(false);
-  const [palette, setPalette] = useState<RunnerPalette>("termica");
+  const [palette, setPalette] = useState<RunnerPalette>(initialPalette);
+  const [camera, setCamera] = useState<MapCamera>(initialCamera ?? { lng: base.center[0], lat: base.center[1], zoom: base.zoom, bearing: 0, pitch: 0 });
   const [layersSlot, setLayersSlot] = useState<HTMLElement | null>(null);
   useEffect(() => {
     setLayersSlot(document.getElementById("map-layers-slot"));
@@ -156,9 +149,10 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
             <h1 className="truncate font-display text-lg font-bold text-brand-ink sm:text-xl">{scenario.name}</h1>
             <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
           </button>
-          <span className="hidden items-center gap-2 text-sm text-muted-foreground lg:flex">
-            <Clock className="h-4 w-4" /> {scenario.schedule.start}–{scenario.schedule.end}
-          </span>
+          <div className="flex w-full items-center justify-end gap-3 sm:w-auto">
+            <span className="hidden items-center gap-2 text-sm text-muted-foreground lg:flex"><Clock className="h-4 w-4" /> {scenario.schedule.start}–{scenario.schedule.end}</span>
+            <ShareMapDialog getUrl={() => buildMapShareUrl(window.location.origin, { scenario: base.id, layers, camera, palette, time: minute })} />
+          </div>
         </div>
         <div className="mt-2 grid grid-cols-2 text-sm font-semibold lg:hidden">
           {(["mapa", "indicadores"] as const).map((t) => (
@@ -190,6 +184,8 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
                   traffic={traffic}
                   minute={tick}
                   palette={palette}
+                  initialCamera={initialCamera}
+                  onCameraChange={setCamera}
                   selectedId={selectedId}
                   onSelect={(id) => setSelectedId(id)}
                   onError={() => setFallback(true)}
