@@ -1,6 +1,6 @@
 import { ClientOnly, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
-import { Play, Pause, Users, X, ChevronDown, Info, Bell, Clock, Car, MapPin, ChevronRight } from "lucide-react";
+import { Play, Pause, Users, X, ChevronDown, Info, Bell, Clock, Car, ChevronRight } from "lucide-react";
 import type { LiveScenario as Scenario, Scenario as RawScenario } from "@/scenarios/types";
 import { simulate, toMin, fmtClock, trafficAt } from "@/sim/engine";
 import { densityLabel, densityLevel } from "@/scenarios/types";
@@ -54,7 +54,6 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
   const trafficTick = Math.floor(minute);
   const traffic = useMemo(() => trafficAt(base, trafficTick), [base, trafficTick]);
   const [showTraffic, setShowTraffic] = useState(false);
-  const [showInfo, setShowInfo] = useState(false);
   const mapLayers = { ...layers, traffic: showTraffic };
   const jammed = traffic.filter((t) => t.level === 3).length;
   const [selectedId, setSelectedId] = useState<string | null>("meta");
@@ -119,7 +118,6 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
           <div className="absolute left-3 top-3 flex max-w-[calc(100%-4.5rem)] flex-col items-start gap-2 sm:left-4 sm:top-4">
             <div className="flex flex-wrap gap-2">
               <MapButton active={showTraffic} onClick={() => setShowTraffic((v) => !v)} icon={<Car className="h-4 w-4" />} label="Tráfico" />
-              <MapButton active={showInfo} onClick={() => { setShowInfo((v) => !v); if (!selectedId) setSelectedId("ayuntamiento"); }} icon={<MapPin className="h-4 w-4" />} label="Info del nodo" />
             </div>
             {showTraffic && (
               <div className="rounded-xl bg-card/95 px-3 py-2 text-xs shadow-card backdrop-blur">
@@ -137,15 +135,10 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
               <p className="text-xs text-muted-foreground">{fmt(total)} personas en zonas cubiertas</p>
               <p className="text-xs text-muted-foreground">{fmt(runners)} corredores · {fmt(total - runners)} público{base.participants ? ` · ${fmt(base.participants)} inscritos` : ""}</p>
             </div>
-            {showInfo && selected && (
-              <div className="w-[min(300px,calc(100vw-2rem))] rounded-2xl bg-card p-4 shadow-float">
-                <NodeBubble minute={minute} node={selected} onClose={() => setShowInfo(false)} detailed />
-              </div>
-            )}
           </div>
 
           {/* Burbuja del nodo */}
-          {selected && !showInfo && (
+          {selected && (
             <div className="absolute left-1/2 top-16 w-[min(260px,calc(100%-2rem))] -translate-x-1/2 rounded-2xl bg-card p-3.5 shadow-float lg:left-auto lg:right-14 lg:translate-x-0 xl:hidden">
               <NodeBubble minute={minute} node={selected} onClose={() => setSelectedId(null)} />
             </div>
@@ -230,7 +223,7 @@ function NodeBubble({ node, onClose, detailed, minute }: { node: Scenario["nodes
         </div>
       )}
       <Link
-        to="/nodo/$id"
+        to="/node/$id"
         params={{ id: node.id }}
         search={{ t: Math.round(minute) }}
         className="mt-3 flex items-center justify-center gap-1 rounded-full bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground"
@@ -294,7 +287,7 @@ function Player(p: {
   onToggle: () => void; onSeek: (m: number) => void; onSpeed: (s: number) => void;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl bg-card px-3 py-2.5 shadow-float">
+    <div className="flex flex-wrap items-center gap-2 rounded-2xl bg-card px-3 py-2.5 shadow-float sm:flex-nowrap sm:gap-3">
       <button onClick={p.onToggle} aria-label={p.playing ? "Pausar" : "Reproducir"} className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
         {p.playing ? <Pause className="h-4 w-4 fill-current" /> : <Play className="h-4 w-4 fill-current" />}
       </button>
@@ -307,7 +300,7 @@ function Player(p: {
         step={1}
         value={p.minute}
         onChange={(e) => p.onSeek(Number(e.target.value))}
-        className="h-1.5 min-w-0 flex-1 cursor-pointer accent-primary"
+        className="order-last h-1.5 w-full min-w-0 cursor-pointer accent-primary sm:order-none sm:w-auto sm:flex-1"
       />
       <span className="hidden text-xs text-muted-foreground sm:inline">{fmtClock(p.end)}</span>
       <span className="w-[4.2rem] shrink-0 font-display text-sm font-bold tabular-nums">{p.clock}</span>

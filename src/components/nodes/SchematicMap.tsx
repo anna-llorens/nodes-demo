@@ -37,7 +37,7 @@ export function SchematicMap({ scenario, selectedId, onSelect }: { scenario: Sce
               <circle cx={x} cy={y} r={60} className={cn(fillCls[densityLevel(n.snapshot.density)])} opacity={0.35} />
               <circle cx={x} cy={y} r={44} className="fill-none stroke-primary" strokeWidth={2} strokeDasharray="6 6" />
               <circle cx={x} cy={y} r={24} className="fill-none stroke-primary" strokeWidth={2.5} />
-              <circle cx={x} cy={y} r={11} className={cn("fill-primary stroke-card", selectedId === n.id && "stroke-brand-ink")} strokeWidth={4} />
+              <circle cx={x} cy={y} r={6} className={cn("fill-primary stroke-card", selectedId === n.id && "stroke-brand-ink")} strokeWidth={2} />
               <text x={x} y={y + 82} textAnchor="middle" className="fill-foreground text-[22px] font-semibold">{n.name}</text>
             </g>
           );

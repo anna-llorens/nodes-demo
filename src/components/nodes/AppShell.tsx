@@ -5,11 +5,11 @@ import { Logo, SimBadge } from "./Logo";
 import { cn } from "@/lib/utils";
 
 export const navItems = [
-  { to: "/", label: "Inicio", icon: Home },
-  { to: "/mapa", label: "Mapa", icon: Map },
-  { to: "/zonas", label: "Zonas", icon: MapPinned },
-  { to: "/informes", label: "Informes", icon: FileBarChart },
-  { to: "/mas", label: "Más", icon: MoreHorizontal },
+  { to: "/home", label: "Inicio", icon: Home },
+  { to: "/map", label: "Mapa", icon: Map },
+  { to: "/zones", label: "Zonas", icon: MapPinned },
+  { to: "/reports", label: "Informes", icon: FileBarChart },
+  { to: "/about", label: "Más", icon: MoreHorizontal },
 ] as const;
 
 export function AppShell({ children, sidebarExtra }: { children: ReactNode; sidebarExtra?: ReactNode }) {
@@ -24,7 +24,7 @@ export function AppShell({ children, sidebarExtra }: { children: ReactNode; side
         </div>
         <nav className="flex flex-col gap-1 px-3">
           {navItems.map((it) => {
-            const active = it.to === "/" ? path === "/" : path.startsWith(it.to);
+            const active = it.to === "/home" ? path === "/" || path === "/home" : path.startsWith(it.to);
             return (
               <Link
                 key={it.to}
@@ -54,7 +54,7 @@ export function AppShell({ children, sidebarExtra }: { children: ReactNode; side
         {/* Barra inferior (móvil y tablet) */}
         <nav className="grid shrink-0 grid-cols-5 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] lg:hidden">
           {navItems.map((it) => {
-            const active = it.to === "/" ? path === "/" : path.startsWith(it.to);
+            const active = it.to === "/home" ? path === "/" || path === "/home" : path.startsWith(it.to);
             return (
               <Link
                 key={it.to}

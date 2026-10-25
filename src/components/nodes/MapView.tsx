@@ -107,12 +107,12 @@ export default function MapView({
         source: "runners",
         paint: {
           "heatmap-weight": ["get", "w"],
-          "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 12, 0.9, 17, 2.2],
-          "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 12, 8, 17, 30],
-          "heatmap-opacity": 0.75,
+           "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 12, 2.5, 17, 4],
+           "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 12, 14, 17, 38],
+           "heatmap-opacity": 0.9,
           "heatmap-color": [
             "interpolate", ["linear"], ["heatmap-density"],
-            0, "rgba(47,158,122,0)", 0.3, "rgba(47,158,122,0.55)", 0.65, "#1d7a5f", 1, C.ink,
+             0, C.low, 0.12, C.mid, 0.45, C.high, 0.8, C.crit, 1, C.crit,
           ],
         },
       });
@@ -141,8 +141,8 @@ export default function MapView({
         const el = document.createElement("button");
         el.type = "button";
         el.setAttribute("aria-label", n.name);
-        el.className = "grid h-7 w-7 place-items-center rounded-full border-[3px] border-card bg-primary shadow-float";
-        el.innerHTML = '<span class="h-2 w-2 rounded-full bg-card"></span>';
+         el.className = "node-marker grid h-8 w-8 place-items-center rounded-full";
+         el.innerHTML = '<span class="h-3 w-3 rounded-full border-2 border-card bg-primary shadow-card"></span>';
         el.addEventListener("click", (ev) => {
           ev.stopPropagation();
           onSelectRef.current(n.id);
