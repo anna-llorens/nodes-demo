@@ -4,6 +4,7 @@ import { AppShell } from "@/components/nodes/AppShell";
 import { Logo, SimBadge } from "@/components/nodes/Logo";
 import maratonImg from "@/assets/maraton.jpg";
 import mascletaImg from "@/assets/mascleta.jpg";
+import { maraton } from "@/scenarios/maraton";
 
 export function HomePage() {
   return (
@@ -25,8 +26,9 @@ export function HomePage() {
             to="/map"
             img={maratonImg}
             icon={<Activity className="h-8 w-8" strokeWidth={1.8} />}
-            title="Medio Maratón de València"
-            subtitle="08:00–11:30 · 3 nodos"
+            title={maraton.name}
+            subtitle={`${maraton.schedule.start}–${maraton.schedule.end} · ${maraton.nodes.length} nodos`}
+            nodes={maraton.nodes}
           />
           <EventCard
             img={mascletaImg}
@@ -40,7 +42,7 @@ export function HomePage() {
   );
 }
 
-function EventCard({ to, img, icon, title, subtitle }: { to?: "/map"; img: string; icon: React.ReactNode; title: string; subtitle: string }) {
+function EventCard({ to, img, icon, title, subtitle, nodes }: { to?: "/map"; img: string; icon: React.ReactNode; title: string; subtitle: string; nodes?: typeof maraton.nodes }) {
   const body = (
     <div className="group relative h-52 overflow-hidden rounded-3xl shadow-card sm:h-60 lg:h-72">
       <img src={img} alt="" width={1024} height={640} className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -57,5 +59,10 @@ function EventCard({ to, img, icon, title, subtitle }: { to?: "/map"; img: strin
       </div>
     </div>
   );
-  return to ? <Link to={to}>{body}</Link> : <div className="cursor-not-allowed opacity-90">{body}</div>;
+  return <div>
+    {to ? <Link to={to}>{body}</Link> : <div className="cursor-not-allowed opacity-90">{body}</div>}
+    {nodes && <ul aria-label="Nodos del Medio Maratón" className="mt-3 divide-y divide-border">
+      {nodes.map((node) => <li key={node.id}><Link to="/node/$id" params={{ id: node.id }} className="flex items-center justify-between gap-3 py-2 text-sm hover:text-primary"><span><span className="mr-2 text-xs font-semibold text-muted-foreground">{node.short}</span>{node.name}</span><ArrowRight className="h-4 w-4 shrink-0" /></Link></li>)}
+    </ul>}
+  </div>;
 }

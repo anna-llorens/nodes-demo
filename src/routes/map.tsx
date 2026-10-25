@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { AppShell, LayerToggle } from "@/components/nodes/AppShell";
+import { AppShell } from "@/components/nodes/AppShell";
 import { MapStage, type MapLayers } from "@/components/nodes/MapStage";
 import { maraton } from "@/scenarios/maraton";
 
@@ -19,8 +19,8 @@ export const Route = createFileRoute("/map")({
 });
 
 function MapaPage() {
-  const [layers, setLayers] = useState<MapLayers>({ heat: true, runners: true, rings: true, flow: true, route: true });
-  const set = (k: keyof MapLayers) => (v: boolean) => setLayers((l) => ({ ...l, [k]: v }));
+  const [layers, setLayers] = useState<MapLayers>({ heat: true, runners: true, rings: true, flow: true, route: true, traffic: false });
+  const setLayer = (key: keyof MapLayers, value: boolean) => setLayers((current) => ({ ...current, [key]: value }));
   return (
     <AppShell
       sidebarExtra={
@@ -28,18 +28,10 @@ function MapaPage() {
           <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Escenario</p>
           <p className="mt-1 font-display font-semibold text-brand-ink">{maraton.name}</p>
           <p className="text-xs text-muted-foreground">Simulación · {maraton.schedule.start}–{maraton.schedule.end}</p>
-          <p className="mt-6 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Capas</p>
-          <div className="mt-1">
-            <LayerToggle label="Mapa de calor" checked={layers.heat} onChange={set("heat")} />
-            <LayerToggle label="Corredores en recorrido" checked={layers.runners} onChange={set("runners")} />
-            <LayerToggle label="Anillos de nodo" checked={layers.rings} onChange={set("rings")} />
-            <LayerToggle label="Flechas de flujo" checked={layers.flow} onChange={set("flow")} />
-            <LayerToggle label="Recorrido" checked={layers.route} onChange={set("route")} />
-          </div>
         </div>
       }
     >
-      <MapStage scenario={maraton} layers={layers} />
+      <MapStage scenario={maraton} layers={layers} onLayerChange={setLayer} />
     </AppShell>
   );
 }
