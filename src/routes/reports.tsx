@@ -21,7 +21,7 @@ export const Route = createFileRoute("/reports")({
   component: ReportsPage,
 });
 
-const tabs = ["Resumen", "Comparativa", "Zonas", "Descargas"] as const;
+const tabs = ["Resumen", "Comparativa", "Densidad", "Descargas"] as const;
 const fmt = (value: number) => value.toLocaleString("es-ES");
 const tooltipStyle = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--foreground)" };
 
@@ -81,7 +81,7 @@ function ReportsPage() {
           <Comparison zones={report.zones} metric={metric} onMetric={setMetric} />
         </>}
         {tab === "Comparativa" && <Comparison zones={report.zones} metric={metric} onMetric={setMetric} />}
-        {tab === "Zonas" && <section>
+        {tab === "Densidad" && <section>
           <h2 className="font-display text-sm font-bold">Densidad por zona</h2>
           <div className="mt-3 overflow-x-auto"><table className="w-full text-left text-sm"><thead className="border-b border-border text-xs text-muted-foreground"><tr><th className="py-3 pr-4">Zona</th><th className="px-3">Pico</th><th className="px-3">Hora</th><th className="px-3">Alta · min</th><th className="px-3">Muy alta · min</th></tr></thead><tbody>{report.zones.map((zone) => <tr key={zone.id} className="border-b border-border"><th className="py-4 pr-4 font-semibold">{zone.name}</th><td className="px-3 tabular-nums">{fmt(zone.peak)}</td><td className="px-3 tabular-nums">{fmtClock(zone.peakMinute)}</td><td className="px-3 tabular-nums text-dens-high">{zone.orange}</td><td className="px-3 tabular-nums text-dens-crit">{zone.red}</td></tr>)}</tbody></table></div>
         </section>}

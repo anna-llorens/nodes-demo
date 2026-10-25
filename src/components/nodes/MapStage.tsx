@@ -1,12 +1,15 @@
 import { ClientOnly, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
-import { Play, Pause, Users, X, ChevronDown, Info, Bell, Clock, Car, ChevronRight } from "lucide-react";
+import { Play, Pause, Users, X, ChevronDown, Info, Bell, Clock, Car, ChevronRight, TriangleAlert } from "lucide-react";
 import type { LiveScenario as Scenario, Scenario as RawScenario } from "@/scenarios/types";
 import { simulate, toMin, fmtClock, trafficAt } from "@/sim/engine";
 import { densityLabel, densityLevel } from "@/scenarios/types";
 import { SimBadge } from "./Logo";
 import { SchematicMap } from "./SchematicMap";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ArrivalAlerts } from "./ArrivalAlerts";
+import { arrivalDensityExceeded, DEFAULT_ARRIVAL_THRESHOLD } from "@/sim/alerts";
 
 const MapView = lazy(() => import("./MapView"));
 
@@ -48,7 +51,10 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
   const tick = Math.floor(minute * 6) / 6; // recalcula cada 10 s simulados
   const scenario: Scenario = useMemo(() => {
     const st = simulate(base, tick);
-    return { ...base, nodes: base.nodes.map((n, i) => ({ ...n, snapshot: st[i]! })) };
+    return { ...base, nodes: base.nodes.flatMap((n, i) => {
+      const snapshot = st[i];
+      return snapshot ? [{ ...n, snapshot }] : [];
+    }) };
   }, [base, tick]);
   const clock = fmtClock(minute, true);
   const trafficTick = Math.floor(minute);
@@ -59,6 +65,11 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
   const [selectedId, setSelectedId] = useState<string | null>("meta");
   const [fallback, setFallback] = useState(false);
   const [tab, setTab] = useState<"mapa" | "indicadores" | "alertas">("mapa");
+  const [arrivalThreshold, setArrivalThreshold] = useState(DEFAULT_ARRIVAL_THRESHOLD);
+  const [showAlertSettings, setShowAlertSettings] = useState(false);
+  const arrival = scenario.nodes.find((node) => node.id === "meta");
+  const arrivalWarning = arrivalDensityExceeded(arrival?.snapshot, arrivalThreshold);
+  const alertSettings = <ArrivalAlerts node={arrival} threshold={arrivalThreshold} onThreshold={setArrivalThreshold} />;
   const selected = scenario.nodes.find((n) => n.id === selectedId) ?? null;
   const total = scenario.nodes.reduce((s, n) => s + n.snapshot.people, 0);
   const runners = scenario.nodes.reduce((s, n) => s + n.snapshot.runners, 0);
@@ -79,7 +90,7 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
         </div>
         <div className="mt-2 grid grid-cols-3 text-sm font-semibold lg:hidden">
           {(["mapa", "indicadores", "alertas"] as const).map((t) => (
-            <button
+            <Button variant="ghost"
               key={t}
               onClick={() => setTab(t)}
               className={cn(
@@ -87,11 +98,21 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
                 tab === t ? "border-primary text-foreground" : "border-transparent text-muted-foreground",
               )}
             >
-              {t}
-            </button>
+              {t}{t === "alertas" && arrivalWarning && <span className="h-2 w-2 rounded-full bg-destructive" />}
+            </Button>
           ))}
         </div>
       </header>
+
+      <div className={cn("flex shrink-0 items-center justify-between gap-3 border-b px-4 py-2 sm:px-6", arrivalWarning ? "border-destructive/30 bg-destructive/10" : "border-border bg-card")}>
+        <div role={arrivalWarning ? "alert" : "status"} aria-live="polite" aria-atomic="true" className={cn("flex min-w-0 items-start gap-2 text-xs", arrivalWarning ? "text-destructive" : "text-muted-foreground")}>
+          {arrivalWarning ? <TriangleAlert className="h-4 w-4 shrink-0" /> : <Bell className="h-4 w-4 shrink-0" />}
+          <div><p className="font-semibold">{arrivalWarning ? "Aviso: densidad elevada en llegada" : "Llegada: sin aviso de densidad"}</p>
+          <p className="mt-0.5 tabular-nums">{arrival?.snapshot.density.toLocaleString("es-ES") ?? "—"} pers/m² · límite {arrivalThreshold.toLocaleString("es-ES")}</p></div>
+        </div>
+        <Button variant="outline" size="sm" aria-label="Configurar aviso de llegada" onClick={() => { setTab("alertas"); setShowAlertSettings((value) => !value); }}><Bell />Avisos</Button>
+      </div>
+      {showAlertSettings && <div className="hidden max-h-72 shrink-0 overflow-y-auto border-b border-border bg-background p-4 lg:block xl:hidden">{alertSettings}</div>}
 
       <div className="flex min-h-0 flex-1">
         {/* Mapa */}
@@ -164,7 +185,7 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
         {/* Indicadores / alertas en móvil */}
         {tab !== "mapa" && (
           <div className="flex-1 overflow-y-auto p-4 lg:hidden">
-            {tab === "indicadores" ? <ZoneList scenario={scenario} onSelect={(id) => { setSelectedId(id); setTab("mapa"); }} /> : <AlertsPlaceholder />}
+            {tab === "indicadores" ? <NodeList scenario={scenario} onSelect={(id) => { setSelectedId(id); setTab("mapa"); }} /> : alertSettings}
           </div>
         )}
 
@@ -177,11 +198,7 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
           ) : (
             <p className="rounded-2xl bg-card p-4 text-sm text-muted-foreground shadow-card">Toca un nodo del mapa para ver su zona.</p>
           )}
-          <div>
-            <h2 className="mb-2 font-display text-sm font-bold text-brand-ink">Zonas</h2>
-            <ZoneList scenario={scenario} onSelect={setSelectedId} selectedId={selectedId} />
-          </div>
-          <AlertsPlaceholder />
+          {alertSettings}
         </aside>
       </div>
     </div>
@@ -243,7 +260,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function ZoneList({ scenario, onSelect, selectedId }: { scenario: Scenario; onSelect: (id: string) => void; selectedId?: string | null }) {
+function NodeList({ scenario, onSelect, selectedId }: { scenario: Scenario; onSelect: (id: string) => void; selectedId?: string | null }) {
   return (
     <ul className="flex flex-col gap-2">
       {scenario.nodes.map((n) => {
@@ -270,15 +287,6 @@ function ZoneList({ scenario, onSelect, selectedId }: { scenario: Scenario; onSe
         );
       })}
     </ul>
-  );
-}
-
-function AlertsPlaceholder() {
-  return (
-    <div className="rounded-2xl border border-dashed border-border bg-card/60 p-4">
-      <p className="flex items-center gap-2 font-display text-sm font-bold text-brand-ink"><Bell className="h-4 w-4" /> Alertas activas</p>
-      <p className="mt-1 text-xs text-muted-foreground">Las alertas llegan en la fase 4.</p>
-    </div>
   );
 }
 

@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Map, MapPinned, FileBarChart, MoreHorizontal, Layers } from "lucide-react";
+import { Home, Map, FileBarChart, MoreHorizontal, Layers } from "lucide-react";
 import type { ReactNode } from "react";
 import { Logo, SimBadge } from "./Logo";
 import { cn } from "@/lib/utils";
@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 export const navItems = [
   { to: "/home", label: "Inicio", icon: Home },
   { to: "/map", label: "Mapa", icon: Map },
-  { to: "/zones", label: "Zonas", icon: MapPinned },
   { to: "/reports", label: "Informes", icon: FileBarChart },
   { to: "/about", label: "Más", icon: MoreHorizontal },
 ] as const;
@@ -52,7 +51,7 @@ export function AppShell({ children, sidebarExtra }: { children: ReactNode; side
         <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
 
         {/* Barra inferior (móvil y tablet) */}
-        <nav className="grid shrink-0 grid-cols-5 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] lg:hidden">
+        <nav className="grid shrink-0 grid-cols-4 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] lg:hidden">
           {navItems.map((it) => {
             const active = it.to === "/home" ? path === "/" || path === "/home" : path.startsWith(it.to);
             return (
