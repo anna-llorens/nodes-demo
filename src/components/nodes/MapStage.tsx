@@ -21,6 +21,15 @@ export interface MapLayers {
   traffic?: boolean;
 }
 
+export type RunnerPalette = "termica" | "verde" | "azul" | "terracota" | "grafito";
+const PALETTES: { id: RunnerPalette; label: string }[] = [
+  { id: "termica", label: "Térmica (amarillo → rojo)" },
+  { id: "verde", label: "Verde bosque" },
+  { id: "azul", label: "Azul cobalto" },
+  { id: "terracota", label: "Terracota" },
+  { id: "grafito", label: "Grafito" },
+];
+
 export const levelDot: Record<string, string> = {
   baja: "bg-dens-low",
   media: "bg-dens-mid",
@@ -64,6 +73,7 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
   const [fallback, setFallback] = useState(false);
   const [tab, setTab] = useState<"mapa" | "indicadores">("mapa");
   const [layersOpen, setLayersOpen] = useState(false);
+  const [palette, setPalette] = useState<RunnerPalette>("termica");
   const selected = scenario.nodes.find((n) => n.id === selectedId) ?? null;
   const total = scenario.nodes.reduce((s, n) => s + n.snapshot.people, 0);
   const runners = scenario.nodes.reduce((s, n) => s + n.snapshot.runners, 0);
@@ -110,6 +120,7 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
                   layers={layers}
                   traffic={traffic}
                   minute={tick}
+                  palette={palette}
                   selectedId={selectedId}
                   onSelect={(id) => setSelectedId(id)}
                   onError={() => setFallback(true)}
@@ -127,6 +138,17 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
                   <h2 className="mb-2 font-display text-sm font-bold">Capas</h2>
                   <LayerToggle label="Mapa de calor" checked={layers.heat} onChange={(value) => onLayerChange("heat", value)} />
                   <LayerToggle label="Corredores en recorrido" checked={layers.runners} onChange={(value) => onLayerChange("runners", value)} />
+                  <label className="mb-2 mt-1 flex items-center justify-between gap-2 pl-1 text-xs text-muted-foreground">
+                    Gama de corredores
+                    <select
+                      aria-label="Gama de color de corredores"
+                      value={palette}
+                      onChange={(e) => setPalette(e.target.value as RunnerPalette)}
+                      className="rounded-lg border border-input bg-card px-2 py-1 text-xs text-foreground"
+                    >
+                      {PALETTES.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
+                    </select>
+                  </label>
                   <LayerToggle label="Anillos de nodo" checked={layers.rings} onChange={(value) => onLayerChange("rings", value)} />
                   <LayerToggle label="Flechas de flujo" checked={layers.flow} onChange={(value) => onLayerChange("flow", value)} />
                   <LayerToggle label="Recorrido" checked={layers.route} onChange={(value) => onLayerChange("route", value)} />
