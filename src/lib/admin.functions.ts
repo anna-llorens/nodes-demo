@@ -44,8 +44,42 @@ export const adminLogout = createServerFn({ method: "POST" }).handler(async () =
 export const getAdminMetrics = createServerFn({ method: "GET" }).handler(async () => {
   const s = await useSession<AdminSession>(sessionConfig());
   if (!s.data.admin) return { authorized: false as const };
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const since = new Date(Date.now() - 30 * 86400000).toISOString();
+  const { data: rows } = await supabaseAdmin
+    .from("analytics_events")
+    .select("kind,path,node_id,node_name,device,created_at")
+    .gte("created_at", since)
+    .order("created_at", { ascending: false })
+    .limit(1000);
+  const { count: totalViews } = await supabaseAdmin
+    .from("analytics_events")
+    .select("id", { count: "exact", head: true })
+    .eq("kind", "page_view");
+  const list = rows ?? [];
+  const today = new Date().toISOString().slice(0, 10);
+  const week = Date.now() - 7 * 86400000;
+  const views = list.filter((r) => r.kind === "page_view");
+  const clicks = list.filter((r) => r.kind === "node_click");
+  const tally = (arr: typeof list, key: (r: (typeof list)[number]) => string) => {
+    const m = new Map<string, number>();
+    for (const r of arr) m.set(key(r), (m.get(key(r)) ?? 0) + 1);
+    return [...m.entries()].map(([label, value]) => ({ label, value })).sort((a, b) => b.value - a.value);
+  };
+  const days: { label: string; value: number }[] = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
+    days.push({ label: d.slice(5), value: views.filter((r) => r.created_at.startsWith(d)).length });
+  }
   return {
     authorized: true as const,
-    analyticsConnected: true,
+    viewsToday: views.filter((r) => r.created_at.startsWith(today)).length,
+    views7d: views.filter((r) => new Date(r.created_at).getTime() >= week).length,
+    viewsTotal: totalViews ?? 0,
+    clicks30d: clicks.length,
+    mobileShare: views.length ? Math.round((views.filter((r) => r.device === "mobile").length / views.length) * 100) : 0,
+    pages: tally(views, (r) => r.path ?? "/").slice(0, 8),
+    nodes: tally(clicks, (r) => r.node_name ?? r.node_id ?? "?").slice(0, 10),
+    days,
   };
 });
