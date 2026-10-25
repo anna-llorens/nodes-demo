@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { LayerToggle } from "./AppShell";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { trackNodeClick } from "@/lib/analytics";
 
 const MapView = lazy(() => import("./MapView"));
 
@@ -72,6 +73,11 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
   const jammed = traffic.filter((t) => t.level === 3).length;
   const times = useMemo(() => trafficTimesAt(base, trafficTick, traffic), [base, trafficTick, traffic]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  useEffect(() => {
+    if (!selectedId) return;
+    const n = rawScenario.nodes.find((x) => x.id === selectedId);
+    trackNodeClick(selectedId, n?.name ?? selectedId);
+  }, [selectedId]);
   const [fallback, setFallback] = useState(false);
   const [tab, setTab] = useState<"mapa" | "indicadores">("mapa");
   const [layersOpen, setLayersOpen] = useState(false);
