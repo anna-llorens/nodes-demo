@@ -29,8 +29,23 @@ export function initAnalytics() {
 
 const device = () => (window.matchMedia("(max-width: 767px)").matches ? "mobile" : "desktop");
 
-function internal(data: { kind: string; path?: string; nodeId?: string; nodeName?: string }) {
+function internal(data: { kind: string; path?: string; nodeId?: string; nodeName?: string; label?: string }) {
   trackEvent({ data: { ...data, device: device() } }).catch(() => {});
+}
+
+// Counts clicks on buttons/links per page (skips /admin).
+export function initClickTracking() {
+  if (typeof window === "undefined") return () => {};
+  const onClick = (e: MouseEvent) => {
+    const path = window.location.pathname;
+    if (path.startsWith("/admin")) return;
+    const el = (e.target as HTMLElement | null)?.closest("a,button,[role=button],input,select,label");
+    if (!el) return;
+    const label = (el.getAttribute("aria-label") || el.textContent || el.tagName).trim().replace(/\s+/g, " ").slice(0, 60);
+    internal({ kind: "click", path, label });
+  };
+  document.addEventListener("click", onClick, true);
+  return () => document.removeEventListener("click", onClick, true);
 }
 
 export function trackPageView(path: string) {
