@@ -31,7 +31,7 @@ function MapaPage() {
             <LayerToggle label="Mapa de calor" checked={layers.heat} onChange={set("heat")} />
             <LayerToggle label="Anillos de nodo" checked={layers.rings} onChange={set("rings")} />
             <LayerToggle label="Flechas de flujo" checked={layers.flow} onChange={set("flow")} />
-            <LayerToggle label="Recorrido aproximado" checked={layers.route} onChange={set("route")} />
+            <LayerToggle label="Recorrido" checked={layers.route} onChange={set("route")} />
           </div>
         </div>
       }

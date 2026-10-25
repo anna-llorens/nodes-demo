@@ -118,7 +118,7 @@ export function trafficAt(s: Scenario, min: number): { id: string; level: Traffi
   const closed = s.closure ? min >= toMin(s.closure.start) && min <= toMin(s.closure.end) : false;
   return s.traffic.map((seg) => {
     let load = seg.imv > 0 ? seg.imv / 3000 : 0.32;
-    if (closed && s.route && nearRoute(seg, s.route)) load += 0.45;
+    if (closed && s.route && nearRoute(seg, s.route)) load += 0.65;
     else if (closed) load += 0.12;
     load += 0.06 * noise(seg.id, min / 6);
     const level: TrafficLevel = load >= 0.9 ? 3 : load >= 0.58 ? 2 : 1;
