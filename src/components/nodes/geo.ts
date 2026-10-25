@@ -1,5 +1,5 @@
 import type * as GeoJSON from "geojson";
-import type { LiveScenario as Scenario } from "@/scenarios/types";
+import type { LiveScenario as Scenario, Scenario as BaseScenario } from "@/scenarios/types";
 
 export function circlePolygon([lng, lat]: [number, number], radiusM: number, steps = 64): [number, number][] {
   const out: [number, number][] = [];
@@ -70,7 +70,7 @@ function pointAt(route: [number, number][], acc: number[], d: number): [number, 
  * Cada corredor sale en una oleada (0–35 min) y tarda 70–165 min; los que aún
  * no han salido o ya han llegado no se dibujan (los cubre el calor de los nodos).
  */
-export function runnerHeatPoints(s: Scenario, minute: number) {
+export function runnerHeatPoints(s: BaseScenario, minute: number) {
   const features: GeoJSON.Feature[] = [];
   if (!s.route || s.route.length < 2) return { type: "FeatureCollection", features } as GeoJSON.FeatureCollection;
   const route = s.route;
