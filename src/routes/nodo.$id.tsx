@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 const fmt = (n: number) => n.toLocaleString("es-ES");
 
 export const Route = createFileRoute("/nodo/$id")({
-  validateSearch: (s: Record<string, unknown>) => ({ t: typeof s.t === "number" ? s.t : undefined }),
+  validateSearch: (s: Record<string, unknown>) => ({ t: typeof s["t"] === "number" ? (s["t"] as number) : undefined }),
   loader: ({ params }) => {
     const node = maraton.nodes.find((n) => n.id === params.id);
     if (!node) throw notFound();
