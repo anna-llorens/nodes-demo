@@ -75,7 +75,7 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   useEffect(() => {
     if (!selectedId) return;
-    const n = rawScenario.nodes.find((x) => x.id === selectedId);
+    const n = base.nodes.find((x) => x.id === selectedId);
     trackNodeClick(selectedId, n?.name ?? selectedId);
   }, [selectedId]);
   const [fallback, setFallback] = useState(false);
