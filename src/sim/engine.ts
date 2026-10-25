@@ -97,6 +97,32 @@ export function simulate(s: Scenario, min: number): NodeState[] {
   return s.nodes.map((n) => nodeState(n, min));
 }
 
+/** Fixed-seed representative runners; heat responds to stage density, not just location. */
+export function simulateRunnerHeat(s: Scenario, minute: number) {
+  const zones = s.nodes.filter((node) => node.kind !== "cruce");
+  const states = zones.map((node) => nodeState(node, minute));
+  const start = toMin(s.schedule.start);
+  const samples: { progress: number; weight: number; offsetLngM: number; offsetLatM: number }[] = [];
+  let seed = 7;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  for (let i = 0; i < 900; i++) {
+    const fraction = rnd();
+    const offsetLngM = (rnd() - 0.5) * 16;
+    const offsetLatM = (rnd() - 0.5) * 10;
+    const progress = (minute - start - fraction * 35) / (70 + fraction * 95);
+    if (progress <= 0 || progress >= 1) continue;
+    const position = progress * Math.max(0, states.length - 1);
+    const left = states[Math.floor(position)];
+    const right = states[Math.min(states.length - 1, Math.floor(position) + 1)];
+    const blend = position % 1;
+    const density = (left?.density ?? 0) * (1 - blend) + (right?.density ?? 0) * blend;
+    const pack = 0.6 + 0.4 * Math.sin(progress * Math.PI);
+    const weight = Math.pow(density / MAX_DENSITY, 1.6) * 0.22 * pack;
+    samples.push({ progress, weight, offsetLngM, offsetLatM });
+  }
+  return samples;
+}
+
 export type TrafficLevel = 1 | 2 | 3;
 
 const nearCache = new WeakMap<TrafficSegment, boolean>();

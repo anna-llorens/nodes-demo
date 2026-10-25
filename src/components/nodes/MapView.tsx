@@ -112,7 +112,7 @@ export default function MapView({
            "heatmap-opacity": 0.9,
           "heatmap-color": [
             "interpolate", ["linear"], ["heatmap-density"],
-             0, C.low, 0.12, C.mid, 0.45, C.high, 0.8, C.crit, 1, C.crit,
+             0, C.low, 0.08, "rgba(76,190,120,0.45)", 0.3, C.mid, 0.6, C.high, 0.9, C.crit, 1, C.crit,
           ],
         },
       });
