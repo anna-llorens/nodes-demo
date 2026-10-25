@@ -287,7 +287,7 @@ function Player(p: {
   onToggle: () => void; onSeek: (m: number) => void; onSpeed: (s: number) => void;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl bg-card px-3 py-2.5 shadow-float">
+    <div className="flex flex-wrap items-center gap-2 rounded-2xl bg-card px-3 py-2.5 shadow-float sm:flex-nowrap sm:gap-3">
       <button onClick={p.onToggle} aria-label={p.playing ? "Pausar" : "Reproducir"} className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
         {p.playing ? <Pause className="h-4 w-4 fill-current" /> : <Play className="h-4 w-4 fill-current" />}
       </button>
@@ -300,7 +300,7 @@ function Player(p: {
         step={1}
         value={p.minute}
         onChange={(e) => p.onSeek(Number(e.target.value))}
-        className="h-1.5 min-w-0 flex-1 cursor-pointer accent-primary"
+        className="order-last h-1.5 w-full min-w-0 cursor-pointer accent-primary sm:order-none sm:w-auto sm:flex-1"
       />
       <span className="hidden text-xs text-muted-foreground sm:inline">{fmtClock(p.end)}</span>
       <span className="w-[4.2rem] shrink-0 font-display text-sm font-bold tabular-nums">{p.clock}</span>

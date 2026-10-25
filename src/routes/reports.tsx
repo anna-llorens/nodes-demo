@@ -96,7 +96,7 @@ function ReportsPage() {
 }
 
 function Kpi({ icon: Icon, label, value }: { icon: typeof Users; label: string; value: string }) {
-  return <div className="flex min-w-0 items-start gap-3 rounded-lg bg-card p-4 shadow-card"><Icon className="mt-1 h-5 w-5 shrink-0 text-primary" /><div className="min-w-0"><p className="break-words font-display text-lg font-bold leading-snug">{value}</p><p className="mt-1 text-xs text-muted-foreground">{label}</p></div></div>;
+  return <div className="flex min-w-0 flex-col items-start gap-2 rounded-lg bg-card p-4 shadow-card sm:flex-row sm:gap-3"><Icon className="mt-1 h-5 w-5 shrink-0 text-primary" /><div className="min-w-0"><p className="font-display text-base font-bold leading-snug sm:text-lg">{value}</p><p className="mt-1 text-xs text-muted-foreground">{label}</p></div></div>;
 }
 
 function Comparison({ zones, metric, onMetric }: { zones: ReturnType<typeof buildReport>["zones"]; metric: string; onMetric: (value: string) => void }) {
