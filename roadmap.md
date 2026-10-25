@@ -1,4 +1,5 @@
 # Tasks
+- [ ] Tell the user how to reach the project's code on GitHub (Git sync in Project settings → Git).
 - [x] Share a map link restoring scenario, enabled layers and camera; verify reopening the link.
 - [x] Request publication under nodes-demo.lovable.app (deployment scheduled).
 - [x] Merge traffic and closures into one combined Capas section and remove the on-screen traffic panel.
