@@ -24,10 +24,14 @@ function MapaPage() {
   return (
     <AppShell
       sidebarExtra={
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Escenario</p>
-          <p className="mt-1 font-display font-semibold text-brand-ink">{maraton.name}</p>
-          <p className="text-xs text-muted-foreground">Simulación · {maraton.schedule.start}–{maraton.schedule.end}</p>
+        <div className="flex flex-col gap-5">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Escenario</p>
+            <p className="mt-1 font-display font-semibold text-brand-ink">{maraton.name}</p>
+            <p className="text-xs text-muted-foreground">Simulación · {maraton.schedule.start}–{maraton.schedule.end}</p>
+          </div>
+          {/* Hueco donde MapStage monta el panel de capas en ordenador */}
+          <div id="map-layers-slot" />
         </div>
       }
     >
