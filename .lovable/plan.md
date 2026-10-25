@@ -1,7 +1,7 @@
 # Phase: real course, traffic, node info, 30k scale (English UI)
 
 ## What changes
-1. **English UI** – switch all visible text (nav, map, panels, badges, home, placeholder pages) to English.
+1. **Spanish UI** – keep all visible text (nav, map, panels, badges, home, placeholder pages) in Spanish.
 2. **Simulation badge** – shows only "Simulation" (no "datos no medidos").
 3. **Clock with seconds** – event time shown as HH:MM:SS in the player and panels.
 4. **200× speed** – added next to 1× / 10× / 60× / 100×.
