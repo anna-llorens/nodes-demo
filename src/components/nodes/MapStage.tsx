@@ -12,6 +12,7 @@ const MapView = lazy(() => import("./MapView"));
 
 export interface MapLayers {
   heat: boolean;
+  runners: boolean;
   rings: boolean;
   flow: boolean;
   route: boolean;
