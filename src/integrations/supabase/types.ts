@@ -20,6 +20,7 @@ export type Database = {
           device: string | null
           id: number
           kind: string
+          label: string | null
           node_id: string | null
           node_name: string | null
           path: string | null
@@ -29,6 +30,7 @@ export type Database = {
           device?: string | null
           id?: never
           kind: string
+          label?: string | null
           node_id?: string | null
           node_name?: string | null
           path?: string | null
@@ -38,6 +40,7 @@ export type Database = {
           device?: string | null
           id?: never
           kind?: string
+          label?: string | null
           node_id?: string | null
           node_name?: string | null
           path?: string | null

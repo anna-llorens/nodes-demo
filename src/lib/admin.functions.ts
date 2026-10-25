@@ -49,10 +49,10 @@ export const getAdminMetrics = createServerFn({ method: "GET" }).handler(async (
   const since = new Date(Date.now() - 30 * 86400000).toISOString();
   const { data: rows } = await supabaseAdmin
     .from("analytics_events")
-    .select("kind,path,node_id,node_name,device,created_at")
+    .select("kind,path,node_id,node_name,device,label,created_at")
     .gte("created_at", since)
     .order("created_at", { ascending: false })
-    .limit(1000);
+    .limit(5000);
   const { count: totalViews } = await supabaseAdmin
     .from("analytics_events")
     .select("id", { count: "exact", head: true })
@@ -62,6 +62,7 @@ export const getAdminMetrics = createServerFn({ method: "GET" }).handler(async (
   const week = Date.now() - 7 * 86400000;
   const views = list.filter((r) => r.kind === "page_view");
   const clicks = list.filter((r) => r.kind === "node_click");
+  const uiClicks = list.filter((r) => r.kind === "click");
   const tally = (arr: typeof list, key: (r: (typeof list)[number]) => string) => {
     const m = new Map<string, number>();
     for (const r of arr) m.set(key(r), (m.get(key(r)) ?? 0) + 1);
@@ -78,9 +79,13 @@ export const getAdminMetrics = createServerFn({ method: "GET" }).handler(async (
     views7d: views.filter((r) => new Date(r.created_at).getTime() >= week).length,
     viewsTotal: totalViews ?? 0,
     clicks30d: clicks.length,
+    uiClicks30d: uiClicks.length,
     mobileShare: views.length ? Math.round((views.filter((r) => r.device === "mobile").length / views.length) * 100) : 0,
-    pages: tally(views, (r) => r.path ?? "/").slice(0, 8),
+    pages: tally(views, (r) => r.path ?? "/").slice(0, 10),
+    nodePages: tally(views.filter((r) => (r.path ?? "").startsWith("/node/")), (r) => (r.path ?? "").replace("/node/", "")).slice(0, 10),
     nodes: tally(clicks, (r) => r.node_name ?? r.node_id ?? "?").slice(0, 10),
+    clicksByPage: tally(uiClicks, (r) => r.path ?? "/").slice(0, 10),
+    topClicks: tally(uiClicks, (r) => `${r.label ?? "?"} · ${r.path ?? "/"}`).slice(0, 10),
     days,
   };
 });

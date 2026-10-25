@@ -12,7 +12,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { initAnalytics, trackPageView } from "../lib/analytics";
+import { initAnalytics, initClickTracking, trackPageView } from "../lib/analytics";
 import { useRouterState } from "@tanstack/react-router";
 
 function NotFoundComponent() {
@@ -122,6 +122,7 @@ function RootComponent() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   useEffect(() => {
     initAnalytics();
+    return initClickTracking();
   }, []);
   useEffect(() => {
     if (!path.startsWith("/admin")) trackPageView(path);

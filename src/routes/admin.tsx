@@ -133,8 +133,11 @@ function Dashboard({ m }: { m: Metrics }) {
         </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Bars title="Nodos más consultados" rows={m.nodes} empty="Aún no hay clics en nodos." />
+        <Bars title="Nodos más consultados (mapa)" rows={m.nodes} empty="Aún no hay clics en nodos." />
+        <Bars title="Vistas de fichas de nodo (/node/…)" rows={m.nodePages} empty="Aún no hay vistas de fichas." />
         <Bars title="Páginas más visitadas" rows={m.pages} empty="Aún no hay visitas." />
+        <Bars title={`Clics por página (${m.uiClicks30d})`} rows={m.clicksByPage} empty="Aún no hay clics." />
+        <Bars title="Botones y enlaces más pulsados" rows={m.topClicks} empty="Aún no hay clics." />
       </div>
       <p className="text-xs text-muted-foreground">
         Seguimiento interno anónimo. Google Analytics (G-ZQHGE29VD1) sigue activo en paralelo.
