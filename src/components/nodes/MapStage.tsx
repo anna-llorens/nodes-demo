@@ -4,7 +4,6 @@ import { Play, Pause, Users, X, ChevronDown, Info, Clock, ChevronRight, Layers }
 import type { LiveScenario as Scenario, Scenario as RawScenario } from "@/scenarios/types";
 import { simulate, toMin, fmtClock, trafficAt } from "@/sim/engine";
 import { densityLabel, densityLevel } from "@/scenarios/types";
-import { SimBadge } from "./Logo";
 import { SchematicMap } from "./SchematicMap";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -78,7 +77,6 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
             <h1 className="truncate font-display text-lg font-bold text-brand-ink sm:text-xl">{scenario.name}</h1>
             <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
           </button>
-          <SimBadge className="lg:hidden" />
           <span className="hidden items-center gap-2 text-sm text-muted-foreground lg:flex">
             <Clock className="h-4 w-4" /> {scenario.schedule.start}–{scenario.schedule.end}
           </span>

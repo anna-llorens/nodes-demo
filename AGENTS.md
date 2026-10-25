@@ -13,5 +13,7 @@
 - Report aggregation in src/sim/reports.ts samples the engine once per minute; interval durations exclude the endpoint so totals do not overcount.
 - Runner movement samples and density-linked weights come from simulateRunnerHeat in the simulation engine; geo.ts only projects these samples onto the route.
 - English content routes are canonical; Spanish legacy URLs redirect to them to preserve existing links, and / and /home share a browser-safe HomePage component.
-- Map layer visibility is controlled by one shared state in the map route; the Tráfico shortcut and Capas checkbox update the same value to stay synchronized.
-- Home displays marathon node counts and names directly from the configured scenario so it stays aligned with the map.
+- Map layer visibility is controlled by one shared state in the map route and exposed through Capas to avoid duplicate controls.
+- Home displays the marathon node count directly from the configured scenario so it stays aligned with the map.
+- AppShell owns the single simulation status strip outside the scrollable content so every page keeps it visible without duplicates.
+- Runner heat paint reads semantic CSS tokens through browser canvas color conversion so MapLibre uses the shared theme palette.

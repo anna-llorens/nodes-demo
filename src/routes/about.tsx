@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { CheckCircle2 } from "lucide-react";
 import { AppShell } from "@/components/nodes/AppShell";
-import { Logo, SimBadge } from "@/components/nodes/Logo";
+import { Logo } from "@/components/nodes/Logo";
 
 const features = [
   { t: "Mapa real de València", d: "Mapa abierto (OpenStreetMap / OpenFreeMap) con zoom y desplazamiento." },
@@ -41,7 +41,6 @@ function MasPage() {
               <Logo className="text-4xl sm:text-5xl" />
             </h1>
           </div>
-          <SimBadge className="lg:hidden" />
         </div>
         <p className="mt-3 text-sm text-muted-foreground">Prototipo de nodos LiDAR temporales para medir densidad y flujo de personas en eventos de calle. Todas las cifras son simuladas.</p>
         <h2 className="mt-8 font-display text-lg font-bold text-brand-ink">Funcionalidades disponibles</h2>

@@ -2,7 +2,6 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ArrowLeft, Users, MapPin } from "lucide-react";
 import { AppShell } from "@/components/nodes/AppShell";
-import { SimBadge } from "@/components/nodes/Logo";
 import { levelDot } from "@/components/nodes/MapStage";
 import { maraton } from "@/scenarios/maraton";
 import { densityLabel, densityLevel, type DensityLevel } from "@/scenarios/types";
@@ -70,7 +69,6 @@ function NodePage() {
             <Link to="/map" className="flex items-center gap-1.5 rounded-full bg-card/95 px-3 py-2 text-sm font-semibold shadow-float backdrop-blur hover:bg-card">
               <ArrowLeft className="h-4 w-4" /> Volver al mapa
             </Link>
-            <SimBadge />
           </div>
         </div>
 
