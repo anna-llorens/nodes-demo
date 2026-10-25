@@ -1,6 +1,6 @@
 import { ClientOnly, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
-import { Play, Pause, Users, X, ChevronDown, Info, Bell, Clock, Car, ChevronRight, TriangleAlert } from "lucide-react";
+import { Play, Pause, Users, X, ChevronDown, Info, Clock, Car, ChevronRight, Layers } from "lucide-react";
 import type { LiveScenario as Scenario, Scenario as RawScenario } from "@/scenarios/types";
 import { simulate, toMin, fmtClock, trafficAt } from "@/sim/engine";
 import { densityLabel, densityLevel } from "@/scenarios/types";
@@ -8,8 +8,8 @@ import { SimBadge } from "./Logo";
 import { SchematicMap } from "./SchematicMap";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ArrivalAlerts } from "./ArrivalAlerts";
-import { arrivalDensityExceeded, DEFAULT_ARRIVAL_THRESHOLD } from "@/sim/alerts";
+import { LayerToggle } from "./AppShell";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const MapView = lazy(() => import("./MapView"));
 
@@ -31,7 +31,7 @@ export const levelDot: Record<string, string> = {
 
 const fmt = (n: number) => n.toLocaleString("es-ES");
 
-export function MapStage({ scenario: base, layers }: { scenario: RawScenario; layers: MapLayers }) {
+export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: RawScenario; layers: MapLayers; onLayerChange: (key: keyof MapLayers, value: boolean) => void }) {
   const start = toMin(base.schedule.start);
   const end = toMin(base.schedule.end);
   const [minute, setMinute] = useState(base.id === "maraton" ? toMin("10:15") : start);
@@ -59,17 +59,12 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
   const clock = fmtClock(minute, true);
   const trafficTick = Math.floor(minute);
   const traffic = useMemo(() => trafficAt(base, trafficTick), [base, trafficTick]);
-  const [showTraffic, setShowTraffic] = useState(false);
-  const mapLayers = { ...layers, traffic: showTraffic };
+  const showTraffic = Boolean(layers.traffic);
   const jammed = traffic.filter((t) => t.level === 3).length;
   const [selectedId, setSelectedId] = useState<string | null>("meta");
   const [fallback, setFallback] = useState(false);
-  const [tab, setTab] = useState<"mapa" | "indicadores" | "alertas">("mapa");
-  const [arrivalThreshold, setArrivalThreshold] = useState(DEFAULT_ARRIVAL_THRESHOLD);
-  const [showAlertSettings, setShowAlertSettings] = useState(false);
-  const arrival = scenario.nodes.find((node) => node.id === "meta");
-  const arrivalWarning = arrivalDensityExceeded(arrival?.snapshot, arrivalThreshold);
-  const alertSettings = <ArrivalAlerts node={arrival} threshold={arrivalThreshold} onThreshold={setArrivalThreshold} />;
+  const [tab, setTab] = useState<"mapa" | "indicadores">("mapa");
+  const [layersOpen, setLayersOpen] = useState(false);
   const selected = scenario.nodes.find((n) => n.id === selectedId) ?? null;
   const total = scenario.nodes.reduce((s, n) => s + n.snapshot.people, 0);
   const runners = scenario.nodes.reduce((s, n) => s + n.snapshot.runners, 0);
@@ -88,8 +83,8 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
             <Clock className="h-4 w-4" /> {scenario.schedule.start}–{scenario.schedule.end}
           </span>
         </div>
-        <div className="mt-2 grid grid-cols-3 text-sm font-semibold lg:hidden">
-          {(["mapa", "indicadores", "alertas"] as const).map((t) => (
+        <div className="mt-2 grid grid-cols-2 text-sm font-semibold lg:hidden">
+          {(["mapa", "indicadores"] as const).map((t) => (
             <Button variant="ghost"
               key={t}
               onClick={() => setTab(t)}
@@ -98,21 +93,11 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
                 tab === t ? "border-primary text-foreground" : "border-transparent text-muted-foreground",
               )}
             >
-              {t}{t === "alertas" && arrivalWarning && <span className="h-2 w-2 rounded-full bg-destructive" />}
+              {t}
             </Button>
           ))}
         </div>
       </header>
-
-      <div className={cn("flex shrink-0 items-center justify-between gap-3 border-b px-4 py-2 sm:px-6", arrivalWarning ? "border-destructive/30 bg-destructive/10" : "border-border bg-card")}>
-        <div role={arrivalWarning ? "alert" : "status"} aria-live="polite" aria-atomic="true" className={cn("flex min-w-0 items-start gap-2 text-xs", arrivalWarning ? "text-destructive" : "text-muted-foreground")}>
-          {arrivalWarning ? <TriangleAlert className="h-4 w-4 shrink-0" /> : <Bell className="h-4 w-4 shrink-0" />}
-          <div><p className="font-semibold">{arrivalWarning ? "Aviso: densidad elevada en llegada" : "Llegada: sin aviso de densidad"}</p>
-          <p className="mt-0.5 tabular-nums">{arrival?.snapshot.density.toLocaleString("es-ES") ?? "—"} pers/m² · límite {arrivalThreshold.toLocaleString("es-ES")}</p></div>
-        </div>
-        <Button variant="outline" size="sm" aria-label="Configurar aviso de llegada" onClick={() => { setTab("alertas"); setShowAlertSettings((value) => !value); }}><Bell />Avisos</Button>
-      </div>
-      {showAlertSettings && <div className="hidden max-h-72 shrink-0 overflow-y-auto border-b border-border bg-background p-4 lg:block xl:hidden">{alertSettings}</div>}
 
       <div className="flex min-h-0 flex-1">
         {/* Mapa */}
@@ -124,7 +109,7 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
               <Suspense fallback={<div className="absolute inset-0 bg-muted" />}>
                 <MapView
                   scenario={scenario}
-                  layers={mapLayers}
+                  layers={layers}
                   traffic={traffic}
                   minute={tick}
                   selectedId={selectedId}
@@ -138,7 +123,19 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
           {/* Controles + hora del evento */}
           <div className="absolute left-3 top-3 flex max-w-[calc(100%-4.5rem)] flex-col items-start gap-2 sm:left-4 sm:top-4">
             <div className="flex flex-wrap gap-2">
-              <MapButton active={showTraffic} onClick={() => setShowTraffic((v) => !v)} icon={<Car className="h-4 w-4" />} label="Tráfico" />
+              <MapButton active={showTraffic} onClick={() => onLayerChange("traffic", !showTraffic)} icon={<Car className="h-4 w-4" />} label="Tráfico" />
+              <Popover open={layersOpen} onOpenChange={setLayersOpen}>
+                <PopoverTrigger asChild><Button variant={layersOpen ? "default" : "secondary"} size="sm" className="rounded-full bg-card text-foreground shadow-float"><Layers />Capas</Button></PopoverTrigger>
+                <PopoverContent align="start" aria-label="Capas del mapa" className="w-72 max-w-[calc(100vw-2rem)]">
+                  <h2 className="mb-2 font-display text-sm font-bold">Capas</h2>
+                  <LayerToggle label="Mapa de calor" checked={layers.heat} onChange={(value) => onLayerChange("heat", value)} />
+                  <LayerToggle label="Corredores en recorrido" checked={layers.runners} onChange={(value) => onLayerChange("runners", value)} />
+                  <LayerToggle label="Anillos de nodo" checked={layers.rings} onChange={(value) => onLayerChange("rings", value)} />
+                  <LayerToggle label="Flechas de flujo" checked={layers.flow} onChange={(value) => onLayerChange("flow", value)} />
+                  <LayerToggle label="Recorrido" checked={layers.route} onChange={(value) => onLayerChange("route", value)} />
+                  <LayerToggle label="Tráfico" checked={showTraffic} onChange={(value) => onLayerChange("traffic", value)} />
+                </PopoverContent>
+              </Popover>
             </div>
             {showTraffic && (
               <div className="rounded-xl bg-card/95 px-3 py-2 text-xs shadow-card backdrop-blur">
@@ -182,10 +179,10 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
           </div>
         </section>
 
-        {/* Indicadores / alertas en móvil */}
+        {/* Indicadores en móvil */}
         {tab !== "mapa" && (
           <div className="flex-1 overflow-y-auto p-4 lg:hidden">
-            {tab === "indicadores" ? <NodeList scenario={scenario} onSelect={(id) => { setSelectedId(id); setTab("mapa"); }} /> : alertSettings}
+            <NodeList scenario={scenario} onSelect={(id) => { setSelectedId(id); setTab("mapa"); }} />
           </div>
         )}
 
@@ -198,7 +195,6 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
           ) : (
             <p className="rounded-2xl bg-card p-4 text-sm text-muted-foreground shadow-card">Toca un nodo del mapa para ver su zona.</p>
           )}
-          {alertSettings}
         </aside>
       </div>
     </div>
@@ -323,7 +319,7 @@ function Player(p: {
 
 function MapButton({ active, onClick, icon, label }: { active: boolean; onClick: () => void; icon: ReactNode; label: string }) {
   return (
-    <button
+    <Button variant="ghost" size="sm"
       onClick={onClick}
       aria-pressed={active}
       className={cn(
@@ -333,7 +329,7 @@ function MapButton({ active, onClick, icon, label }: { active: boolean; onClick:
     >
       {icon}
       {label}
-    </button>
+    </Button>
   );
 }
 

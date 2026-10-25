@@ -1,4 +1,7 @@
 # Tasks
+- [x] Show the configured marathon nodes on Inicio.
+- [x] Remove the last finish-alert implementation.
+- [x] Move layer controls beside Tráfico and include Tráfico in Capas; verify toggles.
 - [x] Remove the Zones section and its navigation entry.
 - [x] Add configurable finish-density visual alerts and verify threshold transitions.
 - [x] Keep a much larger finish-area crowd at the end of the race.
