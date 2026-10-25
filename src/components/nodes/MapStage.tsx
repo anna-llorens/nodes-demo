@@ -1,8 +1,8 @@
 import { ClientOnly } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
-import { Play, Pause, Users, X, ChevronDown, Info, Bell, Clock } from "lucide-react";
+import { Play, Pause, Users, X, ChevronDown, Info, Bell, Clock, Car, MapPin } from "lucide-react";
 import type { LiveScenario as Scenario, Scenario as RawScenario } from "@/scenarios/types";
-import { simulate, toMin, fmtClock } from "@/sim/engine";
+import { simulate, toMin, fmtClock, trafficAt } from "@/sim/engine";
 import { densityLabel, densityLevel } from "@/scenarios/types";
 import { SimBadge } from "./Logo";
 import { SchematicMap } from "./SchematicMap";
@@ -15,6 +15,7 @@ export interface MapLayers {
   rings: boolean;
   flow: boolean;
   route: boolean;
+  traffic?: boolean;
 }
 
 export const levelDot: Record<string, string> = {
@@ -48,12 +49,19 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
     const st = simulate(base, tick);
     return { ...base, nodes: base.nodes.map((n, i) => ({ ...n, snapshot: st[i]! })) };
   }, [base, tick]);
-  const clock = fmtClock(minute);
+  const clock = fmtClock(minute, true);
+  const trafficTick = Math.floor(minute);
+  const traffic = useMemo(() => trafficAt(base, trafficTick), [base, trafficTick]);
+  const [showTraffic, setShowTraffic] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
+  const mapLayers = { ...layers, traffic: showTraffic };
+  const jammed = traffic.filter((t) => t.level === 3).length;
   const [selectedId, setSelectedId] = useState<string | null>("meta");
   const [fallback, setFallback] = useState(false);
   const [tab, setTab] = useState<"mapa" | "indicadores" | "alertas">("mapa");
   const selected = scenario.nodes.find((n) => n.id === selectedId) ?? null;
   const total = scenario.nodes.reduce((s, n) => s + n.snapshot.people, 0);
+  const runners = scenario.nodes.reduce((s, n) => s + n.snapshot.runners, 0);
 
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -95,7 +103,8 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
               <Suspense fallback={<div className="absolute inset-0 bg-muted" />}>
                 <MapView
                   scenario={scenario}
-                  layers={layers}
+                  layers={mapLayers}
+                  traffic={traffic}
                   selectedId={selectedId}
                   onSelect={(id) => setSelectedId(id)}
                   onError={() => setFallback(true)}
@@ -104,16 +113,38 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
             </ClientOnly>
           )}
 
-          {/* Hora del evento (ordenador) */}
-          <div className="absolute left-4 top-4 hidden rounded-2xl bg-card/95 px-4 py-3 shadow-float backdrop-blur lg:block">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Hora del evento</p>
-            <p className="font-display text-3xl font-bold text-brand-ink">{clock}</p>
-            <p className="text-xs text-muted-foreground">{fmt(total)} personas detectadas en zonas cubiertas</p>
+          {/* Controles + hora del evento */}
+          <div className="absolute left-3 top-3 flex max-w-[calc(100%-4.5rem)] flex-col items-start gap-2 sm:left-4 sm:top-4">
+            <div className="flex flex-wrap gap-2">
+              <MapButton active={showTraffic} onClick={() => setShowTraffic((v) => !v)} icon={<Car className="h-4 w-4" />} label="Tráfico" />
+              <MapButton active={showInfo} onClick={() => { setShowInfo((v) => !v); if (!selectedId) setSelectedId("ayuntamiento"); }} icon={<MapPin className="h-4 w-4" />} label="Info del nodo" />
+            </div>
+            {showTraffic && (
+              <div className="rounded-xl bg-card/95 px-3 py-2 text-xs shadow-card backdrop-blur">
+                <div className="flex items-center gap-3 font-semibold">
+                  <span className="flex items-center gap-1"><span className="h-1.5 w-4 rounded-full bg-dens-low" />Fluido</span>
+                  <span className="flex items-center gap-1"><span className="h-1.5 w-4 rounded-full bg-dens-mid" />Denso</span>
+                  <span className="flex items-center gap-1"><span className="h-1.5 w-4 rounded-full bg-dens-crit" />Congestionado</span>
+                </div>
+                <p className="mt-1 text-muted-foreground">{jammed} tramos congestionados · calles cortadas {base.closure?.start}–{base.closure?.end}</p>
+              </div>
+            )}
+            <div className="hidden rounded-2xl bg-card/95 px-4 py-3 shadow-float backdrop-blur lg:block">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Hora del evento</p>
+              <p className="font-display text-3xl font-bold tabular-nums text-brand-ink">{clock}</p>
+              <p className="text-xs text-muted-foreground">{fmt(total)} personas en zonas cubiertas</p>
+              <p className="text-xs text-muted-foreground">{fmt(runners)} corredores · {fmt(total - runners)} público{base.participants ? ` · ${fmt(base.participants)} inscritos` : ""}</p>
+            </div>
+            {showInfo && selected && (
+              <div className="w-[min(300px,calc(100vw-2rem))] rounded-2xl bg-card p-4 shadow-float">
+                <NodeBubble node={selected} onClose={() => setShowInfo(false)} detailed />
+              </div>
+            )}
           </div>
 
           {/* Burbuja del nodo */}
-          {selected && (
-            <div className="absolute left-1/2 top-4 w-[min(260px,calc(100%-2rem))] -translate-x-1/2 rounded-2xl bg-card p-3.5 shadow-float lg:left-auto lg:right-14 lg:translate-x-0 xl:hidden">
+          {selected && !showInfo && (
+            <div className="absolute left-1/2 top-16 w-[min(260px,calc(100%-2rem))] -translate-x-1/2 rounded-2xl bg-card p-3.5 shadow-float lg:left-auto lg:right-14 lg:translate-x-0 xl:hidden">
               <NodeBubble node={selected} onClose={() => setSelectedId(null)} />
             </div>
           )}
@@ -175,7 +206,9 @@ function NodeBubble({ node, onClose, detailed }: { node: Scenario["nodes"][numbe
           <X className="h-4 w-4" />
         </button>
       </div>
+      {detailed && node.description && <p className="mt-1 text-xs text-muted-foreground">{node.description}</p>}
       <p className="mt-1 text-sm">{fmt(node.snapshot.people)} personas</p>
+      <p className="text-xs text-muted-foreground">{fmt(node.snapshot.runners)} corredores · {fmt(node.snapshot.spectators)} público</p>
       <p className="mt-0.5 flex items-center gap-1.5 text-sm text-muted-foreground">
         <span className={cn("h-2.5 w-2.5 rounded-full", levelDot[lvl])} />
         {densityLabel[lvl]} · {node.snapshot.density.toLocaleString("es-ES")} pers/m²
@@ -264,13 +297,29 @@ function Player(p: {
         className="h-1.5 min-w-0 flex-1 cursor-pointer accent-primary"
       />
       <span className="hidden text-xs text-muted-foreground sm:inline">{fmtClock(p.end)}</span>
-      <span className="w-11 shrink-0 font-display text-sm font-bold tabular-nums">{p.clock}</span>
+      <span className="w-[4.2rem] shrink-0 font-display text-sm font-bold tabular-nums">{p.clock}</span>
       <div className="flex shrink-0 rounded-full bg-muted p-0.5 text-xs font-semibold">
-        {[1, 10, 60, 100].map((s) => (
+        {[1, 10, 60, 100, 200].map((s) => (
           <button key={s} onClick={() => p.onSpeed(s)} className={cn("rounded-full px-2 py-1", p.speed === s ? "bg-card shadow-card" : "text-muted-foreground")}>{s}×</button>
         ))}
       </div>
     </div>
+  );
+}
+
+function MapButton({ active, onClick, icon, label }: { active: boolean; onClick: () => void; icon: React.ReactNode; label: string }) {
+  return (
+    <button
+      onClick={onClick}
+      aria-pressed={active}
+      className={cn(
+        "flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold shadow-float transition-colors",
+        active ? "bg-primary text-primary-foreground" : "bg-card text-foreground hover:bg-muted",
+      )}
+    >
+      {icon}
+      {label}
+    </button>
   );
 }
 
