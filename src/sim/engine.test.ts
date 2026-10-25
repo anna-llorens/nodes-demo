@@ -5,6 +5,13 @@ import { densityLevel } from "@/scenarios/types";
 import { runnerHeatPoints } from "@/components/nodes/geo";
 
 describe("simulador", () => {
+  it("la llegada mantiene más de 38.000 personas al terminar", () => {
+    const end = simulate(maraton, toMin("11:30")).find((state) => state.id === "meta");
+    const earlier = simulate(maraton, toMin("10:00")).find((state) => state.id === "meta");
+    expect(end?.people).toBeGreaterThan(38000);
+    expect(end?.people).toBeGreaterThan((earlier?.people ?? 0) * 1.5);
+    expect(end?.spectators).toBeGreaterThan(10000);
+  });
   it("mantiene etapas medias y aumenta la afluencia de animación", () => {
     const medium = simulate(maraton, toMin("10:15")).find((state) => state.id === "animacion");
     expect(densityLevel(medium?.density ?? 0)).toBe("media");

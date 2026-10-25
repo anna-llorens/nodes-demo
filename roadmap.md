@@ -1,4 +1,5 @@
 # Tasks
+- [ ] Keep a much larger finish-area crowd at the end of the race.
 - [ ] Raise stage crowd curves with sustained medium-density periods.
 - [ ] Couple runner heat weights to engine density and avoid red saturation.
 - [ ] Verify time changes in the live map and run simulation tests.
