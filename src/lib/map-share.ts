@@ -14,13 +14,14 @@ export interface MapCamera { lng: number; lat: number; zoom: number; bearing: nu
 const layerKeys = ['heat', 'runners', 'rings', 'flow', 'route', 'traffic', 'closures'] as const;
 const palettes: RunnerPalette[] = ['termica', 'verde', 'azul', 'terracota', 'grafito'];
 export const defaultLayers: MapLayers = { heat: true, runners: true, rings: true, flow: false, route: true, traffic: false, closures: false };
-export function validateMapSearch(raw: Record<string, unknown>) {
+export interface MapSearch { scenario?: string; layers?: string; camera?: string; palette?: string; time?: number }
+export function validateMapSearch(raw: Record<string, unknown>): MapSearch {
   return {
-    scenario: typeof raw.scenario === 'string' ? raw.scenario : undefined,
-    layers: typeof raw.layers === 'string' ? raw.layers : undefined,
-    camera: typeof raw.camera === 'string' ? raw.camera : undefined,
-    palette: typeof raw.palette === 'string' ? raw.palette : undefined,
-    time: typeof raw.time === 'number' && Number.isFinite(raw.time) ? raw.time : undefined,
+    scenario: typeof raw['scenario'] === 'string' ? raw['scenario'] : undefined,
+    layers: typeof raw['layers'] === 'string' ? raw['layers'] : undefined,
+    camera: typeof raw['camera'] === 'string' ? raw['camera'] : undefined,
+    palette: typeof raw['palette'] === 'string' ? raw['palette'] : undefined,
+    time: typeof raw['time'] === 'number' && Number.isFinite(raw['time']) ? raw['time'] : undefined,
   };
 }
 export function restoreMapState(search: ReturnType<typeof validateMapSearch>, scenario: Scenario) {

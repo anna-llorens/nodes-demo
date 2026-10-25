@@ -7,7 +7,7 @@ describe('shared map state', () => {
     const state = { scenario: 'maraton', layers: { heat: false, runners: true, rings: false, flow: true, route: true, traffic: true, closures: true }, camera: { lng: -0.37651, lat: 39.46975, zoom: 15.25, bearing: 24, pitch: 30 }, palette: 'verde' as const, time: 633.5 };
     const url = new URL(buildMapShareUrl('https://nodes-demo.lovable.app', state));
     const raw = Object.fromEntries(url.searchParams);
-    const search = validateMapSearch({ ...raw, time: Number(raw.time) });
+    const search = validateMapSearch({ ...raw, time: Number(raw['time']) });
     expect(search.scenario).toBe('maraton');
     expect(restoreMapState(search, maraton)).toEqual({ layers: state.layers, camera: state.camera, palette: state.palette, time: state.time });
   });
