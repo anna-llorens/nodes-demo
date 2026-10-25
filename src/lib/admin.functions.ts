@@ -49,7 +49,7 @@ export const getAdminMetrics = createServerFn({ method: "GET" }).handler(async (
   const since = new Date(Date.now() - 30 * 86400000).toISOString();
   const { data: rows } = await supabaseAdmin
     .from("analytics_events")
-    .select("kind,path,node_id,node_name,device,label,created_at")
+    .select("kind,path,node_id,node_name,device,label,created_at,visitor_id,session_id")
     .gte("created_at", since)
     .order("created_at", { ascending: false })
     .limit(5000);
@@ -63,21 +63,30 @@ export const getAdminMetrics = createServerFn({ method: "GET" }).handler(async (
   const views = list.filter((r) => r.kind === "page_view");
   const clicks = list.filter((r) => r.kind === "node_click");
   const uiClicks = list.filter((r) => r.kind === "click");
+  const distinct = (arr: typeof list, key: "visitor_id" | "session_id") =>
+    new Set(arr.map((r) => r[key]).filter(Boolean)).size;
+  const todayRows = list.filter((r) => r.created_at.startsWith(today));
+  const weekRows = list.filter((r) => new Date(r.created_at).getTime() >= week);
   const tally = (arr: typeof list, key: (r: (typeof list)[number]) => string) => {
     const m = new Map<string, number>();
     for (const r of arr) m.set(key(r), (m.get(key(r)) ?? 0) + 1);
     return [...m.entries()].map(([label, value]) => ({ label, value })).sort((a, b) => b.value - a.value);
   };
-  const days: { label: string; value: number }[] = [];
+  const days: { label: string; value: number; users: number }[] = [];
   for (let i = 13; i >= 0; i--) {
     const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
-    days.push({ label: d.slice(5), value: views.filter((r) => r.created_at.startsWith(d)).length });
+    const dv = views.filter((r) => r.created_at.startsWith(d));
+    days.push({ label: d.slice(5), value: dv.length, users: distinct(dv, "visitor_id") });
   }
   return {
     authorized: true as const,
     viewsToday: views.filter((r) => r.created_at.startsWith(today)).length,
     views7d: views.filter((r) => new Date(r.created_at).getTime() >= week).length,
     viewsTotal: totalViews ?? 0,
+    usersToday: distinct(todayRows, "visitor_id"),
+    users7d: distinct(weekRows, "visitor_id"),
+    users30d: distinct(list, "visitor_id"),
+    sessions7d: distinct(weekRows, "session_id"),
     clicks30d: clicks.length,
     uiClicks30d: uiClicks.length,
     mobileShare: views.length ? Math.round((views.filter((r) => r.device === "mobile").length / views.length) * 100) : 0,
