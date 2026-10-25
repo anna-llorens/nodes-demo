@@ -172,7 +172,7 @@ export default function MapView({
     vis("r20", layers.rings);
     vis("r40", layers.rings);
     vis("route", layers.route);
-    vis("traffic", layers.traffic);
+    vis("traffic", !!layers.traffic);
     map.getContainer().querySelectorAll<HTMLElement>(".flow-arrow").forEach((el: HTMLElement) => (el.style.display = layers.flow ? "" : "none"));
   }, [layers, ready]);
 
