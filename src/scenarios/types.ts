@@ -15,10 +15,22 @@ export interface ScenarioNode {
   roadwayShare?: number;
   /** Dirección principal del flujo en grados */
   flowBearing: number;
+  /** Fracción de corredores (resto público) por hora "HH:MM" */
+  runnerShare?: [string, number][];
+  /** Descripción breve de la zona */
+  description?: string;
 }
 
 export interface LiveNode extends ScenarioNode {
   snapshot: import("@/sim/engine").NodeState;
+}
+
+export interface TrafficSegment {
+  id: string;
+  name: string;
+  /** Intensidad media de vehículos (veh/h) del portal de datos abiertos */
+  imv: number;
+  coords: [number, number][];
 }
 
 export interface Scenario {
@@ -29,6 +41,11 @@ export interface Scenario {
   center: [number, number];
   zoom: number;
   route?: [number, number][];
+  /** Corredores inscritos */
+  participants?: number;
+  /** Ventana con calles cortadas por la carrera */
+  closure?: { start: string; end: string };
+  traffic?: TrafficSegment[];
   nodes: ScenarioNode[];
 }
 
