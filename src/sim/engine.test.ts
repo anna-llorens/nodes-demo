@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { maraton } from "@/scenarios/maraton";
 import { MAX_DENSITY, fmtClock, simulate, toMin, trafficAt } from "./engine";
 import { densityLevel } from "@/scenarios/types";
+import { runnerHeatPoints } from "@/components/nodes/geo";
 
 describe("simulador", () => {
   it("nunca supera 7 pers/m²", () => {
@@ -27,5 +28,11 @@ describe("simulador", () => {
   });
   it("la hora muestra segundos", () => {
     expect(fmtClock(toMin("10:15") + 0.5, true)).toBe("10:15:30");
+  });
+  it("el calor de corredores es determinista y vacío fuera de carrera", () => {
+    expect(runnerHeatPoints(maraton, toMin("09:30"))).toEqual(runnerHeatPoints(maraton, toMin("09:30")));
+    expect(runnerHeatPoints(maraton, toMin("09:30")).features.length).toBeGreaterThan(0);
+    expect(runnerHeatPoints(maraton, toMin("07:00")).features).toHaveLength(0);
+    expect(runnerHeatPoints(maraton, toMin("12:00")).features).toHaveLength(0);
   });
 });

@@ -17,7 +17,7 @@ export const Route = createFileRoute("/mapa")({
 });
 
 function MapaPage() {
-  const [layers, setLayers] = useState<MapLayers>({ heat: true, rings: true, flow: true, route: true });
+  const [layers, setLayers] = useState<MapLayers>({ heat: true, runners: true, rings: true, flow: true, route: true });
   const set = (k: keyof MapLayers) => (v: boolean) => setLayers((l) => ({ ...l, [k]: v }));
   return (
     <AppShell
@@ -29,6 +29,7 @@ function MapaPage() {
           <p className="mt-6 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Capas</p>
           <div className="mt-1">
             <LayerToggle label="Mapa de calor" checked={layers.heat} onChange={set("heat")} />
+            <LayerToggle label="Corredores en recorrido" checked={layers.runners} onChange={set("runners")} />
             <LayerToggle label="Anillos de nodo" checked={layers.rings} onChange={set("rings")} />
             <LayerToggle label="Flechas de flujo" checked={layers.flow} onChange={set("flow")} />
             <LayerToggle label="Recorrido" checked={layers.route} onChange={set("route")} />

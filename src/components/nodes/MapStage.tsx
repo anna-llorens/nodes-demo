@@ -12,6 +12,7 @@ const MapView = lazy(() => import("./MapView"));
 
 export interface MapLayers {
   heat: boolean;
+  runners: boolean;
   rings: boolean;
   flow: boolean;
   route: boolean;
@@ -105,6 +106,7 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
                   scenario={scenario}
                   layers={mapLayers}
                   traffic={traffic}
+                  minute={tick}
                   selectedId={selectedId}
                   onSelect={(id) => setSelectedId(id)}
                   onError={() => setFallback(true)}
