@@ -25,10 +25,20 @@ export function initAnalytics() {
   window.gtag("config", GA_ID, { send_page_view: false });
 }
 
+const device = () => (window.matchMedia("(max-width: 767px)").matches ? "mobile" : "desktop");
+
+function internal(data: { kind: string; path?: string; nodeId?: string; nodeName?: string }) {
+  void import("./tracking.functions")
+    .then((m) => m.trackEvent({ data: { ...data, device: device() } }))
+    .catch(() => {});
+}
+
 export function trackPageView(path: string) {
   window.gtag?.("event", "page_view", { page_path: path, page_location: window.location.href });
+  internal({ kind: "page_view", path });
 }
 
 export function trackNodeClick(id: string, name: string) {
   window.gtag?.("event", "node_click", { node_id: id, node_name: name });
+  internal({ kind: "node_click", path: window.location.pathname, nodeId: id, nodeName: name });
 }
