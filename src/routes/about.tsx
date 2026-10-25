@@ -12,11 +12,11 @@ const features = [
   { t: "Indicadores por zona", d: "Densidad, entradas y salidas por minuto, velocidad, variación a 10 min y calzada/aceras." },
   { t: "Mapa de calor y flechas de flujo", d: "Cambian con la hora; se pueden encender y apagar en el panel de capas." },
   { t: "Botón de tráfico", d: "Tramos reales de calles (datos abiertos de València) en verde, amarillo o rojo según la hora." },
-  { t: "Botón de info del nodo", d: "Ficha completa de la zona seleccionada sobre el mapa." },
+  { t: "Informes del evento", d: "Resumen, comparativa por zonas, evolución de afluencia y descarga CSV de los datos simulados." },
   { t: "Adaptado a móvil, tablet y ordenador", d: "Barra inferior en móvil y barra lateral en ordenador." },
 ];
 
-export const Route = createFileRoute("/mas")({
+export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "Acerca de — NODES" },

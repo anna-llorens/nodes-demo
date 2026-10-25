@@ -4,9 +4,11 @@ import { AppShell, LayerToggle } from "@/components/nodes/AppShell";
 import { MapStage, type MapLayers } from "@/components/nodes/MapStage";
 import { maraton } from "@/scenarios/maraton";
 
-export const Route = createFileRoute("/mapa")({
+export const Route = createFileRoute("/map")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Mapa · Medio Maratón de València — NODES" },
       { name: "description", content: "Mapa simulado de densidad y flujo por zonas cubiertas con nodos LiDAR en el Medio Maratón de València." },
       { property: "og:title", content: "Mapa · Medio Maratón de València — NODES" },

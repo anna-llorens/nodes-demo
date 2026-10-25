@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, ComingSoon } from "@/components/nodes/AppShell";
 
-export const Route = createFileRoute("/informes")({
+export const Route = createFileRoute("/reports")({
   head: () => ({
     meta: [
       { title: "Informes — NODES" },

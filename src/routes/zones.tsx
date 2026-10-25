@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, ComingSoon } from "@/components/nodes/AppShell";
 
-export const Route = createFileRoute("/zonas")({
+export const Route = createFileRoute("/zones")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Zonas — NODES" },
       { name: "description", content: "Zonas del prototipo NODES (simulación)." },
       { property: "og:title", content: "Zonas — NODES" },

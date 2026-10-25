@@ -223,7 +223,7 @@ function NodeBubble({ node, onClose, detailed, minute }: { node: Scenario["nodes
         </div>
       )}
       <Link
-        to="/nodo/$id"
+        to="/node/$id"
         params={{ id: node.id }}
         search={{ t: Math.round(minute) }}
         className="mt-3 flex items-center justify-center gap-1 rounded-full bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground"

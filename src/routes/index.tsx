@@ -8,6 +8,8 @@ import mascletaImg from "@/assets/mascleta.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "NODES — Datos para decidir a tiempo en eventos de calle" },
       { name: "description", content: "Prototipo de nodos LiDAR temporales para medir densidad y flujo en eventos de calle de València. Simulación." },
       { property: "og:title", content: "NODES — Datos para decidir a tiempo en eventos de calle" },
@@ -34,7 +36,7 @@ function Index() {
 
         <div className="mt-8 grid gap-4 md:grid-cols-2 lg:gap-6">
           <EventCard
-            to="/mapa"
+            to="/map"
             img={maratonImg}
             icon={<Activity className="h-8 w-8" strokeWidth={1.8} />}
             title="Medio Maratón de València"
@@ -52,7 +54,7 @@ function Index() {
   );
 }
 
-function EventCard({ to, img, icon, title, subtitle }: { to?: "/mapa"; img: string; icon: React.ReactNode; title: string; subtitle: string }) {
+function EventCard({ to, img, icon, title, subtitle }: { to?: "/map"; img: string; icon: React.ReactNode; title: string; subtitle: string }) {
   const body = (
     <div className="group relative h-52 overflow-hidden rounded-3xl shadow-card sm:h-60 lg:h-72">
       <img src={img} alt="" width={1024} height={640} className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />

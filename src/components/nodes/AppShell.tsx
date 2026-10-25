@@ -5,11 +5,11 @@ import { Logo, SimBadge } from "./Logo";
 import { cn } from "@/lib/utils";
 
 export const navItems = [
-  { to: "/", label: "Inicio", icon: Home },
-  { to: "/mapa", label: "Mapa", icon: Map },
-  { to: "/zonas", label: "Zonas", icon: MapPinned },
-  { to: "/informes", label: "Informes", icon: FileBarChart },
-  { to: "/mas", label: "Más", icon: MoreHorizontal },
+  { to: "/home", label: "Inicio", icon: Home },
+  { to: "/map", label: "Mapa", icon: Map },
+  { to: "/zones", label: "Zonas", icon: MapPinned },
+  { to: "/reports", label: "Informes", icon: FileBarChart },
+  { to: "/about", label: "Más", icon: MoreHorizontal },
 ] as const;
 
 export function AppShell({ children, sidebarExtra }: { children: ReactNode; sidebarExtra?: ReactNode }) {
