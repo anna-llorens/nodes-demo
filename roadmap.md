@@ -1,6 +1,6 @@
 # Tasks
-- [ ] Remove the Zones section and its navigation entry.
-- [ ] Add configurable finish-density visual alerts and verify threshold transitions.
+- [x] Remove the Zones section and its navigation entry.
+- [x] Add configurable finish-density visual alerts and verify threshold transitions.
 - [x] Keep a much larger finish-area crowd at the end of the race.
 - [x] Raise stage crowd curves with sustained medium-density periods.
 - [x] Couple runner heat weights to engine density and avoid red saturation.
