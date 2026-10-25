@@ -10,83 +10,83 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as InformesRouteImport } from './routes/informes'
-import { Route as MapaRouteImport } from './routes/mapa'
-import { Route as MasRouteImport } from './routes/mas'
-import { Route as ZonasRouteImport } from './routes/zonas'
-import { Route as NodoIdRouteImport } from './routes/nodo.$id'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as MapRouteImport } from './routes/map'
+import { Route as ReportsRouteImport } from './routes/reports'
+import { Route as ZonesRouteImport } from './routes/zones'
+import { Route as NodeIdRouteImport } from './routes/node.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InformesRoute = InformesRouteImport.update({
-  id: '/informes',
-  path: '/informes',
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MapaRoute = MapaRouteImport.update({
-  id: '/mapa',
-  path: '/mapa',
+const MapRoute = MapRouteImport.update({
+  id: '/map',
+  path: '/map',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MasRoute = MasRouteImport.update({
-  id: '/mas',
-  path: '/mas',
+const ReportsRoute = ReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ZonasRoute = ZonasRouteImport.update({
-  id: '/zonas',
-  path: '/zonas',
+const ZonesRoute = ZonesRouteImport.update({
+  id: '/zones',
+  path: '/zones',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NodoIdRoute = NodoIdRouteImport.update({
-  id: '/nodo/$id',
-  path: '/nodo/$id',
+const NodeIdRoute = NodeIdRouteImport.update({
+  id: '/node/$id',
+  path: '/node/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/informes': typeof InformesRoute
-  '/mapa': typeof MapaRoute
-  '/mas': typeof MasRoute
-  '/zonas': typeof ZonasRoute
-  '/nodo/$id': typeof NodoIdRoute
+  '/about': typeof AboutRoute
+  '/map': typeof MapRoute
+  '/reports': typeof ReportsRoute
+  '/zones': typeof ZonesRoute
+  '/node/$id': typeof NodeIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/informes': typeof InformesRoute
-  '/mapa': typeof MapaRoute
-  '/mas': typeof MasRoute
-  '/zonas': typeof ZonasRoute
-  '/nodo/$id': typeof NodoIdRoute
+  '/about': typeof AboutRoute
+  '/map': typeof MapRoute
+  '/reports': typeof ReportsRoute
+  '/zones': typeof ZonesRoute
+  '/node/$id': typeof NodeIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/informes': typeof InformesRoute
-  '/mapa': typeof MapaRoute
-  '/mas': typeof MasRoute
-  '/zonas': typeof ZonasRoute
-  '/nodo/$id': typeof NodoIdRoute
+  '/about': typeof AboutRoute
+  '/map': typeof MapRoute
+  '/reports': typeof ReportsRoute
+  '/zones': typeof ZonesRoute
+  '/node/$id': typeof NodeIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/informes' | '/mapa' | '/mas' | '/zonas' | '/nodo/$id'
+  fullPaths: '/' | '/about' | '/map' | '/reports' | '/zones' | '/node/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/informes' | '/mapa' | '/mas' | '/zonas' | '/nodo/$id'
-  id: '__root__' | '/' | '/informes' | '/mapa' | '/mas' | '/zonas' | '/nodo/$id'
+  to: '/' | '/about' | '/map' | '/reports' | '/zones' | '/node/$id'
+  id: '__root__' | '/' | '/about' | '/map' | '/reports' | '/zones' | '/node/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  InformesRoute: typeof InformesRoute
-  MapaRoute: typeof MapaRoute
-  MasRoute: typeof MasRoute
-  ZonasRoute: typeof ZonasRoute
-  NodoIdRoute: typeof NodoIdRoute
+  AboutRoute: typeof AboutRoute
+  MapRoute: typeof MapRoute
+  ReportsRoute: typeof ReportsRoute
+  ZonesRoute: typeof ZonesRoute
+  NodeIdRoute: typeof NodeIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -98,39 +98,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/informes': {
-      id: '/informes'
-      path: '/informes'
-      fullPath: '/informes'
-      preLoaderRoute: typeof InformesRouteImport
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/mapa': {
-      id: '/mapa'
-      path: '/mapa'
-      fullPath: '/mapa'
-      preLoaderRoute: typeof MapaRouteImport
+    '/map': {
+      id: '/map'
+      path: '/map'
+      fullPath: '/map'
+      preLoaderRoute: typeof MapRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/mas': {
-      id: '/mas'
-      path: '/mas'
-      fullPath: '/mas'
-      preLoaderRoute: typeof MasRouteImport
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/zonas': {
-      id: '/zonas'
-      path: '/zonas'
-      fullPath: '/zonas'
-      preLoaderRoute: typeof ZonasRouteImport
+    '/zones': {
+      id: '/zones'
+      path: '/zones'
+      fullPath: '/zones'
+      preLoaderRoute: typeof ZonesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/nodo/$id': {
-      id: '/nodo/$id'
-      path: '/nodo/$id'
-      fullPath: '/nodo/$id'
-      preLoaderRoute: typeof NodoIdRouteImport
+    '/node/$id': {
+      id: '/node/$id'
+      path: '/node/$id'
+      fullPath: '/node/$id'
+      preLoaderRoute: typeof NodeIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -138,11 +138,11 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  InformesRoute: InformesRoute,
-  MapaRoute: MapaRoute,
-  MasRoute: MasRoute,
-  ZonasRoute: ZonasRoute,
-  NodoIdRoute: NodoIdRoute,
+  AboutRoute: AboutRoute,
+  MapRoute: MapRoute,
+  ReportsRoute: ReportsRoute,
+  ZonesRoute: ZonesRoute,
+  NodeIdRoute: NodeIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
