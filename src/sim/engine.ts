@@ -112,11 +112,12 @@ function nearRoute(seg: TrafficSegment, route: [number, number][]) {
   return near;
 }
 
-/** Nivel de tráfico por tramo: 1 fluido · 2 denso · 3 congestionado (determinista). */
+/** Nivel de tráfico por tramo: 1 fluido · 2 denso · 3 congestionado (determinista).
+ *  Los tramos del recorrido (calles cortadas) no se devuelven. */
 export function trafficAt(s: Scenario, min: number): { id: string; level: TrafficLevel }[] {
   if (!s.traffic) return [];
   const closed = s.closure ? min >= toMin(s.closure.start) && min <= toMin(s.closure.end) : false;
-  return s.traffic.map((seg) => {
+  return s.traffic.filter((seg) => !(s.route && onRoute(seg, s.route))).map((seg) => {
     let load = seg.imv > 0 ? seg.imv / 3000 : 0.32;
     if (closed && s.route && nearRoute(seg, s.route)) load += 0.65;
     else if (closed) load += 0.12;
