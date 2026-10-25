@@ -1,3 +1,5 @@
+import { trackEvent } from "./tracking.functions";
+
 // Google Analytics 4 (public measurement ID — safe in browser code).
 export const GA_ID = "G-ZQHGE29VD1";
 
@@ -28,9 +30,7 @@ export function initAnalytics() {
 const device = () => (window.matchMedia("(max-width: 767px)").matches ? "mobile" : "desktop");
 
 function internal(data: { kind: string; path?: string; nodeId?: string; nodeName?: string }) {
-  void import("./tracking.functions")
-    .then((m) => m.trackEvent({ data: { ...data, device: device() } }))
-    .catch(() => {});
+  trackEvent({ data: { ...data, device: device() } }).catch(() => {});
 }
 
 export function trackPageView(path: string) {
