@@ -148,6 +148,34 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
                     checked={showTraffic || Boolean(layers.closures)}
                     onChange={(value) => { onLayerChange("traffic", value); onLayerChange("closures", value); }}
                   />
+                  {showTraffic && (
+                    <div className="mt-2 border-t border-border pt-2">
+                      <p className="text-xs font-semibold">Tráfico y cortes · {fmtClock(trafficTick)}</p>
+                      <div className="mt-1 flex items-center gap-3 text-[11px]">
+                        <span className="flex items-center gap-1"><span className="h-1.5 w-4 rounded-full bg-dens-low" />Fluido</span>
+                        <span className="flex items-center gap-1"><span className="h-1.5 w-4 rounded-full bg-dens-mid" />Denso</span>
+                        <span className="flex items-center gap-1"><span className="h-1.5 w-4 rounded-full bg-dens-crit" />Congestionado</span>
+                      </div>
+                      <p className="mt-1 text-[11px] text-muted-foreground">
+                        {jammed} tramos congestionados · calles cortadas {base.closure?.start}–{base.closure?.end}
+                      </p>
+                      <p className="mt-1 text-[11px] text-muted-foreground">
+                        <span className="h-2 w-2 mr-1 inline-block animate-pulse rounded-full bg-dens-crit" />
+                        Velocidad media {times.avgSpeed} km/h · retraso +{times.delay} min / 5 km
+                      </p>
+                      {times.waits.length > 0 && (
+                        <ul className="mt-1 space-y-0.5 text-[11px]">
+                          {times.waits.map((w) => (
+                            <li key={w.id} className={cn("flex justify-between gap-3", w.name === times.busiest && "font-semibold text-foreground")}>
+                              <span className="truncate">{w.name}</span>
+                              <span className="tabular-nums">{w.wait} min</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      <p className="mt-1 text-[10px] text-muted-foreground">Espera para cruzar el recorrido (simulado)</p>
+                    </div>
+                  )}
                   <label className="mt-2 flex items-center justify-between gap-2 border-t border-border pt-2 text-xs text-muted-foreground">
                     Gama de corredores
                     <select
