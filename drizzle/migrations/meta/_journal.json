@@ -15,6 +15,13 @@
       "when": 1792899808709,
       "tag": "0001_allow_click_events",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792900000000,
+      "tag": "0002_visitor_session",
+      "breakpoints": true
     }
   ]
 }
