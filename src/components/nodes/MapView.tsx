@@ -5,7 +5,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { createRoot } from "react-dom/client";
 import { ArrowUp } from "lucide-react";
 import type { LiveScenario as Scenario } from "@/scenarios/types";
-import { heatPoints, ringsGeo, trafficGeo } from "./geo";
+import { heatPoints, ringsGeo, runnerHeatPoints, trafficGeo } from "./geo";
 import type { TrafficLevel } from "@/sim/engine";
 import type { MapLayers } from "./MapStage";
 
@@ -28,8 +28,10 @@ export default function MapView({
   onSelect,
   onError,
   traffic,
+  minute,
 }: {
   traffic: { id: string; level: TrafficLevel }[];
+  minute: number;
   scenario: Scenario;
   layers: MapLayers;
   selectedId: string | null;
@@ -98,6 +100,22 @@ export default function MapView({
           },
         });
       }
+      map.addSource("runners", { type: "geojson", data: runnerHeatPoints(scenario, 0) });
+      map.addLayer({
+        id: "runners",
+        type: "heatmap",
+        source: "runners",
+        paint: {
+          "heatmap-weight": ["get", "w"],
+          "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 12, 0.9, 17, 2.2],
+          "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 12, 8, 17, 30],
+          "heatmap-opacity": 0.75,
+          "heatmap-color": [
+            "interpolate", ["linear"], ["heatmap-density"],
+            0, "rgba(47,158,122,0)", 0.3, "rgba(47,158,122,0.55)", 0.65, "#1d7a5f", 1, C.ink,
+          ],
+        },
+      });
       map.addSource("heat", { type: "geojson", data: heatPoints(scenario) });
       map.addLayer({
         id: "heat",
@@ -158,6 +176,12 @@ export default function MapView({
     if (ready && src) src.setData(heatPoints(scenario));
   }, [scenario, ready]);
 
+  // Actualiza el calor de corredores según la hora simulada
+  useEffect(() => {
+    const src = mapRef.current?.getSource("runners") as maplibregl.GeoJSONSource | undefined;
+    if (ready && src) src.setData(runnerHeatPoints(scenario, minute));
+  }, [scenario, minute, ready]);
+
   useEffect(() => {
     const src = mapRef.current?.getSource("traffic") as maplibregl.GeoJSONSource | undefined;
     if (ready && src) src.setData(trafficGeo(scenario, traffic));
@@ -169,6 +193,7 @@ export default function MapView({
     if (!map || !ready) return;
     const vis = (id: string, on: boolean) => map.getLayer(id) && map.setLayoutProperty(id, "visibility", on ? "visible" : "none");
     vis("heat", layers.heat);
+    vis("runners", layers.runners);
     vis("r20", layers.rings);
     vis("r40", layers.rings);
     vis("route", layers.route);

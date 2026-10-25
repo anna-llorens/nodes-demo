@@ -106,6 +106,7 @@ export function MapStage({ scenario: base, layers }: { scenario: RawScenario; la
                   scenario={scenario}
                   layers={mapLayers}
                   traffic={traffic}
+                  minute={tick}
                   selectedId={selectedId}
                   onSelect={(id) => setSelectedId(id)}
                   onError={() => setFallback(true)}
