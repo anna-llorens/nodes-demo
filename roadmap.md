@@ -1,6 +1,8 @@
 # Tasks
+- [ ] Share a map link restoring scenario, enabled layers and camera; verify reopening the link.
+- [ ] Rename the published address to nodes-demo.lovable.app.
 - [x] Merge traffic and closures into one combined Capas section and remove the on-screen traffic panel.
-- [ ] Visit analytics: answer/explain options (native Lovable analytics once published, or Google Analytics/PostHog connector) — waits on user choice and publish.
+- [x] Explain visit analytics options and add Google Analytics tracking.
 - [x] Remove the home node list while retaining the card's configured node count.
 - [x] Try green runner heat without changing simulation data.
 - [x] Keep one always-visible simulation indicator outside the sidebar and verify pages.
