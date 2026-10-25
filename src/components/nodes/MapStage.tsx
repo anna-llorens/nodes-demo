@@ -176,7 +176,7 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
 
           {/* Burbuja del nodo */}
           {selected && (
-            <div className="absolute left-1/2 top-16 w-[min(260px,calc(100%-2rem))] -translate-x-1/2 rounded-2xl bg-card p-3.5 shadow-float lg:left-auto lg:right-14 lg:translate-x-0 xl:hidden">
+            <div className="absolute left-1/2 top-16 w-[min(260px,calc(100%-2rem))] -translate-x-1/2 rounded-2xl bg-card p-3.5 shadow-float lg:left-auto lg:right-14 lg:translate-x-0 lg:hidden">
               <NodeBubble minute={minute} node={selected} onClose={() => setSelectedId(null)} />
             </div>
           )}
