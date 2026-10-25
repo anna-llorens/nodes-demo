@@ -71,7 +71,7 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
   const showTraffic = Boolean(layers.traffic);
   const jammed = traffic.filter((t) => t.level === 3).length;
   const times = useMemo(() => trafficTimesAt(base, trafficTick, traffic), [base, trafficTick, traffic]);
-  const [selectedId, setSelectedId] = useState<string | null>("meta");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [fallback, setFallback] = useState(false);
   const [tab, setTab] = useState<"mapa" | "indicadores">("mapa");
   const [layersOpen, setLayersOpen] = useState(false);
