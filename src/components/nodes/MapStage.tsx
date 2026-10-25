@@ -91,6 +91,62 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
   const total = scenario.nodes.reduce((s, n) => s + n.snapshot.people, 0);
   const runners = scenario.nodes.reduce((s, n) => s + n.snapshot.runners, 0);
 
+  // Panel de capas: se muestra fijo en la barra lateral (ordenador) y en un desplegable (móvil).
+  const layersPanel = (
+    <>
+      <h2 className="mb-2 font-display text-sm font-bold text-brand-ink">Capas</h2>
+      <LayerToggle label="Mapa de calor" checked={layers.heat} onChange={(value) => onLayerChange("heat", value)} />
+      <LayerToggle label="Corredores en recorrido" checked={layers.runners} onChange={(value) => onLayerChange("runners", value)} />
+      <LayerToggle label="Anillos de nodo" checked={layers.rings} onChange={(value) => onLayerChange("rings", value)} />
+      <LayerToggle label="Flechas de flujo" checked={layers.flow} onChange={(value) => onLayerChange("flow", value)} />
+      <LayerToggle label="Recorrido" checked={layers.route} onChange={(value) => onLayerChange("route", value)} />
+      <LayerToggle
+        label="Tráfico y cortes"
+        checked={showTraffic || Boolean(layers.closures)}
+        onChange={(value) => { onLayerChange("traffic", value); onLayerChange("closures", value); }}
+      />
+      {showTraffic && (
+        <div className="mt-2 border-t border-border pt-2">
+          <p className="text-xs font-semibold">Tráfico y cortes · {fmtClock(trafficTick)}</p>
+          <div className="mt-1 flex items-center gap-3 text-[11px]">
+            <span className="flex items-center gap-1"><span className="h-1.5 w-4 rounded-full bg-dens-low" />Fluido</span>
+            <span className="flex items-center gap-1"><span className="h-1.5 w-4 rounded-full bg-dens-mid" />Denso</span>
+            <span className="flex items-center gap-1"><span className="h-1.5 w-4 rounded-full bg-dens-crit" />Congestionado</span>
+          </div>
+          <p className="mt-1 text-[11px] text-muted-foreground">
+            {jammed} tramos congestionados · calles cortadas {base.closure?.start}–{base.closure?.end}
+          </p>
+          <p className="mt-1 text-[11px] text-muted-foreground">
+            <span className="h-2 w-2 mr-1 inline-block animate-pulse rounded-full bg-dens-crit" />
+            Velocidad media {times.avgSpeed} km/h · retraso +{times.delay} min / 5 km
+          </p>
+          {times.waits.length > 0 && (
+            <ul className="mt-1 space-y-0.5 text-[11px]">
+              {times.waits.map((w) => (
+                <li key={w.id} className={cn("flex justify-between gap-3", w.name === times.busiest && "font-semibold text-foreground")}>
+                  <span className="truncate">{w.name}</span>
+                  <span className="tabular-nums">{w.wait} min</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="mt-1 text-[10px] text-muted-foreground">Espera para cruzar el recorrido (simulado)</p>
+        </div>
+      )}
+      <label className="mt-2 flex items-center justify-between gap-2 border-t border-border pt-2 text-xs text-muted-foreground">
+        Gama de corredores
+        <select
+          aria-label="Gama de color de corredores"
+          value={palette}
+          onChange={(e) => setPalette(e.target.value as RunnerPalette)}
+          className="max-w-[9.5rem] rounded-lg border border-input bg-card px-2 py-1 text-xs text-foreground"
+        >
+          {PALETTES.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
+        </select>
+      </label>
+    </>
+  );
+
   return (
     <div className="flex h-full min-h-0 flex-col">
       {/* Cabecera */}
