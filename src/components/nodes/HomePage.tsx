@@ -62,7 +62,7 @@ function EventCard({ to, img, icon, title, subtitle, nodes }: { to?: "/map"; img
   return <div>
     {to ? <Link to={to}>{body}</Link> : <div className="cursor-not-allowed opacity-90">{body}</div>}
     {nodes && <ul aria-label="Nodos del Medio Maratón" className="mt-3 divide-y divide-border">
-      {nodes.map((node) => <li key={node.id}><Link to="/node/$id" params={{ id: node.id }} className="flex items-center justify-between gap-3 py-2 text-sm hover:text-primary"><span><span className="mr-2 text-xs font-semibold text-muted-foreground">{node.short}</span>{node.name}</span><ArrowRight className="h-4 w-4 shrink-0" /></Link></li>)}
+      {nodes.map((node) => <li key={node.id}><Link to="/node/$id" params={{ id: node.id }} search={{ t: undefined }} className="flex items-center justify-between gap-3 py-2 text-sm hover:text-primary"><span><span className="mr-2 text-xs font-semibold text-muted-foreground">{node.short}</span>{node.name}</span><ArrowRight className="h-4 w-4 shrink-0" /></Link></li>)}
     </ul>}
   </div>;
 }
