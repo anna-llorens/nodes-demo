@@ -2,7 +2,7 @@ import { ClientOnly, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Play, Pause, Users, X, ChevronDown, Info, Clock, ChevronRight, Layers } from "lucide-react";
 import type { LiveScenario as Scenario, Scenario as RawScenario } from "@/scenarios/types";
-import { simulate, toMin, fmtClock, trafficAt } from "@/sim/engine";
+import { simulate, toMin, fmtClock, trafficAt, trafficTimesAt } from "@/sim/engine";
 import { densityLabel, densityLevel } from "@/scenarios/types";
 import { SchematicMap } from "./SchematicMap";
 import { cn } from "@/lib/utils";
@@ -69,6 +69,7 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
   const traffic = useMemo(() => trafficAt(base, trafficTick), [base, trafficTick]);
   const showTraffic = Boolean(layers.traffic);
   const jammed = traffic.filter((t) => t.level === 3).length;
+  const times = useMemo(() => trafficTimesAt(base, trafficTick, traffic), [base, trafficTick, traffic]);
   const [selectedId, setSelectedId] = useState<string | null>("meta");
   const [fallback, setFallback] = useState(false);
   const [tab, setTab] = useState<"mapa" | "indicadores">("mapa");
@@ -164,6 +165,24 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
                   <span className="flex items-center gap-1"><span className="h-1.5 w-4 rounded-full bg-dens-crit" />Congestionado</span>
                 </div>
                 <p className="mt-1 text-muted-foreground">{jammed} tramos congestionados · calles cortadas {base.closure?.start}–{base.closure?.end}</p>
+                <div className="mt-2 border-t border-border pt-2">
+                  <p className="flex items-center gap-1.5 font-semibold text-brand-ink">
+                    <span className="h-2 w-2 animate-pulse rounded-full bg-dens-crit" />
+                    Tiempo real · {fmtClock(trafficTick)}
+                  </p>
+                  <p className="mt-0.5 text-muted-foreground">Velocidad media {times.avgSpeed} km/h · retraso +{times.delay} min / 5 km</p>
+                  {times.waits.length > 0 && (
+                    <ul className="mt-1 space-y-0.5">
+                      {times.waits.map((w) => (
+                        <li key={w.id} className={cn("flex justify-between gap-3", w.name === times.busiest && "font-semibold text-foreground")}>
+                          <span className="truncate">{w.name}</span>
+                          <span className="tabular-nums">{w.wait} min</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <p className="mt-1 text-[10px] text-muted-foreground">Espera para cruzar el recorrido (simulado)</p>
+                </div>
               </div>
             )}
             <div className="hidden rounded-2xl bg-card/95 px-4 py-3 shadow-float backdrop-blur lg:block">

@@ -166,3 +166,22 @@ export function trafficAt(s: Scenario, min: number): { id: string; level: Traffi
     return { id: seg.id, level };
   });
 }
+
+export interface CrossingWait { id: string; name: string; wait: number }
+export interface TrafficTimes { waits: CrossingWait[]; maxWait: number; busiest: string | null; avgSpeed: number; delay: number }
+
+/** Tiempos de tráfico simulados: espera en cruces peatonales y velocidad/retraso medio del tráfico rodado. */
+export function trafficTimesAt(s: Scenario, min: number, traffic = trafficAt(s, min)): TrafficTimes {
+  const closed = s.closure ? min >= toMin(s.closure.start) && min <= toMin(s.closure.end) : false;
+  const waits = s.nodes.filter((n) => n.kind === "cruce").map((n, i) => {
+    const baseWait: number = [14, 11, 18, 9][i % 4] ?? 12;
+    const wave = Math.sin((min + (i + 1) * 33) / 22) * 6;
+    const wait = Math.max(2, Math.round(baseWait * (closed ? 1.35 : 0.5) + wave + 2 * noise(n.id, min / 5)));
+    return { id: n.id, name: n.name, wait };
+  });
+  const max = waits.reduce<CrossingWait | null>((a, b) => (!a || b.wait > a.wait ? b : a), null);
+  const speedOf = { 1: 38, 2: 22, 3: 9 } as const;
+  const avgSpeed = traffic.length ? Math.round(traffic.reduce((t, x) => t + speedOf[x.level], 0) / traffic.length) : 0;
+  const delay = avgSpeed ? Math.max(0, Math.round((5 / avgSpeed - 5 / 38) * 60)) : 0; // min extra en 5 km
+  return { waits, maxWait: max?.wait ?? 0, busiest: max?.name ?? null, avgSpeed, delay };
+}
