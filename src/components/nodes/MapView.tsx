@@ -190,6 +190,22 @@ export default function MapView({
         );
         new maplibregl.Marker({ element: arrow, offset: [26, -26] }).setLngLat(n.lngLat).addTo(map);
       }
+      for (const c of scenario.roadClosures ?? []) {
+        const el = document.createElement("div");
+        el.className = "road-closure flex flex-col items-center";
+        el.title = c.name;
+        createRoot(el).render(
+          <>
+            {c.underpass && (
+              <span className="mb-1 rounded-full border-2 border-dens-crit bg-card px-2 py-0.5 text-center text-[10px] font-bold leading-tight text-foreground shadow-card">
+                Paso inferior<br />cerrado
+              </span>
+            )}
+            <span className="h-4 w-4 rounded-full border-[3px] border-dens-crit bg-muted shadow-card" />
+          </>,
+        );
+        new maplibregl.Marker({ element: el, anchor: "bottom", offset: [0, 8] }).setLngLat(c.lngLat).addTo(map);
+      }
       map.on("click", () => onSelectRef.current(null));
       setReady(true);
     });
@@ -239,6 +255,7 @@ export default function MapView({
     vis("route", layers.route);
     vis("traffic", !!layers.traffic);
     map.getContainer().querySelectorAll<HTMLElement>(".flow-arrow").forEach((el: HTMLElement) => (el.style.display = layers.flow ? "" : "none"));
+    map.getContainer().querySelectorAll<HTMLElement>(".road-closure").forEach((el: HTMLElement) => (el.style.display = layers.closures ? "" : "none"));
   }, [layers, ready]);
 
   // Centrar el nodo seleccionado

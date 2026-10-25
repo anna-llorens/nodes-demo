@@ -51,6 +51,8 @@ export interface Scenario {
   participants?: number;
   /** Ventana con calles cortadas por la carrera */
   closure?: { start: string; end: string };
+  /** Posibles cortes de tráfico (referencia: plano oficial del Ayuntamiento; posiciones aproximadas). */
+  roadClosures?: { id: string; name: string; lngLat: [number, number]; underpass?: boolean }[];
   traffic?: TrafficSegment[];
   nodes: ScenarioNode[];
 }
