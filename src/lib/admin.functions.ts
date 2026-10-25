@@ -9,7 +9,8 @@ function sessionConfig() {
     password: process.env["SESSION_SECRET"]!,
     name: "nodes-admin",
     maxAge: 60 * 60 * 8,
-    cookie: { httpOnly: true, secure: true, sameSite: "lax" as const, path: "/" },
+    // sameSite "none" so the login also works inside the embedded editor preview.
+    cookie: { httpOnly: true, secure: true, sameSite: "none" as const, partitioned: true, path: "/" },
   };
 }
 
