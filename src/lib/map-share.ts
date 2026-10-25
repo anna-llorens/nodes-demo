@@ -14,7 +14,7 @@ export interface MapCamera { lng: number; lat: number; zoom: number; bearing: nu
 const layerKeys = ['heat', 'runners', 'rings', 'flow', 'route', 'traffic', 'closures'] as const;
 const palettes: RunnerPalette[] = ['termica', 'verde', 'azul', 'terracota', 'grafito'];
 export const defaultLayers: MapLayers = { heat: true, runners: true, rings: true, flow: false, route: true, traffic: false, closures: false };
-export interface MapSearch { scenario?: string; layers?: string; camera?: string; palette?: string; time?: number }
+export interface MapSearch { scenario?: string | undefined; layers?: string | undefined; camera?: string | undefined; palette?: string | undefined; time?: number | undefined }
 export function validateMapSearch(raw: Record<string, unknown>): MapSearch {
   return {
     scenario: typeof raw['scenario'] === 'string' ? raw['scenario'] : undefined,

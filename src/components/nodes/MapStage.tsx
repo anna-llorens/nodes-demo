@@ -184,7 +184,7 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
                   traffic={traffic}
                   minute={tick}
                   palette={palette}
-                  initialCamera={initialCamera}
+                  {...(initialCamera ? { initialCamera } : {})}
                   onCameraChange={setCamera}
                   selectedId={selectedId}
                   onSelect={(id) => setSelectedId(id)}
