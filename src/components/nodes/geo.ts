@@ -48,3 +48,15 @@ export function ringsGeo(s: Scenario, radius: number) {
     })),
   } as GeoJSON.FeatureCollection;
 }
+
+export function trafficGeo(s: Scenario, levels: { id: string; level: number }[]) {
+  const byId = new Map(levels.map((l) => [l.id, l.level]));
+  return {
+    type: "FeatureCollection",
+    features: (s.traffic ?? []).map((seg) => ({
+      type: "Feature",
+      properties: { id: seg.id, name: seg.name, level: byId.get(seg.id) ?? 1 },
+      geometry: { type: "LineString", coordinates: seg.coords },
+    })),
+  } as GeoJSON.FeatureCollection;
+}

@@ -5,7 +5,8 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { createRoot } from "react-dom/client";
 import { ArrowUp } from "lucide-react";
 import type { LiveScenario as Scenario } from "@/scenarios/types";
-import { heatPoints, ringsGeo } from "./geo";
+import { heatPoints, ringsGeo, trafficGeo } from "./geo";
+import type { TrafficLevel } from "@/sim/engine";
 import type { MapLayers } from "./MapStage";
 
 // maplibre necesita colores literales en su paint (no lee variables CSS)
@@ -26,7 +27,9 @@ export default function MapView({
   selectedId,
   onSelect,
   onError,
+  traffic,
 }: {
+  traffic: { id: string; level: TrafficLevel }[];
   scenario: Scenario;
   layers: MapLayers;
   selectedId: string | null;
@@ -38,6 +41,8 @@ export default function MapView({
   const [ready, setReady] = useState(false);
   const onSelectRef = useRef(onSelect);
   onSelectRef.current = onSelect;
+  const trafficRef = useRef(traffic);
+  trafficRef.current = traffic;
 
   useEffect(() => {
     if (!ref.current) return;
@@ -77,6 +82,20 @@ export default function MapView({
           type: "line",
           source: "route",
           paint: { "line-color": C.ink, "line-width": 3, "line-dasharray": [2, 1.6], "line-opacity": 0.75 },
+        });
+      }
+      if (scenario.traffic) {
+        map.addSource("traffic", { type: "geojson", data: trafficGeo(scenario, trafficRef.current) });
+        map.addLayer({
+          id: "traffic",
+          type: "line",
+          source: "traffic",
+          layout: { "line-cap": "round", visibility: "none" },
+          paint: {
+            "line-width": ["interpolate", ["linear"], ["zoom"], 12, 2, 16, 5],
+            "line-opacity": 0.85,
+            "line-color": ["match", ["get", "level"], 3, C.crit, 2, C.mid, "#2bb673"],
+          },
         });
       }
       map.addSource("heat", { type: "geojson", data: heatPoints(scenario) });
@@ -139,6 +158,11 @@ export default function MapView({
     if (ready && src) src.setData(heatPoints(scenario));
   }, [scenario, ready]);
 
+  useEffect(() => {
+    const src = mapRef.current?.getSource("traffic") as maplibregl.GeoJSONSource | undefined;
+    if (ready && src) src.setData(trafficGeo(scenario, traffic));
+  }, [traffic, ready]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Capas visibles
   useEffect(() => {
     const map = mapRef.current;
@@ -148,6 +172,7 @@ export default function MapView({
     vis("r20", layers.rings);
     vis("r40", layers.rings);
     vis("route", layers.route);
+    vis("traffic", !!layers.traffic);
     map.getContainer().querySelectorAll<HTMLElement>(".flow-arrow").forEach((el: HTMLElement) => (el.style.display = layers.flow ? "" : "none"));
   }, [layers, ready]);
 

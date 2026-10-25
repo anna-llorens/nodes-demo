@@ -1,4 +1,4 @@
-import type { Scenario, ScenarioNode } from "@/scenarios/types";
+import type { Scenario, ScenarioNode, TrafficSegment } from "@/scenarios/types";
 
 /** Densidad máxima permitida en cualquier momento (pers/m²). */
 export const MAX_DENSITY = 7;
@@ -6,6 +6,8 @@ export const MAX_DENSITY = 7;
 export interface NodeState {
   id: string;
   people: number;
+  runners: number;
+  spectators: number;
   roadway?: number | undefined;
   sidewalk?: number | undefined;
   density: number;
@@ -19,10 +21,13 @@ export const toMin = (hhmm: string) => {
   const [h = 0, m = 0] = hhmm.split(":").map(Number);
   return h * 60 + m;
 };
-export const fmtClock = (min: number) => {
-  const h = Math.floor(min / 60);
-  const m = Math.floor(min % 60);
-  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+export const fmtClock = (min: number, seconds = false) => {
+  const total = Math.floor(min * 60 + 1e-6);
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const sec = total % 60;
+  const hm = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+  return seconds ? `${hm}:${String(sec).padStart(2, "0")}` : hm;
 };
 
 // Ruido determinista: hash entero -> [-1, 1]
@@ -41,7 +46,11 @@ function noise(id: string, min: number) {
 }
 
 function curve(node: ScenarioNode, min: number) {
-  const k = node.curve as [string, number][] & { 0: [string, number] };
+  return interp(node.curve, min);
+}
+
+function interp(pts: [string, number][], min: number) {
+  const k = pts as [string, number][] & { 0: [string, number] };
   if (min <= toMin(k[0][0])) return k[0][1];
   for (let i = 1; i < k.length; i++) {
     const a = toMin(k[i - 1]![0]);
@@ -67,9 +76,13 @@ export function nodeState(node: ScenarioNode, min: number): NodeState {
   const delta = people - peopleAt(node, min - 1);
   const base = people * node.turnover;
   const prev10 = peopleAt(node, min - 10);
+  const share = node.runnerShare ? Math.min(1, Math.max(0, interp(node.runnerShare, min))) : 0;
+  const runners = Math.round(people * share);
   return {
     id: node.id,
     people,
+    runners,
+    spectators: people - runners,
     roadway: node.roadwayShare !== undefined ? Math.round(people * node.roadwayShare) : undefined,
     sidewalk: node.roadwayShare !== undefined ? people - Math.round(people * node.roadwayShare) : undefined,
     density: Math.round(density * 10) / 10,
@@ -82,4 +95,33 @@ export function nodeState(node: ScenarioNode, min: number): NodeState {
 
 export function simulate(s: Scenario, min: number): NodeState[] {
   return s.nodes.map((n) => nodeState(n, min));
+}
+
+export type TrafficLevel = 1 | 2 | 3;
+
+const nearCache = new WeakMap<TrafficSegment, boolean>();
+/** ¿El tramo está a menos de ~150 m del recorrido? */
+function nearRoute(seg: TrafficSegment, route: [number, number][]) {
+  const c = nearCache.get(seg);
+  if (c !== undefined) return c;
+  const lim = 150 / 111320;
+  const near = seg.coords.some(([x, y]) =>
+    route.some(([rx, ry]) => Math.abs(rx - x) * 0.77 < lim && Math.abs(ry - y) < lim),
+  );
+  nearCache.set(seg, near);
+  return near;
+}
+
+/** Nivel de tráfico por tramo: 1 fluido · 2 denso · 3 congestionado (determinista). */
+export function trafficAt(s: Scenario, min: number): { id: string; level: TrafficLevel }[] {
+  if (!s.traffic) return [];
+  const closed = s.closure ? min >= toMin(s.closure.start) && min <= toMin(s.closure.end) : false;
+  return s.traffic.map((seg) => {
+    let load = seg.imv > 0 ? seg.imv / 3000 : 0.32;
+    if (closed && s.route && nearRoute(seg, s.route)) load += 0.65;
+    else if (closed) load += 0.12;
+    load += 0.06 * noise(seg.id, min / 6);
+    const level: TrafficLevel = load >= 0.9 ? 3 : load >= 0.58 ? 2 : 1;
+    return { id: seg.id, level };
+  });
 }
