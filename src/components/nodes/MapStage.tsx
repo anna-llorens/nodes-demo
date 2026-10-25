@@ -1,5 +1,5 @@
 import { ClientOnly, Link } from "@tanstack/react-router";
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Play, Pause, Users, X, ChevronDown, Info, Clock, ChevronRight, Layers } from "lucide-react";
 import type { LiveScenario as Scenario, Scenario as RawScenario } from "@/scenarios/types";
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { LayerToggle } from "./AppShell";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { trackNodeClick } from "@/lib/analytics";
-import { buildMapShareUrl, type MapCamera, type MapLayers, type RunnerPalette } from "@/lib/map-share";
+import { buildMapShareUrl, writeMapCache, DEFAULT_MARATHON_MINUTE, DEFAULT_SPEED, type MapCamera, type MapLayers, type RunnerPalette } from "@/lib/map-share";
 import { ShareMapDialog } from "./ShareMapDialog";
 export type { MapLayers, RunnerPalette } from "@/lib/map-share";
 
@@ -34,12 +34,12 @@ export const levelDot: Record<string, string> = {
 
 const fmt = (n: number) => n.toLocaleString("es-ES");
 
-export function MapStage({ scenario: base, layers, onLayerChange, initialCamera, initialPalette = "termica", initialMinute }: { scenario: RawScenario; layers: MapLayers; onLayerChange: (key: keyof MapLayers, value: boolean) => void; initialCamera?: MapCamera; initialPalette?: RunnerPalette; initialMinute?: number }) {
+export function MapStage({ scenario: base, layers, onLayerChange, initialCamera, initialPalette = "termica", initialMinute, initialSpeed = DEFAULT_SPEED }: { scenario: RawScenario; layers: MapLayers; onLayerChange: (key: keyof MapLayers, value: boolean) => void; initialCamera?: MapCamera; initialPalette?: RunnerPalette; initialMinute?: number; initialSpeed?: number }) {
   const start = toMin(base.schedule.start);
   const end = toMin(base.schedule.end);
-  const [minute, setMinute] = useState(initialMinute ?? (base.id === "maraton" ? toMin("10:15") : start));
+  const [minute, setMinute] = useState(initialMinute ?? (base.id === "maraton" ? DEFAULT_MARATHON_MINUTE : start));
   const [playing, setPlaying] = useState(false);
-  const [speed, setSpeed] = useState(10);
+  const [speed, setSpeed] = useState(initialSpeed);
   useEffect(() => {
     if (!playing) return;
     const id = setInterval(() => {
@@ -76,6 +76,12 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
   const [layersOpen, setLayersOpen] = useState(false);
   const [palette, setPalette] = useState<RunnerPalette>(initialPalette);
   const [camera, setCamera] = useState<MapCamera>(initialCamera ?? { lng: base.center[0], lat: base.center[1], zoom: base.zoom, bearing: 0, pitch: 0 });
+  // Persist simulation view so returning to the map resumes where the user left it.
+  const savedTick = Math.floor(minute * 6) / 6;
+  useEffect(() => { writeMapCache({ time: savedTick, speed, palette, camera }); }, [savedTick, speed, palette, camera]);
+  const minuteRef = useRef(minute);
+  minuteRef.current = minute;
+  useEffect(() => () => writeMapCache({ time: minuteRef.current }), []);
   const [layersSlot, setLayersSlot] = useState<HTMLElement | null>(null);
   useEffect(() => {
     setLayersSlot(document.getElementById("map-layers-slot"));

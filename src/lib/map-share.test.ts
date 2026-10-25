@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { maraton } from '@/scenarios/maraton';
-import { buildMapShareUrl, restoreMapState, validateMapSearch, defaultLayers } from './map-share';
+import { buildMapShareUrl, restoreMapState, validateMapSearch, defaultLayers, restoreFromCache, DEFAULT_SPEED } from './map-share';
 
 describe('shared map state', () => {
   it('preserves scenario, every layer, camera, palette and event time in a reopened link', () => {
@@ -27,5 +27,24 @@ describe('shared map state', () => {
     const [h, m] = maraton.schedule.end.split(':').map(Number);
     expect(restored.time).toBe((h ?? 0) * 60 + (m ?? 0));
     expect(restored.palette).toBe('termica');
+  });
+});
+
+describe('default and cached map view', () => {
+  it('opens a fresh browser at 08:43 on the agreed camera without traffic', () => {
+    const r = restoreMapState(validateMapSearch({}), maraton);
+    expect(r.time).toBe(523);
+    expect(r.camera.zoom).toBeCloseTo(14.3534, 3);
+    expect(r.camera.lng).toBeCloseTo(-0.37264, 4);
+    expect(r.layers.traffic).toBe(false);
+    expect(DEFAULT_SPEED).toBe(100);
+  });
+  it('restores cached minute, layers, palette and speed', () => {
+    const layers = { heat: false, runners: true, rings: true, flow: false, route: true, traffic: true, closures: true };
+    const r = restoreFromCache({ time: 600, layers, palette: 'azul', speed: 200 }, maraton);
+    expect(r.time).toBe(600);
+    expect(r.layers).toEqual(layers);
+    expect(r.palette).toBe('azul');
+    expect(r.speed).toBe(200);
   });
 });
