@@ -1,0 +1,165 @@
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { ArrowLeft, Users, MapPin } from "lucide-react";
+import { AppShell } from "@/components/nodes/AppShell";
+import { SimBadge } from "@/components/nodes/Logo";
+import { levelDot } from "@/components/nodes/MapStage";
+import { maraton } from "@/scenarios/maraton";
+import { densityLabel, densityLevel, type DensityLevel } from "@/scenarios/types";
+import { nodeState, toMin, fmtClock } from "@/sim/engine";
+import { cn } from "@/lib/utils";
+
+const fmt = (n: number) => n.toLocaleString("es-ES");
+
+export const Route = createFileRoute("/nodo/$id")({
+  validateSearch: (s: Record<string, unknown>) => ({ t: typeof s.t === "number" ? s.t : undefined }),
+  loader: ({ params }) => {
+    const node = maraton.nodes.find((n) => n.id === params.id);
+    if (!node) throw notFound();
+    return { name: node.name };
+  },
+  head: ({ loaderData }) => ({
+    meta: [
+      { title: `${loaderData?.name ?? "Nodo"} · Medio Maratón — NODES` },
+      { name: "description", content: `Afluencia y densidad simuladas en ${loaderData?.name ?? "el nodo"} durante el Medio Maratón de València.` },
+      { property: "og:title", content: `${loaderData?.name ?? "Nodo"} · NODES` },
+      { property: "og:description", content: "Evolución de la afluencia y distribución de la densidad por nodo." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  notFoundComponent: () => <div className="p-8">Nodo no encontrado. <Link to="/mapa" className="text-primary underline">Volver al mapa</Link></div>,
+  component: NodePage,
+});
+
+const LEVELS: DensityLevel[] = ["baja", "media", "alta", "muy-alta"];
+
+function NodePage() {
+  const { id } = Route.useParams();
+  const { t } = Route.useSearch();
+  const node = maraton.nodes.find((n) => n.id === id)!;
+  const start = toMin(maraton.schedule.start);
+  const end = toMin(maraton.schedule.end);
+  const [minute, setMinute] = useState(Math.round(t ?? toMin("10:15")));
+  const st = nodeState(node, minute);
+  const lvl = densityLevel(st.density);
+
+  const series = useMemo(() => {
+    const out: { m: number; people: number; runners: number; density: number }[] = [];
+    for (let m = start; m <= end; m += 5) {
+      const s = nodeState(node, m);
+      out.push({ m, people: s.people, runners: s.runners, density: s.density });
+    }
+    return out;
+  }, [node, start, end]);
+  const dist = useMemo(() => {
+    const c: Record<DensityLevel, number> = { baja: 0, media: 0, alta: 0, "muy-alta": 0 };
+    series.forEach((p) => c[densityLevel(p.density)]++);
+    return LEVELS.map((l) => ({ l, min: c[l] * 5, pct: c[l] / series.length }));
+  }, [series]);
+  const peak = series.reduce((a, b) => (b.people > a.people ? b : a), series[0]!);
+
+  return (
+    <AppShell>
+      <div className="h-full overflow-y-auto">
+        <div className="relative">
+          {node.image && (
+            <img src={node.image} alt={node.name} width={1024} height={640} className="h-48 w-full object-cover sm:h-64 lg:h-72" />
+          )}
+          <div className="absolute inset-x-0 top-0 flex items-center justify-between p-3 sm:p-4">
+            <Link to="/mapa" className="flex items-center gap-1.5 rounded-full bg-card/95 px-3 py-2 text-sm font-semibold shadow-float backdrop-blur hover:bg-card">
+              <ArrowLeft className="h-4 w-4" /> Volver al mapa
+            </Link>
+            <SimBadge />
+          </div>
+        </div>
+
+        <div className="mx-auto max-w-5xl space-y-5 p-4 sm:p-6">
+          <div>
+            <p className="text-xs font-semibold text-muted-foreground">{node.short} · {node.kind === "cruce" ? "Punto de cruce" : "Zona de control"}</p>
+            <h1 className="font-display text-2xl font-bold text-brand-ink sm:text-3xl">{node.name}</h1>
+            {node.address && <p className="mt-1 flex items-start gap-1.5 text-sm text-muted-foreground"><MapPin className="mt-0.5 h-4 w-4 shrink-0" />{node.address}</p>}
+            {node.description && node.description !== node.address && <p className="mt-1 text-sm text-muted-foreground">{node.description}</p>}
+          </div>
+
+          <div className="flex items-center gap-3 rounded-2xl bg-card px-4 py-3 shadow-card">
+            <span className="font-display text-lg font-bold tabular-nums">{fmtClock(minute)}</span>
+            <input type="range" aria-label="Hora" min={start} max={end} step={1} value={minute} onChange={(e) => setMinute(Number(e.target.value))} className="h-1.5 flex-1 accent-primary" />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <Kpi icon={<Users className="h-4 w-4" />} label="Personas" value={fmt(st.people)} sub={`${fmt(st.runners)} corredores · ${fmt(st.spectators)} público`} />
+            <Kpi label="Densidad" value={`${st.density.toLocaleString("es-ES")} pers/m²`} sub={<span className="flex items-center gap-1.5"><span className={cn("h-2.5 w-2.5 rounded-full", levelDot[lvl])} />{densityLabel[lvl]}</span>} />
+            <Kpi label="Entrada / salida" value={`${st.flowIn} / ${st.flowOut}`} sub="pers/min" />
+            <Kpi label="Velocidad media" value={`${st.speed.toLocaleString("es-ES")} m/s`} sub={`Variación 10 min: ${st.variation10 >= 0 ? "+" : ""}${Math.round(st.variation10 * 100)} %`} />
+          </div>
+
+          <div className="grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+            <section className="rounded-2xl bg-card p-4 shadow-card">
+              <h2 className="font-display font-bold text-brand-ink">Evolución de la afluencia</h2>
+              <p className="text-xs text-muted-foreground">Pico: {fmt(peak.people)} personas a las {fmtClock(peak.m)}</p>
+              <FlowChart series={series} minute={minute} start={start} end={end} />
+              <div className="mt-2 flex gap-4 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1.5"><span className="h-2 w-4 rounded-full bg-primary" />Total</span>
+                <span className="flex items-center gap-1.5"><span className="h-2 w-4 rounded-full bg-dens-mid" />Corredores</span>
+              </div>
+            </section>
+            <section className="rounded-2xl bg-card p-4 shadow-card">
+              <h2 className="font-display font-bold text-brand-ink">Distribución de la densidad</h2>
+              <p className="text-xs text-muted-foreground">Tiempo en cada nivel ({maraton.schedule.start}–{maraton.schedule.end})</p>
+              <ul className="mt-4 space-y-3">
+                {dist.map((d) => (
+                  <li key={d.l}>
+                    <div className="flex justify-between text-sm"><span>{densityLabel[d.l]}</span><span className="font-semibold tabular-nums">{d.min} min</span></div>
+                    <div className="mt-1 h-2.5 rounded-full bg-muted"><div className={cn("h-full rounded-full", levelDot[d.l])} style={{ width: `${d.pct * 100}%` }} /></div>
+                  </li>
+                ))}
+              </ul>
+              {st.roadway !== undefined && (
+                <div className="mt-5">
+                  <p className="text-sm font-semibold">Ahora: calzada / aceras</p>
+                  <div className="mt-1 flex h-2.5 overflow-hidden rounded-full bg-muted">
+                    <div className="bg-primary" style={{ width: `${(st.roadway / Math.max(1, st.people)) * 100}%` }} />
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">{fmt(st.roadway)} en calzada · {fmt(st.sidewalk ?? 0)} en aceras (estimado)</p>
+                </div>
+              )}
+            </section>
+          </div>
+        </div>
+      </div>
+    </AppShell>
+  );
+}
+
+function Kpi({ label, value, sub, icon }: { label: string; value: string; sub?: React.ReactNode; icon?: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl bg-card p-3 shadow-card">
+      <p className="flex items-center gap-1.5 text-xs text-muted-foreground">{icon}{label}</p>
+      <p className="mt-1 font-display text-lg font-bold tabular-nums">{value}</p>
+      {sub && <div className="text-[11px] text-muted-foreground">{sub}</div>}
+    </div>
+  );
+}
+
+function FlowChart({ series, minute, start, end }: { series: { m: number; people: number; runners: number }[]; minute: number; start: number; end: number }) {
+  const W = 600, H = 200;
+  const max = Math.max(1, ...series.map((p) => p.people)) * 1.1;
+  const x = (m: number) => ((m - start) / (end - start)) * W;
+  const y = (v: number) => H - (v / max) * H;
+  const line = (k: "people" | "runners") => series.map((p, i) => `${i ? "L" : "M"}${x(p.m).toFixed(1)},${y(p[k]).toFixed(1)}`).join(" ");
+  const area = `${line("people")} L${W},${H} L0,${H} Z`;
+  const ticks = [];
+  for (let m = Math.ceil(start / 30) * 30; m <= end; m += 30) ticks.push(m);
+  return (
+    <svg viewBox={`0 0 ${W} ${H + 20}`} className="mt-3 w-full" role="img" aria-label="Evolución de la afluencia">
+      <path d={area} className="fill-primary/15" />
+      <path d={line("people")} className="fill-none stroke-primary" strokeWidth={2.5} />
+      <path d={line("runners")} className="fill-none stroke-dens-mid" strokeWidth={2} strokeDasharray="5 4" />
+      <line x1={x(minute)} x2={x(minute)} y1={0} y2={H} className="stroke-foreground" strokeWidth={1} strokeDasharray="3 3" />
+      {ticks.map((m) => (
+        <text key={m} x={x(m)} y={H + 15} textAnchor="middle" className="fill-muted-foreground text-[11px]">{fmtClock(m)}</text>
+      ))}
+    </svg>
+  );
+}
