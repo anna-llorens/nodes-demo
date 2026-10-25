@@ -117,7 +117,7 @@ const onCache = new WeakMap<TrafficSegment, boolean>();
 function onRoute(seg: TrafficSegment, route: [number, number][]) {
   const c = onCache.get(seg);
   if (c !== undefined) return c;
-  const lim = 30 / 111320;
+  const lim = 40 / 111320;
   const hits = seg.coords.filter(([x, y]) =>
     route.some(([rx, ry]) => Math.abs(rx - x) * 0.77 < lim && Math.abs(ry - y) < lim),
   ).length;

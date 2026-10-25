@@ -19,6 +19,12 @@ export interface ScenarioNode {
   runnerShare?: [string, number][];
   /** Descripción breve de la zona */
   description?: string;
+  /** Tipo de nodo: zona de control o punto de cruce peatonal */
+  kind?: "zona" | "cruce";
+  /** Ubicación legible */
+  address?: string;
+  /** Foto del sitio (asset importado) */
+  image?: string;
 }
 
 export interface LiveNode extends ScenarioNode {
