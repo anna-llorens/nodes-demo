@@ -13,3 +13,4 @@
 - Report aggregation in src/sim/reports.ts samples the engine once per minute; interval durations exclude the endpoint so totals do not overcount.
 - Runner movement samples and density-linked weights come from simulateRunnerHeat in the simulation engine; geo.ts only projects these samples onto the route.
 - English content routes are canonical; Spanish legacy URLs redirect to them to preserve existing links, and / and /home share a browser-safe HomePage component.
+- Finish-density alerts compare the current engine snapshot through src/sim/alerts.ts; the adjustable threshold is view-local simulation state, not a validated safety limit.
