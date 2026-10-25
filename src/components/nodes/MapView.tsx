@@ -21,6 +21,34 @@ const C = {
 
 maplibregl.setWorkerUrl(workerUrl);
 
+type ColorFn = (token: string, alpha?: number) => string;
+function runnerRamp(c: ColorFn, palette: RunnerPalette) {
+  const t = (s: string) => `--runner-${palette}-${s}`;
+  return [
+    "interpolate", ["linear"], ["heatmap-density"],
+    0, c(t("low"), 0),
+    0.08, c(t("low"), 0.45),
+    0.3, c(t("mid")),
+    0.6, c(t("high")),
+    0.9, c(t("peak")),
+    1, c(t("peak")),
+  ];
+}
+function makeColorFn(): ColorFn | null {
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = 1;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  const theme = getComputedStyle(document.documentElement);
+  return (token, alpha = 1) => {
+    ctx.clearRect(0, 0, 1, 1);
+    ctx.fillStyle = theme.getPropertyValue(token).trim();
+    ctx.fillRect(0, 0, 1, 1);
+    const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+    return `rgba(${r},${g},${b},${alpha})`;
+  };
+}
+
 export default function MapView({
   scenario,
   layers,
@@ -29,6 +57,7 @@ export default function MapView({
   onError,
   traffic,
   minute,
+  palette = "termica",
 }: {
   traffic: { id: string; level: TrafficLevel }[];
   minute: number;
@@ -37,6 +66,7 @@ export default function MapView({
   selectedId: string | null;
   onSelect: (id: string | null, point?: { x: number; y: number }) => void;
   onError: () => void;
+  palette?: RunnerPalette;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -45,6 +75,8 @@ export default function MapView({
   onSelectRef.current = onSelect;
   const trafficRef = useRef(traffic);
   trafficRef.current = traffic;
+  const paletteRef = useRef(palette);
+  paletteRef.current = palette;
 
   useEffect(() => {
     if (!ref.current) return;
@@ -123,15 +155,7 @@ export default function MapView({
            "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 12, 2.5, 17, 4],
            "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 12, 14, 17, 38],
            "heatmap-opacity": 0.9,
-          "heatmap-color": [
-            "interpolate", ["linear"], ["heatmap-density"],
-            0, runnerColor("--runner-heat-low", 0),
-            0.08, runnerColor("--runner-heat-low", 0.45),
-            0.3, runnerColor("--runner-heat-mid"),
-            0.6, runnerColor("--runner-heat-high"),
-            0.9, runnerColor("--runner-heat-peak"),
-            1, runnerColor("--runner-heat-peak"),
-          ],
+          "heatmap-color": runnerRamp(runnerColor, paletteRef.current) as never,
         },
       });
       map.addSource("heat", { type: "geojson", data: heatPoints(scenario) });
