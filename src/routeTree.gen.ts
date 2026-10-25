@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as HomeRouteImport } from './routes/home'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as ZonesRouteImport } from './routes/zones'
@@ -24,6 +25,11 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MapRoute = MapRouteImport.update({
@@ -50,6 +56,7 @@ const NodeIdRoute = NodeIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/home': typeof HomeRoute
   '/map': typeof MapRoute
   '/reports': typeof ReportsRoute
   '/zones': typeof ZonesRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/home': typeof HomeRoute
   '/map': typeof MapRoute
   '/reports': typeof ReportsRoute
   '/zones': typeof ZonesRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/home': typeof HomeRoute
   '/map': typeof MapRoute
   '/reports': typeof ReportsRoute
   '/zones': typeof ZonesRoute
@@ -74,15 +83,25 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/map' | '/reports' | '/zones' | '/node/$id'
+  fullPaths:
+    '/' | '/about' | '/home' | '/map' | '/reports' | '/zones' | '/node/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/map' | '/reports' | '/zones' | '/node/$id'
-  id: '__root__' | '/' | '/about' | '/map' | '/reports' | '/zones' | '/node/$id'
+  to: '/' | '/about' | '/home' | '/map' | '/reports' | '/zones' | '/node/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/home'
+    | '/map'
+    | '/reports'
+    | '/zones'
+    | '/node/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  HomeRoute: typeof HomeRoute
   MapRoute: typeof MapRoute
   ReportsRoute: typeof ReportsRoute
   ZonesRoute: typeof ZonesRoute
@@ -103,6 +122,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/map': {
@@ -139,6 +165,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  HomeRoute: HomeRoute,
   MapRoute: MapRoute,
   ReportsRoute: ReportsRoute,
   ZonesRoute: ZonesRoute,
