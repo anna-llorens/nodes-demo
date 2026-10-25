@@ -1,6 +1,6 @@
 import { ClientOnly, Link } from "@tanstack/react-router";
-import { lazy, Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
-import { Play, Pause, Users, X, ChevronDown, Info, Clock, Car, ChevronRight, Layers } from "lucide-react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { Play, Pause, Users, X, ChevronDown, Info, Clock, ChevronRight, Layers } from "lucide-react";
 import type { LiveScenario as Scenario, Scenario as RawScenario } from "@/scenarios/types";
 import { simulate, toMin, fmtClock, trafficAt } from "@/sim/engine";
 import { densityLabel, densityLevel } from "@/scenarios/types";
@@ -123,7 +123,6 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
           {/* Controles + hora del evento */}
           <div className="absolute left-3 top-3 flex max-w-[calc(100%-4.5rem)] flex-col items-start gap-2 sm:left-4 sm:top-4">
             <div className="flex flex-wrap gap-2">
-              <MapButton active={showTraffic} onClick={() => onLayerChange("traffic", !showTraffic)} icon={<Car className="h-4 w-4" />} label="Tráfico" />
               <Popover open={layersOpen} onOpenChange={setLayersOpen}>
                 <PopoverTrigger asChild><Button variant={layersOpen ? "default" : "secondary"} size="sm" className="rounded-full bg-card text-foreground shadow-float"><Layers />Capas</Button></PopoverTrigger>
                 <PopoverContent align="start" aria-label="Capas del mapa" className="w-72 max-w-[calc(100vw-2rem)]">
@@ -317,21 +316,6 @@ function Player(p: {
   );
 }
 
-function MapButton({ active, onClick, icon, label }: { active: boolean; onClick: () => void; icon: ReactNode; label: string }) {
-  return (
-    <Button variant="ghost" size="sm"
-      onClick={onClick}
-      aria-pressed={active}
-      className={cn(
-        "flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold shadow-float transition-colors",
-        active ? "bg-primary text-primary-foreground" : "bg-card text-foreground hover:bg-muted",
-      )}
-    >
-      {icon}
-      {label}
-    </Button>
-  );
-}
 
 function Legend() {
   return (
