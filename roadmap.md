@@ -1,4 +1,5 @@
 # Tasks
+- [x] Show the NODES logo on the About page.
 - [x] Show the configured marathon nodes on Inicio.
 - [x] Remove the last finish-alert implementation.
 - [x] Move layer controls beside Tráfico and include Tráfico in Capas; verify toggles.

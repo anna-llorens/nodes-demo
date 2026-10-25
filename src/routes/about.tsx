@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { CheckCircle2 } from "lucide-react";
 import { AppShell } from "@/components/nodes/AppShell";
-import { SimBadge } from "@/components/nodes/Logo";
+import { Logo, SimBadge } from "@/components/nodes/Logo";
 
 const features = [
   { t: "Mapa real de València", d: "Mapa abierto (OpenStreetMap / OpenFreeMap) con zoom y desplazamiento." },
@@ -11,7 +11,7 @@ const features = [
   { t: "Recuento de personas", d: "Escala de 30.000 corredores más público, separados en cada zona." },
   { t: "Indicadores por zona", d: "Densidad, entradas y salidas por minuto, velocidad, variación a 10 min y calzada/aceras." },
   { t: "Mapa de calor y flechas de flujo", d: "Cambian con la hora; se pueden encender y apagar en el panel de capas." },
-  { t: "Botón de tráfico", d: "Tramos reales de calles (datos abiertos de València) en verde, amarillo o rojo según la hora." },
+  { t: "Capa de tráfico", d: "Tramos reales de calles (datos abiertos de València) en verde, amarillo o rojo según la hora. Se activa en Capas." },
   { t: "Informes del evento", d: "Resumen, comparativa por zonas, evolución de afluencia y descarga CSV de los datos simulados." },
   { t: "Adaptado a móvil, tablet y ordenador", d: "Barra inferior en móvil y barra lateral en ordenador." },
 ];
@@ -34,11 +34,16 @@ function MasPage() {
   return (
     <AppShell>
       <div className="mx-auto max-w-2xl px-5 py-6 lg:py-10">
-        <div className="flex items-center justify-between gap-3">
-          <h1 className="font-display text-2xl font-bold text-brand-ink">Acerca de NODES</h1>
+        <div className="flex items-end justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Acerca de</p>
+            <h1 className="mt-1 leading-none">
+              <Logo className="text-4xl sm:text-5xl" />
+            </h1>
+          </div>
           <SimBadge className="lg:hidden" />
         </div>
-        <p className="mt-2 text-sm text-muted-foreground">Prototipo de nodos LiDAR temporales para medir densidad y flujo de personas en eventos de calle. Todas las cifras son simuladas.</p>
+        <p className="mt-3 text-sm text-muted-foreground">Prototipo de nodos LiDAR temporales para medir densidad y flujo de personas en eventos de calle. Todas las cifras son simuladas.</p>
         <h2 className="mt-8 font-display text-lg font-bold text-brand-ink">Funcionalidades disponibles</h2>
         <ul className="mt-3 flex flex-col gap-2">
           {features.map((f) => (
