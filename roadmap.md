@@ -1,5 +1,5 @@
 # Tasks
-- [ ] Share a map link restoring scenario, enabled layers and camera; verify reopening the link.
+- [x] Share a map link restoring scenario, enabled layers and camera; verify reopening the link.
 - [ ] Rename the published address to nodes-demo.lovable.app.
 - [x] Merge traffic and closures into one combined Capas section and remove the on-screen traffic panel.
 - [x] Explain visit analytics options and add Google Analytics tracking.
