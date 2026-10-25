@@ -6,7 +6,7 @@ import { Logo } from "@/components/nodes/Logo";
 const features = [
   { t: "Mapa real de València", d: "Mapa abierto (OpenStreetMap / OpenFreeMap) con zoom y desplazamiento." },
   { t: "Recorrido real del Medio Maratón", d: "Trazado GPS de 21 km usado como referencia." },
-  { t: "4 zonas con nodos", d: "Salida, Plaza del Ayuntamiento, punto de animación y meta, con anillos de 20 y 40 m." },
+  { t: "8 zonas con nodos", d: "Salida, Plaza del Ayuntamiento, punto de animación y meta, con anillos de 20 y 40 m." },
   {
     t: "Simulador reproducible",
     d: "Play/pausa, deslizador de hora con segundos y velocidades 1×, 10×, 60×, 100× y 200×.",
