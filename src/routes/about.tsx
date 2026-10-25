@@ -13,7 +13,7 @@ const features = [
   },
   { t: "Recuento de personas", d: "Escala de 30.000 corredores más público, separados en cada zona." },
   {
-    t: "Indicadores por zona",
+    t: "Nodos por zona",
     d: "Densidad, entradas y salidas por minuto, velocidad, variación a 10 min y calzada/aceras.",
   },
   {
