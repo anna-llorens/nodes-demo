@@ -60,3 +60,15 @@ describe("simulador", () => {
     expect(runnerHeatPoints(maraton, toMin("12:00")).features).toHaveLength(0);
   });
 });
+
+describe("trafficTimesAt", () => {
+  it("gives every crossing a wait of at least 2 min and longer waits during the closure", async () => {
+    const { trafficTimesAt, toMin } = await import("./engine");
+    const { maraton } = await import("@/scenarios/maraton");
+    const during = trafficTimesAt(maraton, toMin("09:30"));
+    const before = trafficTimesAt(maraton, toMin("07:30"));
+    expect(during.waits.length).toBe(4);
+    expect(during.waits.every((w) => w.wait >= 2)).toBe(true);
+    expect(during.maxWait).toBeGreaterThan(before.maxWait);
+  });
+});
