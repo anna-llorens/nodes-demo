@@ -75,7 +75,7 @@ function Dashboard({ connected }: { connected: boolean }) {
       </div>
       <div className="rounded-2xl bg-card p-5 shadow-card text-sm">
         {connected ? (
-          <p>Google Analytics conectado. Las métricas de visitas y clics en nodos aparecerán aquí.</p>
+          <p>Google Analytics activo (G-ZQHGE29VD1). Registra visitas por página y clics en nodos (evento <b>node_click</b>). Consulta las cifras en <a className="underline" href="https://analytics.google.com/" target="_blank" rel="noreferrer">Google Analytics</a> → Informes → Tiempo real / Eventos.</p>
         ) : (
           <p className="text-muted-foreground">
             Google Analytics aún no está conectado. Cuando tengas el ID de medición (G-…), lo conectamos y aquí verás
