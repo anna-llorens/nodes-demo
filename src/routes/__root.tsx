@@ -12,6 +12,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { initAnalytics, trackPageView } from "../lib/analytics";
+import { useRouterState } from "@tanstack/react-router";
 
 function NotFoundComponent() {
   return (
@@ -117,6 +119,14 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const path = useRouterState({ select: (s) => s.location.pathname });
+  useEffect(() => {
+    initAnalytics();
+  }, []);
+  useEffect(() => {
+    if (!path.startsWith("/admin")) trackPageView(path);
+  }, [path]);
+
 
   return (
     <QueryClientProvider client={queryClient}>
