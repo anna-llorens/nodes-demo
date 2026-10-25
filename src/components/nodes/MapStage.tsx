@@ -1,5 +1,5 @@
 import { ClientOnly, Link } from "@tanstack/react-router";
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Play, Pause, Users, X, ChevronDown, Info, Clock, ChevronRight, Layers } from "lucide-react";
 import type { LiveScenario as Scenario, Scenario as RawScenario } from "@/scenarios/types";
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { LayerToggle } from "./AppShell";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { trackNodeClick } from "@/lib/analytics";
-import { buildMapShareUrl, type MapCamera, type MapLayers, type RunnerPalette } from "@/lib/map-share";
+import { buildMapShareUrl, writeMapCache, DEFAULT_MARATHON_MINUTE, DEFAULT_SPEED, type MapCamera, type MapLayers, type RunnerPalette } from "@/lib/map-share";
 import { ShareMapDialog } from "./ShareMapDialog";
 export type { MapLayers, RunnerPalette } from "@/lib/map-share";
 
