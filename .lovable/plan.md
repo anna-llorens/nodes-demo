@@ -5,7 +5,7 @@
 2. **Simulation badge** – shows only "Simulation" (no "datos no medidos").
 3. **Clock with seconds** – event time shown as HH:MM:SS in the player and panels.
 4. **200× speed** – added next to 1× / 10× / 60× / 100×.
-5. **30,000 participants** – zone counts scaled so totals match a 30k-runner event (start peak, finish/reunion peak).
+5. **30,000 participants** – zone counts scaled to 30k runners plus spectators/fans along the course, counted separately (runners vs public) at each zone (start peak, finish/reunion peak).
 6. **Real course** – replace the approximate route with the real 21K Valencia GPS course from the uploaded Nodes.html (used as reference only), on the existing open-source Valencia map.
 7. **Reference points** – nodes placed on the points marked in the file, including **Plaza del Ayuntamiento** as a new zone.
 8. **Traffic button (top-left of map)** – toggles traffic lines on the map: green / amber / red street segments near the course, changing with event time.
