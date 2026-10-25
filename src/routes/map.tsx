@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppShell } from "@/components/nodes/AppShell";
 import { MapStage, type MapLayers } from "@/components/nodes/MapStage";
 import { maraton } from "@/scenarios/maraton";
-import { restoreMapState, validateMapSearch } from "@/lib/map-share";
+import { DEFAULT_SPEED, readMapCache, restoreFromCache, restoreMapState, validateMapSearch, writeMapCache } from "@/lib/map-share";
 
 export const Route = createFileRoute("/map")({
   validateSearch: validateMapSearch,
