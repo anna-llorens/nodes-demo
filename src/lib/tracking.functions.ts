@@ -3,7 +3,16 @@ import { createServerFn } from "@tanstack/react-start";
 // Public endpoint: anonymous internal tracking (no cookies, no personal data).
 export const trackEvent = createServerFn({ method: "POST" })
   .inputValidator(
-    (d: { kind: string; path?: string; nodeId?: string; nodeName?: string; device?: string; label?: string }) => {
+    (d: {
+      kind: string;
+      path?: string;
+      nodeId?: string;
+      nodeName?: string;
+      device?: string;
+      label?: string;
+      visitorId?: string;
+      sessionId?: string;
+    }) => {
       const kind = d.kind === "node_click" ? "node_click" : d.kind === "click" ? "click" : "page_view";
       const clip = (v: unknown, n: number) => (typeof v === "string" ? v.slice(0, n) : null);
       return {
@@ -13,6 +22,8 @@ export const trackEvent = createServerFn({ method: "POST" })
         node_name: clip(d.nodeName, 120),
         label: clip(d.label, 80),
         device: d.device === "mobile" ? "mobile" : "desktop",
+        visitor_id: clip(d.visitorId, 40),
+        session_id: clip(d.sessionId, 40),
       };
     },
   )

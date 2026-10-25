@@ -29,8 +29,25 @@ export function initAnalytics() {
 
 const device = () => (window.matchMedia("(max-width: 767px)").matches ? "mobile" : "desktop");
 
+// Anonymous random ids: visitor = per browser (persists), session = per tab session.
+function anonId(store: Storage | undefined, key: string) {
+  try {
+    if (!store) return undefined;
+    let v = store.getItem(key);
+    if (!v) {
+      v = crypto.randomUUID();
+      store.setItem(key, v);
+    }
+    return v;
+  } catch {
+    return undefined;
+  }
+}
+
 function internal(data: { kind: string; path?: string; nodeId?: string; nodeName?: string; label?: string }) {
-  trackEvent({ data: { ...data, device: device() } }).catch(() => {});
+  const visitorId = anonId(window.localStorage, "nodes-visitor");
+  const sessionId = anonId(window.sessionStorage, "nodes-session");
+  trackEvent({ data: { ...data, device: device(), visitorId, sessionId } }).catch(() => {});
 }
 
 // Counts clicks on buttons/links per page (skips /admin).

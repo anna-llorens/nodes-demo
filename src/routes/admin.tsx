@@ -114,7 +114,11 @@ function Dashboard({ m }: { m: Metrics }) {
           </Button>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <Kpi label="Usuarios hoy" value={m.usersToday} />
+        <Kpi label="Usuarios 7 días" value={m.users7d} />
+        <Kpi label="Usuarios 30 días" value={m.users30d} />
+        <Kpi label="Sesiones 7 días" value={m.sessions7d} />
         <Kpi label="Visitas hoy" value={m.viewsToday} />
         <Kpi label="Visitas 7 días" value={m.views7d} />
         <Kpi label="Visitas totales" value={m.viewsTotal} />
@@ -125,7 +129,7 @@ function Dashboard({ m }: { m: Metrics }) {
         <h2 className="mb-3 font-display font-semibold text-brand-ink">Visitas por día (14 días)</h2>
         <div className="flex h-32 items-end gap-1">
           {m.days.map((d) => (
-            <div key={d.label} className="flex flex-1 flex-col items-center gap-1" title={`${d.label}: ${d.value}`}>
+            <div key={d.label} className="flex flex-1 flex-col items-center gap-1" title={`${d.label}: ${d.value} visitas · ${d.users} usuarios`}>
               <div className="w-full rounded-t bg-primary" style={{ height: `${(d.value / maxDay) * 100}%`, minHeight: d.value ? 2 : 0 }} />
               <span className="text-[9px] text-muted-foreground">{d.label.slice(3)}</span>
             </div>
