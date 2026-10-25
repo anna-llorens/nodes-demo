@@ -1,4 +1,6 @@
 # Tasks
+- [x] Merge traffic and closures into one combined Capas section and remove the on-screen traffic panel.
+- [ ] Visit analytics: answer/explain options (native Lovable analytics once published, or Google Analytics/PostHog connector) — waits on user choice and publish.
 - [x] Remove the home node list while retaining the card's configured node count.
 - [x] Try green runner heat without changing simulation data.
 - [x] Keep one always-visible simulation indicator outside the sidebar and verify pages.
