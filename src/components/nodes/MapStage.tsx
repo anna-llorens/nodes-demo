@@ -1,5 +1,6 @@
 import { ClientOnly, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { Play, Pause, Users, X, ChevronDown, Info, Clock, ChevronRight, Layers } from "lucide-react";
 import type { LiveScenario as Scenario, Scenario as RawScenario } from "@/scenarios/types";
 import { simulate, toMin, fmtClock, trafficAt, trafficTimesAt } from "@/sim/engine";
@@ -82,6 +83,10 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
   const [tab, setTab] = useState<"mapa" | "indicadores">("mapa");
   const [layersOpen, setLayersOpen] = useState(false);
   const [palette, setPalette] = useState<RunnerPalette>("termica");
+  const [layersSlot, setLayersSlot] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    setLayersSlot(document.getElementById("map-layers-slot"));
+  }, []);
   const selected = scenario.nodes.find((n) => n.id === selectedId) ?? null;
   const total = scenario.nodes.reduce((s, n) => s + n.snapshot.people, 0);
   const runners = scenario.nodes.reduce((s, n) => s + n.snapshot.runners, 0);
