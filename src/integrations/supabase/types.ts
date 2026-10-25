@@ -24,8 +24,6 @@ export type Database = {
           node_id: string | null
           node_name: string | null
           path: string | null
-          session_id: string | null
-          visitor_id: string | null
         }
         Insert: {
           created_at?: string
@@ -36,8 +34,6 @@ export type Database = {
           node_id?: string | null
           node_name?: string | null
           path?: string | null
-          session_id?: string | null
-          visitor_id?: string | null
         }
         Update: {
           created_at?: string
@@ -48,8 +44,6 @@ export type Database = {
           node_id?: string | null
           node_name?: string | null
           path?: string | null
-          session_id?: string | null
-          visitor_id?: string | null
         }
         Relationships: []
       }
