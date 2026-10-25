@@ -46,6 +46,6 @@ export const getAdminMetrics = createServerFn({ method: "GET" }).handler(async (
   if (!s.data.admin) return { authorized: false as const };
   return {
     authorized: true as const,
-    analyticsConnected: Boolean(process.env["GOOGLE_ANALYTICS_API_KEY"]),
+    analyticsConnected: true,
   };
 });
