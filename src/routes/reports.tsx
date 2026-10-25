@@ -3,7 +3,6 @@ import { useMemo, useState } from "react";
 import { Users, Clock, MapPin, Radio, Download } from "lucide-react";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AppShell } from "@/components/nodes/AppShell";
-import { SimBadge } from "@/components/nodes/Logo";
 import { Button } from "@/components/ui/button";
 import { maraton } from "@/scenarios/maraton";
 import { fmtClock, toMin } from "@/sim/engine";
@@ -43,7 +42,6 @@ function ReportsPage() {
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-2xl font-bold text-brand-ink">Informes</h1>
-        <SimBadge />
       </header>
       <p className="mt-2 text-sm font-semibold">{maraton.name}</p>
       <div role="tablist" aria-label="Informes" className="mt-5 grid grid-cols-4 border-b border-border">

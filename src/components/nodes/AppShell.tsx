@@ -42,12 +42,12 @@ export function AppShell({ children, sidebarExtra }: { children: ReactNode; side
         {sidebarExtra && (
           <div className="mt-6 flex-1 overflow-y-auto border-t border-sidebar-border px-5 pt-5">{sidebarExtra}</div>
         )}
-        <div className="mt-auto p-5">
-          <SimBadge />
-        </div>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
+        <div aria-label="Estado de los datos" className="flex shrink-0 justify-end border-b border-border bg-card px-4 py-2 sm:px-6">
+          <SimBadge />
+        </div>
         <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
 
         {/* Barra inferior (móvil y tablet) */}
@@ -96,7 +96,6 @@ export function ComingSoon({ title, phase }: { title: string; phase: number }) {
     <div className="mx-auto flex min-h-full max-w-xl flex-col px-5 py-6 lg:py-10">
       <div className="flex items-center justify-between gap-3">
         <h1 className="font-display text-2xl font-bold text-brand-ink">{title}</h1>
-        <SimBadge className="lg:hidden" />
       </div>
       <div className="mt-8 rounded-2xl bg-card p-8 text-center shadow-card">
         <p className="font-display text-lg font-semibold">Disponible en la fase {phase}</p>

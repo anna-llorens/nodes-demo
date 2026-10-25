@@ -48,6 +48,19 @@ export default function MapView({
 
   useEffect(() => {
     if (!ref.current) return;
+    // Canvas resolves CSS theme colors to MapLibre-compatible RGB values.
+    const paletteCanvas = document.createElement("canvas");
+    paletteCanvas.width = paletteCanvas.height = 1;
+    const paletteContext = paletteCanvas.getContext("2d");
+    if (!paletteContext) { onError(); return; }
+    const theme = getComputedStyle(document.documentElement);
+    const runnerColor = (token: string, alpha = 1) => {
+      paletteContext.clearRect(0, 0, 1, 1);
+      paletteContext.fillStyle = theme.getPropertyValue(token).trim();
+      paletteContext.fillRect(0, 0, 1, 1);
+      const [r, g, b] = paletteContext.getImageData(0, 0, 1, 1).data;
+      return `rgba(${r},${g},${b},${alpha})`;
+    };
     let failed = false;
     const map = new maplibregl.Map({
       container: ref.current,
@@ -112,7 +125,12 @@ export default function MapView({
            "heatmap-opacity": 0.9,
           "heatmap-color": [
             "interpolate", ["linear"], ["heatmap-density"],
-             0, C.low, 0.08, "rgba(76,190,120,0.45)", 0.3, C.mid, 0.6, C.high, 0.9, C.crit, 1, C.crit,
+            0, runnerColor("--runner-heat-low", 0),
+            0.08, runnerColor("--runner-heat-low", 0.45),
+            0.3, runnerColor("--runner-heat-mid"),
+            0.6, runnerColor("--runner-heat-high"),
+            0.9, runnerColor("--runner-heat-peak"),
+            1, runnerColor("--runner-heat-peak"),
           ],
         },
       });

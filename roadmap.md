@@ -1,4 +1,7 @@
 # Tasks
+- [x] Remove the home node list while retaining the card's configured node count.
+- [x] Try green runner heat without changing simulation data.
+- [x] Keep one always-visible simulation indicator outside the sidebar and verify pages.
 - [x] Show the NODES logo on the About page.
 - [x] Show the configured marathon nodes on Inicio.
 - [x] Remove the last finish-alert implementation.
