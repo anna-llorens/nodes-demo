@@ -7,7 +7,7 @@ import { ArrowUp } from "lucide-react";
 import type { LiveScenario as Scenario } from "@/scenarios/types";
 import { heatPoints, ringsGeo, runnerHeatPoints, trafficGeo } from "./geo";
 import type { TrafficLevel } from "@/sim/engine";
-import type { MapLayers } from "./MapStage";
+import type { MapLayers, RunnerPalette } from "./MapStage";
 
 // maplibre necesita colores literales en su paint (no lee variables CSS)
 const C = {
@@ -81,18 +81,8 @@ export default function MapView({
   useEffect(() => {
     if (!ref.current) return;
     // Canvas resolves CSS theme colors to MapLibre-compatible RGB values.
-    const paletteCanvas = document.createElement("canvas");
-    paletteCanvas.width = paletteCanvas.height = 1;
-    const paletteContext = paletteCanvas.getContext("2d");
-    if (!paletteContext) { onError(); return; }
-    const theme = getComputedStyle(document.documentElement);
-    const runnerColor = (token: string, alpha = 1) => {
-      paletteContext.clearRect(0, 0, 1, 1);
-      paletteContext.fillStyle = theme.getPropertyValue(token).trim();
-      paletteContext.fillRect(0, 0, 1, 1);
-      const [r, g, b] = paletteContext.getImageData(0, 0, 1, 1).data;
-      return `rgba(${r},${g},${b},${alpha})`;
-    };
+    const runnerColor = makeColorFn();
+    if (!runnerColor) { onError(); return; }
     let failed = false;
     const map = new maplibregl.Map({
       container: ref.current,
@@ -223,6 +213,14 @@ export default function MapView({
     const src = mapRef.current?.getSource("runners") as maplibregl.GeoJSONSource | undefined;
     if (ready && src) src.setData(runnerHeatPoints(scenario, minute));
   }, [scenario, minute, ready]);
+
+  // Cambia la gama de color de los corredores
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!ready || !map?.getLayer("runners")) return;
+    const c = makeColorFn();
+    if (c) map.setPaintProperty("runners", "heatmap-color", runnerRamp(c, palette) as never);
+  }, [palette, ready]);
 
   useEffect(() => {
     const src = mapRef.current?.getSource("traffic") as maplibregl.GeoJSONSource | undefined;
