@@ -174,9 +174,9 @@ export interface TrafficTimes { waits: CrossingWait[]; maxWait: number; busiest:
 export function trafficTimesAt(s: Scenario, min: number, traffic = trafficAt(s, min)): TrafficTimes {
   const closed = s.closure ? min >= toMin(s.closure.start) && min <= toMin(s.closure.end) : false;
   const waits = s.nodes.filter((n) => n.kind === "cruce").map((n, i) => {
-    const base = [14, 11, 18, 9][i % 4] ?? 12;
+    const baseWait: number = [14, 11, 18, 9][i % 4] ?? 12;
     const wave = Math.sin((min + (i + 1) * 33) / 22) * 6;
-    const wait = Math.max(2, Math.round(base * (closed ? 1.35 : 0.5) + wave + 2 * noise(n.id, min / 5)));
+    const wait = Math.max(2, Math.round(baseWait * (closed ? 1.35 : 0.5) + wave + 2 * noise(n.id, min / 5)));
     return { id: n.id, name: n.name, wait };
   });
   const max = waits.reduce<CrossingWait | null>((a, b) => (!a || b.wait > a.wait ? b : a), null);
