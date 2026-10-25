@@ -22,12 +22,14 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
+type Metrics = Extract<Awaited<ReturnType<typeof getAdminMetrics>>, { authorized: true }>;
+
 function AdminPage() {
   const data = Route.useLoaderData();
   return (
     <AppShell>
-      <div className="mx-auto max-w-md px-5 py-10">
-        {data.authorized ? <Dashboard connected={data.analyticsConnected} /> : <Login />}
+      <div className={data.authorized ? "mx-auto max-w-4xl px-5 py-8" : "mx-auto max-w-md px-5 py-10"}>
+        {data.authorized ? <Dashboard m={data} /> : <Login />}
       </div>
     </AppShell>
   );
@@ -55,34 +57,88 @@ function Login() {
   );
 }
 
-function Dashboard({ connected }: { connected: boolean }) {
+function Kpi({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="rounded-2xl bg-card p-4 shadow-card">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="font-display text-2xl font-bold text-brand-ink">{value}</p>
+    </div>
+  );
+}
+
+function Bars({ title, rows, empty }: { title: string; rows: { label: string; value: number }[]; empty: string }) {
+  const max = Math.max(1, ...rows.map((r) => r.value));
+  return (
+    <div className="rounded-2xl bg-card p-5 shadow-card">
+      <h2 className="mb-3 font-display font-semibold text-brand-ink">{title}</h2>
+      {rows.length === 0 ? (
+        <p className="text-sm text-muted-foreground">{empty}</p>
+      ) : (
+        <ul className="flex flex-col gap-2">
+          {rows.map((r) => (
+            <li key={r.label} className="text-sm">
+              <div className="flex justify-between gap-2">
+                <span className="truncate">{r.label}</span>
+                <span className="font-semibold">{r.value}</span>
+              </div>
+              <div className="mt-1 h-1.5 rounded-full bg-muted">
+                <div className="h-1.5 rounded-full bg-primary" style={{ width: `${(r.value / max) * 100}%` }} />
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function Dashboard({ m }: { m: Metrics }) {
   const router = useRouter();
   const logout = useServerFn(adminLogout);
+  const maxDay = Math.max(1, ...m.days.map((d) => d.value));
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h1 className="font-display text-xl font-bold text-brand-ink">Analíticas</h1>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={async () => {
-            await logout();
-            await router.invalidate();
-          }}
-        >
-          Salir
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => router.invalidate()}>Actualizar</Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={async () => {
+              await logout();
+              await router.invalidate();
+            }}
+          >
+            Salir
+          </Button>
+        </div>
       </div>
-      <div className="rounded-2xl bg-card p-5 shadow-card text-sm">
-        {connected ? (
-          <p>Google Analytics activo (G-ZQHGE29VD1). Registra visitas por página y clics en nodos (evento <b>node_click</b>). Consulta las cifras en <a className="underline" href="https://analytics.google.com/" target="_blank" rel="noreferrer">Google Analytics</a> → Informes → Tiempo real / Eventos.</p>
-        ) : (
-          <p className="text-muted-foreground">
-            Google Analytics aún no está conectado. Cuando tengas el ID de medición (G-…), lo conectamos y aquí verás
-            las visitas y los clics en los nodos.
-          </p>
-        )}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+        <Kpi label="Visitas hoy" value={m.viewsToday} />
+        <Kpi label="Visitas 7 días" value={m.views7d} />
+        <Kpi label="Visitas totales" value={m.viewsTotal} />
+        <Kpi label="Clics en nodos (30 d)" value={m.clicks30d} />
+        <Kpi label="Desde móvil" value={`${m.mobileShare}%`} />
       </div>
+      <div className="rounded-2xl bg-card p-5 shadow-card">
+        <h2 className="mb-3 font-display font-semibold text-brand-ink">Visitas por día (14 días)</h2>
+        <div className="flex h-32 items-end gap-1">
+          {m.days.map((d) => (
+            <div key={d.label} className="flex flex-1 flex-col items-center gap-1" title={`${d.label}: ${d.value}`}>
+              <div className="w-full rounded-t bg-primary" style={{ height: `${(d.value / maxDay) * 100}%`, minHeight: d.value ? 2 : 0 }} />
+              <span className="text-[9px] text-muted-foreground">{d.label.slice(3)}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Bars title="Nodos más consultados" rows={m.nodes} empty="Aún no hay clics en nodos." />
+        <Bars title="Páginas más visitadas" rows={m.pages} empty="Aún no hay visitas." />
+      </div>
+      <p className="text-xs text-muted-foreground">
+        Seguimiento interno anónimo. Google Analytics (G-ZQHGE29VD1) sigue activo en paralelo.
+      </p>
     </div>
   );
 }
