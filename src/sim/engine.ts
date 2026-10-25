@@ -112,6 +112,20 @@ function nearRoute(seg: TrafficSegment, route: [number, number][]) {
   return near;
 }
 
+const onCache = new WeakMap<TrafficSegment, boolean>();
+/** ¿El tramo forma parte del recorrido (mayoría de puntos a < 30 m)? */
+function onRoute(seg: TrafficSegment, route: [number, number][]) {
+  const c = onCache.get(seg);
+  if (c !== undefined) return c;
+  const lim = 30 / 111320;
+  const hits = seg.coords.filter(([x, y]) =>
+    route.some(([rx, ry]) => Math.abs(rx - x) * 0.77 < lim && Math.abs(ry - y) < lim),
+  ).length;
+  const on = hits / Math.max(1, seg.coords.length) >= 0.5;
+  onCache.set(seg, on);
+  return on;
+}
+
 /** Nivel de tráfico por tramo: 1 fluido · 2 denso · 3 congestionado (determinista).
  *  Los tramos del recorrido (calles cortadas) no se devuelven. */
 export function trafficAt(s: Scenario, min: number): { id: string; level: TrafficLevel }[] {
