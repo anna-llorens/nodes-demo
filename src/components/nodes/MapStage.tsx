@@ -161,7 +161,8 @@ export function MapStage({ scenario: base, layers, onLayerChange }: { scenario: 
                   </label>
                 </PopoverContent>
               </Popover>
-              {showTraffic && (
+            </div>
+            {showTraffic && (
                 <div className="border-t border-border pt-2">
                   <p className="text-xs font-semibold">Tráfico y cortes · {fmtClock(trafficTick)}</p>
                   <div className="mt-1 flex items-center gap-3 text-[11px]">
