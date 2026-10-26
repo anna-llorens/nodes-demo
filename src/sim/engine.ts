@@ -1,7 +1,8 @@
 import type { Scenario, ScenarioNode, TrafficSegment } from "@/scenarios/types";
+import { MAX_NODE_AREA_M2 } from "@/scenarios/types";
 
 /** Densidad máxima permitida en cualquier momento (pers/m²). */
-export const MAX_DENSITY = 7;
+export const MAX_DENSITY = 6;
 
 export interface NodeState {
   id: string;
@@ -68,11 +69,15 @@ export function densityAt(node: ScenarioNode, min: number) {
   return Math.min(MAX_DENSITY, Math.max(0, d));
 }
 
-const peopleAt = (node: ScenarioNode, min: number) => densityAt(node, min) * node.areaM2;
+/** Área efectiva del nodo: nunca mayor que el círculo de 20 m de radio. */
+export const nodeArea = (node: ScenarioNode) => Math.min(MAX_NODE_AREA_M2, Math.max(0, node.areaM2));
+
+/** personas = densidad × área de la zona */
+const peopleAt = (node: ScenarioNode, min: number) => densityAt(node, min) * nodeArea(node);
 
 export function nodeState(node: ScenarioNode, min: number): NodeState {
   const density = densityAt(node, min);
-  const people = Math.round(density * node.areaM2);
+  const people = Math.round(peopleAt(node, min));
   const delta = people - peopleAt(node, min - 1);
   const base = people * node.turnover;
   const prev10 = peopleAt(node, min - 10);

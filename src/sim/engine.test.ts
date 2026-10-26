@@ -1,24 +1,46 @@
 import { describe, expect, it } from "vitest";
 import { maraton } from "@/scenarios/maraton";
-import { MAX_DENSITY, fmtClock, simulate, simulateRunnerHeat, toMin, trafficAt } from "./engine";
-import { densityLevel } from "@/scenarios/types";
+import { MAX_DENSITY, densityAt, fmtClock, simulate, simulateRunnerHeat, toMin, trafficAt } from "./engine";
+import { MAX_NODE_AREA_M2, densityLevel, nodeAreaM2 } from "@/scenarios/types";
 import { runnerHeatPoints } from "@/components/nodes/geo";
 
 describe("simulador", () => {
-  it("la llegada mantiene más de 38.000 personas al terminar", () => {
+  it("la llegada crece hacia el final hasta el tope de densidad", () => {
     const end = simulate(maraton, toMin("11:30")).find((state) => state.id === "meta");
     const earlier = simulate(maraton, toMin("10:00")).find((state) => state.id === "meta");
-    expect(end?.people).toBeGreaterThan(38000);
-    expect(end?.people).toBeGreaterThan((earlier?.people ?? 0) * 1.5);
-    expect(end?.spectators).toBeGreaterThan(10000);
+    expect(end?.density).toBe(MAX_DENSITY);
+    expect(end?.people).toBeGreaterThan((earlier?.people ?? 0) * 1.4);
+    expect(end?.spectators).toBeGreaterThan(2000);
+  });
+  it("personas = densidad × área del nodo", () => {
+    for (const minute of [toMin("09:10"), toMin("10:15"), toMin("11:30")])
+      for (const node of maraton.nodes) {
+        const state = simulate(maraton, minute).find((item) => item.id === node.id)!;
+        expect(state.people).toBe(Math.round(densityAt(node, minute) * node.areaM2));
+      }
+  });
+  it("el área de cada nodo es como máximo un círculo de 20 m y menor en calles estrechas", () => {
+    expect(Math.round(MAX_NODE_AREA_M2)).toBe(1257);
+    expect(nodeAreaM2(40)).toBe(1257);
+    expect(nodeAreaM2(8)).toBeLessThan(nodeAreaM2(22));
+    for (const node of maraton.nodes) expect(node.areaM2).toBeLessThanOrEqual(1257);
+    const crossing = maraton.nodes.find((node) => node.id === "cruce1")!;
+    expect(crossing.areaM2).toBeLessThan(500);
+  });
+  it("ningún nodo supera 6 pers/m² ni 6 × área personas", () => {
+    for (let m = toMin("08:00"); m <= toMin("11:30"); m += 0.5)
+      for (const s of simulate(maraton, m)) {
+        const node = maraton.nodes.find((item) => item.id === s.id)!;
+        expect(s.density).toBeLessThanOrEqual(6);
+        expect(s.people).toBeLessThanOrEqual(Math.round(6 * node.areaM2));
+      }
   });
   it("mantiene etapas medias y aumenta la afluencia de animación", () => {
     const medium = simulate(maraton, toMin("10:15")).find((state) => state.id === "animacion");
     expect(densityLevel(medium?.density ?? 0)).toBe("media");
-    expect(medium?.people).toBeGreaterThan(6000);
     const peak = simulate(maraton, toMin("09:10")).find((state) => state.id === "animacion");
     expect(densityLevel(peak?.density ?? 0)).toBe("alta");
-    expect(peak?.people).toBeGreaterThan(10000);
+    expect(peak?.people).toBeGreaterThan(medium?.people ?? 0);
   });
   it("el calor aumenta con la densidad sin cambiar posiciones", () => {
     const low = { ...maraton, nodes: maraton.nodes.map((node) => ({ ...node, curve: [["08:00", 2]] as [string, number][] })) };
@@ -28,10 +50,6 @@ describe("simulador", () => {
     expect(a.length).toBeGreaterThan(0);
     expect(a.map((point) => point.progress)).toEqual(b.map((point) => point.progress));
     expect(b.reduce((sum, point) => sum + point.weight, 0)).toBeGreaterThan(a.reduce((sum, point) => sum + point.weight, 0) * 4);
-  });
-  it("nunca supera 7 pers/m²", () => {
-    for (let m = toMin("08:00"); m <= toMin("11:30"); m += 0.5)
-      for (const s of simulate(maraton, m)) expect(s.density).toBeLessThanOrEqual(MAX_DENSITY);
   });
   it("es determinista", () => {
     expect(simulate(maraton, 615.3)).toEqual(simulate(maraton, 615.3));

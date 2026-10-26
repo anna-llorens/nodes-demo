@@ -1,4 +1,5 @@
 import type { Scenario, TrafficSegment } from "./types";
+import { nodeAreaM2 } from "./types";
 import route from "./data/maraton-route.json";
 import traffic from "./data/valencia-traffic.json";
 import imgSalida from "@/assets/nodes/salida.jpg";
@@ -52,7 +53,7 @@ export const maraton: Scenario = {
       name: "Salida",
       short: "S01",
       lngLat: r[0]!,
-      areaM2: 6000,
+      areaM2: nodeAreaM2(40), // avenida ancha: círculo completo
       roadwayShare: 0.78,
       flowBearing: 290,
       turnover: 0.08,
@@ -68,7 +69,7 @@ export const maraton: Scenario = {
       name: "Plaza del Ayuntamiento",
       short: "S02",
       lngLat: [-0.37635, 39.46986],
-      areaM2: 3000,
+      areaM2: nodeAreaM2(40), // plaza: círculo completo
       roadwayShare: 0.62,
       flowBearing: 200,
       turnover: 0.1,
@@ -84,7 +85,7 @@ export const maraton: Scenario = {
       name: "Punto de animación",
       short: "S03",
       lngLat: r[300]!,
-      areaM2: 2500,
+      areaM2: nodeAreaM2(30), // calle de ~30 m
       roadwayShare: 0.58,
       flowBearing: 250,
       turnover: 0.08,
@@ -100,7 +101,7 @@ export const maraton: Scenario = {
       name: "Meta · reencuentro",
       short: "S04",
       lngLat: r[r.length - 1]!,
-      areaM2: 6000,
+      areaM2: nodeAreaM2(40), // explanada de meta: círculo completo
       roadwayShare: 0.66,
       flowBearing: 95,
       turnover: 0.08,
@@ -108,18 +109,18 @@ export const maraton: Scenario = {
       curve: [["08:00", 1.0], ["09:00", 1.8], ["09:30", 3.2], ["10:00", 3.8], ["10:12", 4.8], ["10:35", 6.5], ["11:00", 6.6], ["11:30", 6.8]],
       runnerShare: [["08:00", 0], ["09:05", 0.2], ["10:00", 0.5], ["10:35", 0.55], ["11:30", 0.7]],
     },
-    // Puntos de cruce peatonal (referencia: Nodes.html)
+    // Puntos de cruce peatonal (referencia: Nodes.html); el número es el ancho de calle (m)
     ...([
-      ["cruce1", "C01", "Metro Xàtiva", [-0.377624, 39.467814], "Paso subterráneo en la parada de metro Xàtiva.", [["08:00", 0.4], ["08:35", 2.4], ["09:00", 2.9], ["09:40", 1.8], ["10:30", 0.9], ["11:30", 0.5]]],
-      ["cruce2", "C02", "C/ Colón nº 8", [-0.374165, 39.467301], "C/ Colón nº 8.", [["08:00", 0.5], ["08:40", 2.2], ["09:05", 3.1], ["09:45", 2.0], ["10:30", 1.0], ["11:30", 0.6]]],
-      ["cruce3", "C03", "Colón · Puerta del Mar", [-0.369185, 39.471505], "C/ Colón con Puerta del Mar.", [["08:00", 0.4], ["08:45", 1.9], ["09:10", 2.7], ["09:50", 1.7], ["10:40", 0.8], ["11:30", 0.4]]],
-      ["cruce4", "C04", "Av. Tarongers", [-0.331446, 39.475964], "Avda. de los Naranjos (Av. Tarongers), antes de la rotonda de los Cactus (esquina con C/ Lluís Peixó, a la altura del Tanatorio).", [["08:00", 0.2], ["09:00", 0.9], ["09:30", 2.3], ["10:05", 2.6], ["10:40", 1.2], ["11:30", 0.4]]],
-    ] as [string, string, string, [number, number], string, [string, number][]][]).map(([id, short, name, lngLat, description, curve]) => ({
+      ["cruce1", "C01", "Metro Xàtiva", [-0.377624, 39.467814], "Paso subterráneo en la parada de metro Xàtiva.", 8, [["08:00", 0.4], ["08:35", 2.4], ["09:00", 2.9], ["09:40", 1.8], ["10:30", 0.9], ["11:30", 0.5]]],
+      ["cruce2", "C02", "C/ Colón nº 8", [-0.374165, 39.467301], "C/ Colón nº 8.", 22, [["08:00", 0.5], ["08:40", 2.2], ["09:05", 3.1], ["09:45", 2.0], ["10:30", 1.0], ["11:30", 0.6]]],
+      ["cruce3", "C03", "Colón · Puerta del Mar", [-0.369185, 39.471505], "C/ Colón con Puerta del Mar.", 30, [["08:00", 0.4], ["08:45", 1.9], ["09:10", 2.7], ["09:50", 1.7], ["10:40", 0.8], ["11:30", 0.4]]],
+      ["cruce4", "C04", "Av. Tarongers", [-0.331446, 39.475964], "Avda. de los Naranjos (Av. Tarongers), antes de la rotonda de los Cactus (esquina con C/ Lluís Peixó, a la altura del Tanatorio).", 35, [["08:00", 0.2], ["09:00", 0.9], ["09:30", 2.3], ["10:05", 2.6], ["10:40", 1.2], ["11:30", 0.4]]],
+    ] as [string, string, string, [number, number], string, number, [string, number][]][]).map(([id, short, name, lngLat, description, streetWidthM, curve]) => ({
       id, short, name, lngLat, description, curve,
       kind: "cruce" as const,
       image: imgCruce,
       address: description,
-      areaM2: 400,
+      areaM2: nodeAreaM2(streetWidthM),
       roadwayShare: 0.35,
       flowBearing: 0,
       turnover: 0.2,
