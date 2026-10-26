@@ -1,6 +1,7 @@
 import type * as GeoJSON from "geojson";
 import type { LiveScenario as Scenario, Scenario as BaseScenario } from "@/scenarios/types";
-import { simulateRunnerHeat } from "@/sim/engine";
+import { densityLevel } from "@/scenarios/types";
+import { simulateRunnerHeat, zoneAssignments } from "@/sim/engine";
 
 export function circlePolygon([lng, lat]: [number, number], radiusM: number, steps = 64): [number, number][] {
   const out: [number, number][] = [];
@@ -105,6 +106,23 @@ export function ringsGeo(s: Scenario, radius: number) {
       properties: { id: n.id },
       geometry: { type: "LineString", coordinates: circlePolygon(n.lngLat, radius) },
     })),
+  } as GeoJSON.FeatureCollection;
+}
+
+/** Polígonos de zona con el nivel de densidad del nodo al que están asignados. */
+export function zonesGeo(s: Scenario) {
+  const assigned = zoneAssignments(s);
+  const byId = new Map(s.nodes.map((n) => [n.id, n]));
+  return {
+    type: "FeatureCollection",
+    features: (s.zones ?? []).map((zone) => {
+      const node = byId.get(assigned.get(zone.id) ?? "");
+      return {
+        type: "Feature",
+        properties: { id: zone.id, name: zone.name, node: node?.id ?? "", level: densityLevel(node?.snapshot.density ?? 0) },
+        geometry: { type: "Polygon", coordinates: zone.polygon },
+      };
+    }),
   } as GeoJSON.FeatureCollection;
 }
 

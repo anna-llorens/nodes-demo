@@ -27,6 +27,14 @@ export interface ScenarioNode {
   image?: string;
 }
 
+/** Polígono aproximado de zona para la estimación extrapolada. */
+export interface ScenarioZone {
+  id: string;
+  name: string;
+  /** Anillos GeoJSON [lng, lat]: el primero es el contorno y los siguientes, huecos (p. ej. zona vallada) */
+  polygon: [number, number][][];
+}
+
 export interface LiveNode extends ScenarioNode {
   snapshot: import("@/sim/engine").NodeState;
 }
@@ -59,6 +67,10 @@ export interface Scenario {
   roadClosures?: { id: string; name: string; lngLat: [number, number]; underpass?: boolean }[];
   traffic?: TrafficSegment[];
   nodes: ScenarioNode[];
+  /** Polígonos de zona; cada uno se asigna al nodo más cercano para extrapolar su densidad */
+  zones?: ScenarioZone[];
+  /** Etiqueta de los polígonos en el mapa, p. ej. "zonas aproximadas" */
+  zonesLabel?: string;
 }
 
 /** Radio máximo de cobertura de un nodo (m). */
@@ -79,6 +91,9 @@ export function densityLevel(d: number): DensityLevel {
   if (d <= 6) return "alta";
   return "muy-alta";
 }
+
+/** Etiqueta obligatoria junto a cualquier cifra estimada. */
+export const ESTIMATE_LABEL = "Estimación extrapolada · no medida";
 
 export const densityLabel: Record<DensityLevel, string> = {
   baja: "Densidad baja",

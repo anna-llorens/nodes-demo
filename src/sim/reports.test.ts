@@ -19,12 +19,13 @@ describe("simulation reports", () => {
     const expected = maraton.nodes.reduce((sum, node) => sum + Math.round(densityAt(node, minute) * node.areaM2), 0);
     expect(report.series[0]?.people).toBe(expected);
     expect(expected).toBeLessThanOrEqual(maraton.nodes.reduce((sum, node) => sum + 6 * node.areaM2, 0));
-    expect(reportCsv(report)).toContain(`11:00;${expected};`);
+    expect(reportCsv(report)).toContain(`11:00;${expected};${report.series[0]?.estimated};`);
   });
   it("exports counts with runners and public kept separate", () => {
     const report = buildReport(maraton, 615, 615);
     const row = report.series[0];
     expect(row?.people).toBe((row?.runners ?? 0) + (row?.spectators ?? 0));
-    expect(reportCsv(report)).toContain(`10:15;${row?.people};${row?.runners};${row?.spectators}`);
+    expect(reportCsv(report)).toContain(`10:15;${row?.people};${row?.estimated};${row?.runners};${row?.spectators}`);
+    expect(reportCsv(report).split("\n")[0]).toBe("Hora;Personas medidas;Personas estimadas (estimación extrapolada · no medida);Corredores;Público");
   });
 });

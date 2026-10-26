@@ -5,6 +5,7 @@ import { Area, AreaChart, Bar, BarChart, CartesianGrid, Legend, ResponsiveContai
 import { AppShell } from "@/components/nodes/AppShell";
 import { Button } from "@/components/ui/button";
 import { maraton } from "@/scenarios/maraton";
+import { ESTIMATE_LABEL } from "@/scenarios/types";
 import { fmtClock, toMin } from "@/sim/engine";
 import { buildReport, reportCsv } from "@/sim/reports";
 
@@ -59,8 +60,9 @@ function ReportsPage() {
       {!valid ? <p role="alert" className="text-destructive">La hora final debe ser posterior a la inicial.</p> : <div role="tabpanel" aria-label={tab}>
         {tab === "Resumen" && <>
           <h2 className="mb-3 font-display text-sm font-bold">Resumen del evento</h2>
-          <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-            <Kpi icon={Users} label="Personas en zonas · pico" value={fmt(report.peak?.people ?? 0)} />
+          <div className="grid grid-cols-2 gap-3 xl:grid-cols-5">
+            <Kpi icon={Users} label="Personas medidas en zonas · pico" value={fmt(report.peak?.people ?? 0)} />
+            <Kpi icon={Users} label={`Estimadas en el área · pico · ${ESTIMATE_LABEL}`} value={`≈ ${fmt(report.peakEstimated?.estimated ?? 0)}`} />
             <Kpi icon={Clock} label="Hora del pico" value={fmtClock(report.peak?.minute ?? toMin(start))} />
             <Kpi icon={MapPin} label="Zona más concurrida" value={report.busiest?.name ?? "—"} />
             <Kpi icon={Radio} label="Nodos incluidos" value={`${report.zones.length} / ${maraton.nodes.length}`} />
@@ -71,7 +73,8 @@ function ReportsPage() {
               <ResponsiveContainer width="100%" height="100%"><AreaChart data={report.series} margin={{ top: 12, right: 12, left: 0, bottom: 0 }}>
                 <CartesianGrid vertical={false} stroke="var(--border)" /><XAxis dataKey="time" minTickGap={40} tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} /><YAxis width={48} tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} />
                 <Tooltip contentStyle={tooltipStyle} formatter={(value: number) => fmt(value)} /><Legend />
-                <Area type="monotone" dataKey="people" name="Personas" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.14} strokeWidth={2} />
+                <Area type="monotone" dataKey="estimated" name={`Estimadas (${ESTIMATE_LABEL})`} stroke="var(--brand-ink)" fill="none" strokeDasharray="4 4" strokeWidth={1.5} />
+                <Area type="monotone" dataKey="people" name="Personas medidas" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.14} strokeWidth={2} />
                 <Area type="monotone" dataKey="runners" name="Corredores" stroke="var(--dens-high)" fill="var(--dens-mid)" fillOpacity={0.12} strokeWidth={2} />
               </AreaChart></ResponsiveContainer>
             </div>
@@ -81,11 +84,13 @@ function ReportsPage() {
         {tab === "Comparativa" && <Comparison zones={report.zones} metric={metric} onMetric={setMetric} />}
         {tab === "Densidad" && <section>
           <h2 className="font-display text-sm font-bold">Densidad por zona</h2>
-          <div className="mt-3 overflow-x-auto"><table className="w-full text-left text-sm"><thead className="border-b border-border text-xs text-muted-foreground"><tr><th className="py-3 pr-4">Zona</th><th className="px-3">Pico</th><th className="px-3">Hora</th><th className="px-3">Alta · min</th><th className="px-3">Muy alta · min</th></tr></thead><tbody>{report.zones.map((zone) => <tr key={zone.id} className="border-b border-border"><th className="py-4 pr-4 font-semibold">{zone.name}</th><td className="px-3 tabular-nums">{fmt(zone.peak)}</td><td className="px-3 tabular-nums">{fmtClock(zone.peakMinute)}</td><td className="px-3 tabular-nums text-dens-high">{zone.orange}</td><td className="px-3 tabular-nums text-dens-crit">{zone.red}</td></tr>)}</tbody></table></div>
+          <div className="mt-3 overflow-x-auto"><table className="w-full text-left text-sm"><thead className="border-b border-border text-xs text-muted-foreground"><tr><th className="py-3 pr-4">Zona</th><th className="px-3">Pico medido</th><th className="px-3">Pico estimado*</th><th className="px-3">Hora</th><th className="px-3">Alta · min</th><th className="px-3">Muy alta · min</th></tr></thead><tbody>{report.zones.map((zone) => <tr key={zone.id} className="border-b border-border"><th className="py-4 pr-4 font-semibold">{zone.name}</th><td className="px-3 tabular-nums">{fmt(zone.peak)}</td><td className="px-3 tabular-nums">≈ {fmt(zone.peakEstimated)}</td><td className="px-3 tabular-nums">{fmtClock(zone.peakMinute)}</td><td className="px-3 tabular-nums text-dens-high">{zone.orange}</td><td className="px-3 tabular-nums text-dens-crit">{zone.red}</td></tr>)}</tbody></table></div>
+          <p className="mt-2 text-xs text-muted-foreground">* {ESTIMATE_LABEL}: densidad del nodo × área de los polígonos de su zona.</p>
         </section>}
         {tab === "Descargas" && <section className="border-y border-border py-6">
           <h2 className="font-display text-lg font-bold">Datos del evento</h2>
           <p className="mt-2 text-sm text-muted-foreground">{start}–{end} · {report.zones.length} zonas · {report.series.length} registros · Simulación</p>
+          <p className="mt-1 text-xs text-muted-foreground">Columnas: personas medidas y personas estimadas ({ESTIMATE_LABEL}), corredores y público.</p>
           <Button onClick={exportCsv} className="mt-4"><Download />Exportar CSV</Button>
         </section>}
       </div>}

@@ -1,3 +1,4 @@
+import area from "@turf/area";
 import type { Scenario, ScenarioNode, TrafficSegment } from "@/scenarios/types";
 import { MAX_NODE_AREA_M2 } from "@/scenarios/types";
 
@@ -6,7 +7,10 @@ export const MAX_DENSITY = 6;
 
 export interface NodeState {
   id: string;
+  /** Medido: densidad × área del círculo del nodo */
   people: number;
+  /** Estimación extrapolada (no medida): densidad × área de los polígonos de su zona */
+  estimated: number;
   runners: number;
   spectators: number;
   roadway?: number | undefined;
@@ -75,9 +79,48 @@ export const nodeArea = (node: ScenarioNode) => Math.min(MAX_NODE_AREA_M2, Math.
 /** personas = densidad × área de la zona */
 const peopleAt = (node: ScenarioNode, min: number) => densityAt(node, min) * nodeArea(node);
 
-export function nodeState(node: ScenarioNode, min: number): NodeState {
+const centroid = (ring: [number, number][]) => {
+  const pts = ring.slice(0, -1);
+  return [pts.reduce((a, p) => a + p[0], 0) / pts.length, pts.reduce((a, p) => a + p[1], 0) / pts.length] as [number, number];
+};
+const distM = (a: [number, number], b: [number, number]) =>
+  Math.hypot((b[0] - a[0]) * 111320 * Math.cos((a[1] * Math.PI) / 180), (b[1] - a[1]) * 111320);
+
+const assignCache = new WeakMap<Scenario, Map<string, string>>();
+/** Asigna cada polígono de zona al nodo más cercano a su centroide (id de zona → id de nodo). */
+export function zoneAssignments(s: Scenario) {
+  const cached = assignCache.get(s);
+  if (cached) return cached;
+  const out = new Map<string, string>();
+  for (const zone of s.zones ?? []) {
+    const c = centroid(zone.polygon[0] ?? []);
+    const nearest = s.nodes.reduce((best, n) => (distM(c, n.lngLat) < distM(c, best.lngLat) ? n : best));
+    out.set(zone.id, nearest.id);
+  }
+  assignCache.set(s, out);
+  return out;
+}
+
+const areaCache = new WeakMap<Scenario, Map<string, number>>();
+/** Área de extrapolación por nodo (m², @turf/area): suma de sus polígonos, nunca menor que el círculo medido. */
+export function estimateAreas(s: Scenario) {
+  const cached = areaCache.get(s);
+  if (cached) return cached;
+  const assigned = zoneAssignments(s);
+  const sums = new Map<string, number>();
+  for (const zone of s.zones ?? []) {
+    const id = assigned.get(zone.id)!;
+    sums.set(id, (sums.get(id) ?? 0) + area({ type: "Polygon", coordinates: zone.polygon }));
+  }
+  const out = new Map(s.nodes.map((n) => [n.id, Math.max(nodeArea(n), sums.get(n.id) ?? 0)]));
+  areaCache.set(s, out);
+  return out;
+}
+
+export function nodeState(node: ScenarioNode, min: number, estimateAreaM2 = nodeArea(node)): NodeState {
   const density = densityAt(node, min);
   const people = Math.round(peopleAt(node, min));
+  const estimated = Math.max(people, Math.round(density * estimateAreaM2));
   const delta = people - peopleAt(node, min - 1);
   const base = people * node.turnover;
   const prev10 = peopleAt(node, min - 10);
@@ -86,6 +129,7 @@ export function nodeState(node: ScenarioNode, min: number): NodeState {
   return {
     id: node.id,
     people,
+    estimated,
     runners,
     spectators: people - runners,
     roadway: node.roadwayShare !== undefined ? Math.round(people * node.roadwayShare) : undefined,
@@ -99,7 +143,13 @@ export function nodeState(node: ScenarioNode, min: number): NodeState {
 }
 
 export function simulate(s: Scenario, min: number): NodeState[] {
-  return s.nodes.map((n) => nodeState(n, min));
+  const areas = estimateAreas(s);
+  return s.nodes.map((n) => nodeState(n, min, areas.get(n.id)));
+}
+
+/** Estado de un nodo con el área de extrapolación de su escenario. */
+export function scenarioNodeState(s: Scenario, node: ScenarioNode, min: number) {
+  return nodeState(node, min, estimateAreas(s).get(node.id));
 }
 
 /** Fixed-seed representative runners; heat responds to stage density, not just location. */

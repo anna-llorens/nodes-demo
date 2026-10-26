@@ -5,7 +5,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { createRoot } from "react-dom/client";
 import { ArrowUp } from "lucide-react";
 import type { LiveScenario as Scenario } from "@/scenarios/types";
-import { heatPoints, ringsGeo, runnerHeatPoints, trafficGeo } from "./geo";
+import { heatPoints, ringsGeo, runnerHeatPoints, trafficGeo, zonesGeo } from "./geo";
 import type { TrafficLevel } from "@/sim/engine";
 import type { MapCamera, MapLayers, RunnerPalette } from "@/lib/map-share";
 
@@ -135,6 +135,12 @@ export default function MapView({
           paint: { "line-color": C.ink, "line-width": 3, "line-dasharray": [2, 1.6], "line-opacity": 0.75 },
         });
       }
+      if (scenario.zones?.length) {
+        map.addSource("zones", { type: "geojson", data: zonesGeo(scenario) });
+        const levelColor = ["match", ["get", "level"], "muy-alta", C.crit, "alta", C.high, "media", C.mid, "#2bb673"];
+        map.addLayer({ id: "zones-fill", type: "fill", source: "zones", paint: { "fill-color": levelColor as never, "fill-opacity": 0.16 } });
+        map.addLayer({ id: "zones-line", type: "line", source: "zones", paint: { "line-color": levelColor as never, "line-width": 1.5, "line-dasharray": [3, 2], "line-opacity": 0.9 } });
+      }
       if (scenario.traffic) {
         map.addSource("traffic", { type: "geojson", data: trafficGeo(scenario, trafficRef.current) });
         map.addLayer({
@@ -232,10 +238,12 @@ export default function MapView({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scenario.id]);
 
-  // Actualiza el mapa de calor con los datos simulados
+  // Actualiza el mapa de calor y el color de las zonas con los datos simulados
   useEffect(() => {
     const src = mapRef.current?.getSource("heat") as maplibregl.GeoJSONSource | undefined;
     if (ready && src) src.setData(heatPoints(scenario));
+    const zones = mapRef.current?.getSource("zones") as maplibregl.GeoJSONSource | undefined;
+    if (ready && zones) zones.setData(zonesGeo(scenario));
   }, [scenario, ready]);
 
   // Actualiza el calor de corredores según la hora simulada
@@ -267,6 +275,8 @@ export default function MapView({
     vis("r20", layers.rings);
     vis("r40", layers.rings);
     vis("route", layers.route);
+    vis("zones-fill", !!layers.zones);
+    vis("zones-line", !!layers.zones);
     vis("traffic", !!layers.traffic);
     map.getContainer().querySelectorAll<HTMLElement>(".flow-arrow").forEach((el: HTMLElement) => (el.style.display = layers.flow ? "" : "none"));
     map.getContainer().querySelectorAll<HTMLElement>(".road-closure").forEach((el: HTMLElement) => (el.style.display = layers.closures ? "" : "none"));

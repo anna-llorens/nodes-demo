@@ -1,5 +1,6 @@
 import type { Scenario, TrafficSegment } from "./types";
 import { nodeAreaM2 } from "./types";
+import { offset, rect, routeBearing } from "./shapes";
 import route from "./data/maraton-route.json";
 import traffic from "./data/valencia-traffic.json";
 import imgSalida from "@/assets/nodes/salida.jpg";
@@ -9,6 +10,10 @@ import imgMeta from "@/assets/nodes/meta.jpg";
 import imgCruce from "@/assets/nodes/cruce.jpg";
 
 const r = route as [number, number][];
+const last = r.length - 1;
+/** Punto a `m` metros de `p` siguiendo el rumbo `bearing`. */
+const ahead = (p: [number, number], bearing: number, m: number) =>
+  offset(p, m * Math.sin((bearing * Math.PI) / 180), m * Math.cos((bearing * Math.PI) / 180));
 
 /**
  * Medio Maratón de València · simulación (referencia edición 2025).
@@ -128,5 +133,17 @@ export const maraton: Scenario = {
       turnover: 0.2,
       runnerShare: [["08:00", 0], ["08:30", 0.3], ["10:30", 0.2], ["11:30", 0]] as [string, number][],
     })),
+  ],
+  // Polígonos aproximados por zona (espacio de público alrededor de cada nodo), para la estimación extrapolada.
+  zonesLabel: "zonas aproximadas",
+  zones: [
+    { id: "z-salida", name: "Cajones de salida", polygon: [rect(ahead(r[0]!, routeBearing(r, 0, 5), -85), 170, 28, routeBearing(r, 0, 5))] },
+    { id: "z-ayuntamiento", name: "Paso por la plaza del Ayuntamiento", polygon: [rect(r[335]!, 180, 18, routeBearing(r, 335))] },
+    { id: "z-animacion", name: "Tramo de animación", polygon: [rect(r[300]!, 120, 20, routeBearing(r, 300))] },
+    { id: "z-meta", name: "Recta de meta y reencuentro", polygon: [rect(ahead(r[last]!, routeBearing(r, last, 5), -50), 200, 30, routeBearing(r, last, 5))] },
+    { id: "z-cruce1", name: "Acceso metro Xàtiva", polygon: [rect([-0.377624, 39.467814], 60, 8, 80)] },
+    { id: "z-cruce2", name: "C/ Colón nº 8", polygon: [rect([-0.374165, 39.467301], 80, 22, 43)] },
+    { id: "z-cruce3", name: "Colón · Puerta del Mar", polygon: [rect([-0.369185, 39.471505], 80, 30, 43)] },
+    { id: "z-cruce4", name: "Av. Tarongers", polygon: [rect([-0.331446, 39.475964], 100, 35, 80)] },
   ],
 };

@@ -6,14 +6,15 @@ export interface MapLayers {
   rings: boolean;
   flow: boolean;
   route: boolean;
+  zones?: boolean;
   traffic?: boolean;
   closures?: boolean;
 }
 export type RunnerPalette = 'termica' | 'verde' | 'azul' | 'terracota' | 'grafito';
 export interface MapCamera { lng: number; lat: number; zoom: number; bearing: number; pitch: number }
-const layerKeys = ['heat', 'runners', 'rings', 'flow', 'route', 'traffic', 'closures'] as const;
+const layerKeys = ['heat', 'runners', 'rings', 'flow', 'route', 'zones', 'traffic', 'closures'] as const;
 const palettes: RunnerPalette[] = ['termica', 'verde', 'azul', 'terracota', 'grafito'];
-export const defaultLayers: MapLayers = { heat: true, runners: true, rings: true, flow: false, route: true, traffic: false, closures: false };
+export const defaultLayers: MapLayers = { heat: true, runners: true, rings: true, flow: false, route: true, zones: true, traffic: false, closures: false };
 export interface MapSearch { scenario?: string | undefined; layers?: string | undefined; camera?: string | undefined; palette?: string | undefined; time?: number | undefined }
 export function validateMapSearch(raw: Record<string, unknown>): MapSearch {
   return {

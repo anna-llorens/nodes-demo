@@ -4,7 +4,7 @@ import { buildMapShareUrl, restoreMapState, validateMapSearch, defaultLayers, re
 
 describe('shared map state', () => {
   it('preserves scenario, every layer, camera, palette and event time in a reopened link', () => {
-    const state = { scenario: 'maraton', layers: { heat: false, runners: true, rings: false, flow: true, route: true, traffic: true, closures: true }, camera: { lng: -0.37651, lat: 39.46975, zoom: 15.25, bearing: 24, pitch: 30 }, palette: 'verde' as const, time: 633.5 };
+    const state = { scenario: 'maraton', layers: { heat: false, runners: true, rings: false, flow: true, route: true, zones: false, traffic: true, closures: true }, camera: { lng: -0.37651, lat: 39.46975, zoom: 15.25, bearing: 24, pitch: 30 }, palette: 'verde' as const, time: 633.5 };
     const url = new URL(buildMapShareUrl('https://nodes-demo.lovable.app', state));
     const raw = Object.fromEntries(url.searchParams);
     const search = validateMapSearch({ ...raw, time: Number(raw['time']) });
@@ -13,7 +13,7 @@ describe('shared map state', () => {
   });
   it('preserves an explicitly empty layer selection', () => {
     const restored = restoreMapState(validateMapSearch({ layers: '' }), maraton);
-    expect(Object.values(restored.layers)).toEqual([false, false, false, false, false, false, false]);
+    expect(Object.values(restored.layers)).toEqual([false, false, false, false, false, false, false, false]);
   });
   it('uses existing defaults for an ordinary map visit', () => {
     const restored = restoreMapState(validateMapSearch({}), maraton);
@@ -40,7 +40,7 @@ describe('default and cached map view', () => {
     expect(DEFAULT_SPEED).toBe(100);
   });
   it('restores cached minute, layers, palette and speed', () => {
-    const layers = { heat: false, runners: true, rings: true, flow: false, route: true, traffic: true, closures: true };
+    const layers = { heat: false, runners: true, rings: true, flow: false, route: true, zones: true, traffic: true, closures: true };
     const r = restoreFromCache({ time: 600, layers, palette: 'azul', speed: 200 }, maraton);
     expect(r.time).toBe(600);
     expect(r.layers).toEqual(layers);

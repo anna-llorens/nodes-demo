@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { maraton } from "@/scenarios/maraton";
-import { MAX_DENSITY, densityAt, fmtClock, simulate, simulateRunnerHeat, toMin, trafficAt } from "./engine";
+import { MAX_DENSITY, densityAt, estimateAreas, fmtClock, simulate, simulateRunnerHeat, toMin, trafficAt, zoneAssignments } from "./engine";
 import { MAX_NODE_AREA_M2, densityLevel, nodeAreaM2 } from "@/scenarios/types";
 import { runnerHeatPoints } from "@/components/nodes/geo";
 
@@ -34,6 +34,18 @@ describe("simulador", () => {
         expect(s.density).toBeLessThanOrEqual(6);
         expect(s.people).toBeLessThanOrEqual(Math.round(6 * node.areaM2));
       }
+  });
+  it("cada polígono del maratón se asigna al nodo de su zona y el área estimada no baja del círculo", () => {
+    for (const [zone, node] of zoneAssignments(maraton)) expect(zone).toBe(`z-${node}`);
+    for (const node of maraton.nodes) expect(estimateAreas(maraton).get(node.id)).toBeGreaterThanOrEqual(node.areaM2);
+  });
+  it("la estimación extrapolada es coherente: ≥ medido y sin más corredores que inscritos", () => {
+    for (let m = toMin("08:00"); m <= toMin("11:30"); m++) {
+      const states = simulate(maraton, m);
+      for (const s of states) expect(s.estimated).toBeGreaterThanOrEqual(s.people);
+      const runners = states.reduce((sum, s) => sum + (s.people ? (s.estimated * s.runners) / s.people : 0), 0);
+      expect(runners).toBeLessThanOrEqual(maraton.participants ?? 0);
+    }
   });
   it("mantiene etapas medias y aumenta la afluencia de animación", () => {
     const medium = simulate(maraton, toMin("10:15")).find((state) => state.id === "animacion");

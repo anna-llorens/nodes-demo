@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 import { Play, Pause, Users, X, ChevronDown, Info, Clock, ChevronRight, Layers } from "lucide-react";
 import type { LiveScenario as Scenario, Scenario as RawScenario } from "@/scenarios/types";
 import { simulate, toMin, fmtClock, trafficAt, trafficTimesAt } from "@/sim/engine";
-import { densityLabel, densityLevel } from "@/scenarios/types";
+import { ESTIMATE_LABEL, densityLabel, densityLevel } from "@/scenarios/types";
 import { SchematicMap } from "./SchematicMap";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -88,6 +88,7 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
   }, []);
   const selected = scenario.nodes.find((n) => n.id === selectedId) ?? null;
   const total = scenario.nodes.reduce((s, n) => s + n.snapshot.people, 0);
+  const estimated = scenario.nodes.reduce((s, n) => s + n.snapshot.estimated, 0);
   const runners = scenario.nodes.reduce((s, n) => s + n.snapshot.runners, 0);
 
   // Panel de capas: se muestra fijo en la barra lateral (ordenador) y en un desplegable (móvil).
@@ -99,6 +100,9 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
       <LayerToggle label="Anillos de nodo" checked={layers.rings} onChange={(value) => onLayerChange("rings", value)} />
       <LayerToggle label="Flechas de flujo" checked={layers.flow} onChange={(value) => onLayerChange("flow", value)} />
       <LayerToggle label="Recorrido" checked={layers.route} onChange={(value) => onLayerChange("route", value)} />
+      {base.zones?.length ? (
+        <LayerToggle label={`Polígonos · ${base.zonesLabel ?? "zonas"}`} checked={Boolean(layers.zones)} onChange={(value) => onLayerChange("zones", value)} />
+      ) : null}
       <LayerToggle
         label="Tráfico y cortes"
         checked={showTraffic || Boolean(layers.closures)}
@@ -157,6 +161,7 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
               <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
             </button>
             <p className="truncate text-xs text-muted-foreground">{scenario.nodes.length} nodos{scenario.tagline ? ` · ${scenario.tagline}` : ""}</p>
+            <PeopleSummary measured={total} estimated={estimated} />
           </div>
           <div className="flex w-full items-center justify-end gap-3 sm:w-auto">
             <span className="hidden items-center gap-2 text-sm text-muted-foreground lg:flex"><Clock className="h-4 w-4" /> {scenario.schedule.start}–{scenario.schedule.end}</span>
@@ -221,7 +226,6 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
             <div className="hidden rounded-2xl bg-card/95 px-4 py-3 shadow-float backdrop-blur lg:block">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Hora del evento</p>
               <p className="font-display text-3xl font-bold tabular-nums text-brand-ink">{clock}</p>
-              <p className="text-xs text-muted-foreground">{fmt(total)} personas en zonas cubiertas</p>
               <p className="text-xs text-muted-foreground">{fmt(runners)} corredores · {fmt(total - runners)} público{base.participants ? ` · ${fmt(base.participants)} inscritos${base.participantsBasis ? ` (base: ${base.participantsBasis})` : ""}` : ""}</p>
             </div>
           </div>
@@ -293,7 +297,8 @@ function NodeBubble({ node, onClose, detailed, minute }: { node: Scenario["nodes
         </button>
       </div>
       {detailed && node.description && <p className="mt-1 text-xs text-muted-foreground">{node.description}</p>}
-      <p className="mt-1 text-sm">{fmt(node.snapshot.people)} personas</p>
+      <p className="mt-1 text-sm">{fmt(node.snapshot.people)} personas medidas</p>
+      <p className="text-sm">≈ {fmt(node.snapshot.estimated)} estimadas en su zona <EstimateTag /></p>
       <p className="text-xs text-muted-foreground">{fmt(node.snapshot.runners)} corredores · {fmt(node.snapshot.spectators)} público</p>
       <p className="mt-0.5 flex items-center gap-1.5 text-sm text-muted-foreground">
         <span className={cn("h-2.5 w-2.5 rounded-full", levelDot[lvl])} />
@@ -322,6 +327,20 @@ function NodeBubble({ node, onClose, detailed, minute }: { node: Scenario["nodes
   );
 }
 
+/** Medido y estimado del escenario; la estimación siempre lleva su etiqueta. */
+function PeopleSummary({ measured, estimated }: { measured: number; estimated: number }) {
+  return (
+    <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-0.5 pb-1 text-xs">
+      <span><span className="font-semibold tabular-nums text-foreground">{fmt(measured)}</span> <span className="text-muted-foreground">personas medidas en zonas cubiertas</span></span>
+      <span><span className="font-semibold tabular-nums text-foreground">≈ {fmt(estimated)}</span> <span className="text-muted-foreground">estimadas en el área del evento</span> <EstimateTag /></span>
+    </div>
+  );
+}
+
+export function EstimateTag() {
+  return <span className="ml-1 inline-block whitespace-nowrap rounded-full border border-dashed border-border px-1.5 py-px align-middle text-[10px] font-semibold text-muted-foreground">{ESTIMATE_LABEL}</span>;
+}
+
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl bg-muted px-3 py-2">
@@ -334,6 +353,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 function NodeList({ scenario, onSelect, selectedId }: { scenario: Scenario; onSelect: (id: string) => void; selectedId?: string | null }) {
   return (
     <ul className="flex flex-col gap-2">
+      <li className="text-[11px] text-muted-foreground">≈ estimadas: <EstimateTag /></li>
       {scenario.nodes.map((n) => {
         const lvl = densityLevel(n.snapshot.density);
         return (
@@ -350,7 +370,7 @@ function NodeList({ scenario, onSelect, selectedId }: { scenario: Scenario; onSe
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-semibold">{n.name}</span>
-                <span className="block text-xs text-muted-foreground">{fmt(n.snapshot.people)} personas · {n.snapshot.density.toLocaleString("es-ES")} pers/m²</span>
+                <span className="block text-xs text-muted-foreground">{fmt(n.snapshot.people)} medidas · ≈ {fmt(n.snapshot.estimated)} estimadas · {n.snapshot.density.toLocaleString("es-ES")} pers/m²</span>
               </span>
               <span className={cn("h-3 w-3 shrink-0 rounded-full", levelDot[lvl])} />
             </button>

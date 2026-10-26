@@ -2,10 +2,10 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ArrowLeft, Users, MapPin } from "lucide-react";
 import { AppShell } from "@/components/nodes/AppShell";
-import { levelDot } from "@/components/nodes/MapStage";
+import { EstimateTag, levelDot } from "@/components/nodes/MapStage";
 import { maraton } from "@/scenarios/maraton";
-import { densityLabel, densityLevel, type DensityLevel } from "@/scenarios/types";
-import { nodeState, toMin, fmtClock } from "@/sim/engine";
+import { ESTIMATE_LABEL, densityLabel, densityLevel, type DensityLevel } from "@/scenarios/types";
+import { scenarioNodeState, toMin, fmtClock } from "@/sim/engine";
 import { cn } from "@/lib/utils";
 
 const fmt = (n: number) => n.toLocaleString("es-ES");
@@ -40,14 +40,14 @@ function NodePage() {
   const start = toMin(maraton.schedule.start);
   const end = toMin(maraton.schedule.end);
   const [minute, setMinute] = useState(Math.round(t ?? toMin("10:15")));
-  const st = nodeState(node, minute);
+  const st = scenarioNodeState(maraton, node, minute);
   const lvl = densityLevel(st.density);
 
   const series = useMemo(() => {
-    const out: { m: number; people: number; runners: number; density: number }[] = [];
+    const out: { m: number; people: number; estimated: number; runners: number; density: number }[] = [];
     for (let m = start; m <= end; m += 5) {
-      const s = nodeState(node, m);
-      out.push({ m, people: s.people, runners: s.runners, density: s.density });
+      const s = scenarioNodeState(maraton, node, m);
+      out.push({ m, people: s.people, estimated: s.estimated, runners: s.runners, density: s.density });
     }
     return out;
   }, [node, start, end]);
@@ -85,8 +85,9 @@ function NodePage() {
             <input type="range" aria-label="Hora" min={start} max={end} step={1} value={minute} onChange={(e) => setMinute(Number(e.target.value))} className="h-1.5 flex-1 accent-primary" />
           </div>
 
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            <Kpi icon={<Users className="h-4 w-4" />} label="Personas" value={fmt(st.people)} sub={`${fmt(st.runners)} corredores · ${fmt(st.spectators)} público`} />
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
+            <Kpi icon={<Users className="h-4 w-4" />} label="Personas medidas" value={fmt(st.people)} sub={`${fmt(st.runners)} corredores · ${fmt(st.spectators)} público`} />
+            <Kpi label="Estimadas en su zona" value={`≈ ${fmt(st.estimated)}`} sub={ESTIMATE_LABEL} />
             <Kpi label="Densidad" value={`${st.density.toLocaleString("es-ES")} pers/m²`} sub={<span className="flex items-center gap-1.5"><span className={cn("h-2.5 w-2.5 rounded-full", levelDot[lvl])} />{densityLabel[lvl]}</span>} />
             <Kpi label="Entrada / salida" value={`${st.flowIn} / ${st.flowOut}`} sub="pers/min" />
             <Kpi label="Velocidad media" value={`${st.speed.toLocaleString("es-ES")} m/s`} sub={`Variación 10 min: ${st.variation10 >= 0 ? "+" : ""}${Math.round(st.variation10 * 100)} %`} />
@@ -95,10 +96,11 @@ function NodePage() {
           <div className="grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
             <section className="rounded-2xl bg-card p-4 shadow-card">
               <h2 className="font-display font-bold text-brand-ink">Evolución de la afluencia</h2>
-              <p className="text-xs text-muted-foreground">Pico: {fmt(peak.people)} personas a las {fmtClock(peak.m)}</p>
+              <p className="text-xs text-muted-foreground">Pico: {fmt(peak.people)} personas medidas (≈ {fmt(peak.estimated)} estimadas) a las {fmtClock(peak.m)}</p>
               <FlowChart series={series} minute={minute} start={start} end={end} />
               <div className="mt-2 flex gap-4 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1.5"><span className="h-2 w-4 rounded-full bg-primary" />Total</span>
+                <span className="flex items-center gap-1.5"><span className="h-2 w-4 rounded-full bg-primary" />Medidas</span>
+                <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 border-t-2 border-dashed border-brand-ink" />Estimadas <EstimateTag /></span>
                 <span className="flex items-center gap-1.5"><span className="h-2 w-4 rounded-full bg-dens-mid" />Corredores</span>
               </div>
             </section>
@@ -140,12 +142,12 @@ function Kpi({ label, value, sub, icon }: { label: string; value: string; sub?: 
   );
 }
 
-function FlowChart({ series, minute, start, end }: { series: { m: number; people: number; runners: number }[]; minute: number; start: number; end: number }) {
+function FlowChart({ series, minute, start, end }: { series: { m: number; people: number; estimated: number; runners: number }[]; minute: number; start: number; end: number }) {
   const W = 600, H = 200;
-  const max = Math.max(1, ...series.map((p) => p.people)) * 1.1;
+  const max = Math.max(1, ...series.map((p) => p.estimated)) * 1.1;
   const x = (m: number) => ((m - start) / (end - start)) * W;
   const y = (v: number) => H - (v / max) * H;
-  const line = (k: "people" | "runners") => series.map((p, i) => `${i ? "L" : "M"}${x(p.m).toFixed(1)},${y(p[k]).toFixed(1)}`).join(" ");
+  const line = (k: "people" | "estimated" | "runners") => series.map((p, i) => `${i ? "L" : "M"}${x(p.m).toFixed(1)},${y(p[k]).toFixed(1)}`).join(" ");
   const area = `${line("people")} L${W},${H} L0,${H} Z`;
   const ticks = [];
   for (let m = Math.ceil(start / 30) * 30; m <= end; m += 30) ticks.push(m);
@@ -154,6 +156,7 @@ function FlowChart({ series, minute, start, end }: { series: { m: number; people
       <path d={area} className="fill-primary/15" />
       <path d={line("people")} className="fill-none stroke-primary" strokeWidth={2.5} />
       <path d={line("runners")} className="fill-none stroke-dens-mid" strokeWidth={2} strokeDasharray="5 4" />
+      <path d={line("estimated")} className="fill-none stroke-brand-ink" strokeWidth={1.5} strokeDasharray="2 4" />
       <line x1={x(minute)} x2={x(minute)} y1={0} y2={H} className="stroke-foreground" strokeWidth={1} strokeDasharray="3 3" />
       {ticks.map((m) => (
         <text key={m} x={x(m)} y={H + 15} textAnchor="middle" className="fill-muted-foreground text-[11px]">{fmtClock(m)}</text>
