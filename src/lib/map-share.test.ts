@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { maraton } from '@/scenarios/maraton';
+import { mascleta } from '@/scenarios/mascleta';
 import { buildMapShareUrl, restoreMapState, validateMapSearch, defaultLayers, restoreFromCache, DEFAULT_SPEED } from './map-share';
 
 describe('shared map state', () => {
@@ -38,6 +39,9 @@ describe('default and cached map view', () => {
     expect(r.camera.lng).toBeCloseTo(-0.37264, 4);
     expect(r.layers.traffic).toBe(false);
     expect(DEFAULT_SPEED).toBe(100);
+  });
+  it('opens the mascletà at 14:10 by default', () => {
+    expect(restoreMapState(validateMapSearch({ scenario: 'mascleta' }), mascleta).time).toBe(14 * 60 + 10);
   });
   it('restores cached minute, layers, palette and speed', () => {
     const layers = { heat: false, runners: true, rings: true, flow: false, route: true, zones: true, traffic: true, closures: true };
