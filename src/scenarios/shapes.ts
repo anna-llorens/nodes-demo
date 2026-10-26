@@ -25,3 +25,9 @@ export function routeBearing(route: [number, number][], i: number, span = 3) {
   const north = b[1] - a[1];
   return (Math.atan2(east, north) * 180) / Math.PI;
 }
+
+/** Punto a `m` metros de `p` siguiendo el rumbo `bearingDeg` (grados desde el norte; negativo = hacia atrás). */
+export function move(p: [number, number], bearingDeg: number, m: number): [number, number] {
+  const b = (bearingDeg * Math.PI) / 180;
+  return offset(p, m * Math.sin(b), m * Math.cos(b));
+}
