@@ -22,7 +22,9 @@ export const maraton: Scenario = {
   center: [-0.3726364867191023, 39.47338819057936],
   zoom: 14.353430624087817,
   route: r,
-  participants: 30000,
+  participants: 27681,
+  participantsBasis: "edición 2025",
+  tagline: "despliegue hipotético de un gran evento",
   closure: { start: "08:15", end: "11:15" },
   roadClosures: [
     { id: "c1", name: "Av. Constitució · paso inferior", lngLat: [-0.3795, 39.4888], underpass: true },

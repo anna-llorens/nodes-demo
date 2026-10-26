@@ -151,10 +151,13 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
       {/* Cabecera */}
       <header className="shrink-0 border-b border-border bg-card px-4 pt-3 sm:px-6">
         <div className="flex flex-col-reverse items-start gap-2 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-3">
-          <button className="flex w-full min-w-0 items-center gap-1.5 text-left">
-            <h1 className="truncate font-display text-lg font-bold text-brand-ink sm:text-xl">{scenario.name}</h1>
-            <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
-          </button>
+          <div className="w-full min-w-0">
+            <button className="flex w-full min-w-0 items-center gap-1.5 text-left">
+              <h1 className="truncate font-display text-lg font-bold text-brand-ink sm:text-xl">{scenario.name}</h1>
+              <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+            </button>
+            <p className="truncate text-xs text-muted-foreground">{scenario.nodes.length} nodos{scenario.tagline ? ` · ${scenario.tagline}` : ""}</p>
+          </div>
           <div className="flex w-full items-center justify-end gap-3 sm:w-auto">
             <span className="hidden items-center gap-2 text-sm text-muted-foreground lg:flex"><Clock className="h-4 w-4" /> {scenario.schedule.start}–{scenario.schedule.end}</span>
             <ShareMapDialog getUrl={() => buildMapShareUrl(window.location.origin, { scenario: base.id, layers, camera, palette, time: minute })} />
@@ -170,7 +173,7 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
                 tab === t ? "border-primary text-foreground" : "border-transparent text-muted-foreground",
               )}
             >
-              {t === "mapa" ? "Mapa" : "Nodes"}
+              {t === "mapa" ? "Mapa" : "Nodos"}
             </Button>
           ))}
         </div>
@@ -219,7 +222,7 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
               <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Hora del evento</p>
               <p className="font-display text-3xl font-bold tabular-nums text-brand-ink">{clock}</p>
               <p className="text-xs text-muted-foreground">{fmt(total)} personas en zonas cubiertas</p>
-              <p className="text-xs text-muted-foreground">{fmt(runners)} corredores · {fmt(total - runners)} público{base.participants ? ` · ${fmt(base.participants)} inscritos` : ""}</p>
+              <p className="text-xs text-muted-foreground">{fmt(runners)} corredores · {fmt(total - runners)} público{base.participants ? ` · ${fmt(base.participants)} inscritos${base.participantsBasis ? ` (base: ${base.participantsBasis})` : ""}` : ""}</p>
             </div>
           </div>
 
@@ -264,7 +267,7 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
             <p className="rounded-2xl bg-card p-4 text-sm text-muted-foreground shadow-card">Toca un nodo del mapa para ver su zona.</p>
           )}
           <div>
-            <h2 className="mb-2 font-display text-sm font-bold text-brand-ink">Nodes</h2>
+            <h2 className="mb-2 font-display text-sm font-bold text-brand-ink">Nodos</h2>
             <NodeList scenario={scenario} selectedId={selectedId} onSelect={setSelectedId} />
           </div>
         </aside>

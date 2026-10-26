@@ -49,6 +49,10 @@ export interface Scenario {
   route?: [number, number][];
   /** Corredores inscritos */
   participants?: number;
+  /** Fuente de la cifra de inscritos, p. ej. "edición 2025" */
+  participantsBasis?: string;
+  /** Descripción breve del despliegue, mostrada bajo el título junto al número de nodos */
+  tagline?: string;
   /** Ventana con calles cortadas por la carrera */
   closure?: { start: string; end: string };
   /** Posibles cortes de tráfico (referencia: plano oficial del Ayuntamiento; posiciones aproximadas). */

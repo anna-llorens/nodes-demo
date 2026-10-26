@@ -11,7 +11,7 @@ const features = [
     t: "Simulador reproducible",
     d: "Play/pausa, deslizador de hora con segundos y velocidades 1×, 10×, 60×, 100× y 200×.",
   },
-  { t: "Recuento de personas", d: "Escala de 30.000 corredores más público, separados en cada zona." },
+  { t: "Recuento de personas", d: "Escala de 27.681 inscritos (base: edición 2025) más público, separados en cada zona." },
   {
     t: "Nodos por zona",
     d: "Densidad, entradas y salidas por minuto, velocidad, variación a 10 min y calzada/aceras.",

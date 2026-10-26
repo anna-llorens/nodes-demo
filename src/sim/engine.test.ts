@@ -59,10 +59,10 @@ describe("simulador", () => {
     const meta = simulate(maraton, toMin("10:15")).find((s) => s.id === "meta")!;
     expect(densityLevel(meta.density)).toBe("alta");
   });
-  it("los corredores contados nunca superan los 30.000 inscritos", () => {
+  it("los corredores contados nunca superan los 27.681 inscritos", () => {
     for (let m = toMin("08:00"); m <= toMin("11:30"); m += 1) {
       const runners = simulate(maraton, m).reduce((a, s) => a + s.runners, 0);
-      expect(runners).toBeLessThanOrEqual(30000);
+      expect(runners).toBeLessThanOrEqual(maraton.participants ?? 0);
     }
   });
   it("corredores + público = personas", () => {
