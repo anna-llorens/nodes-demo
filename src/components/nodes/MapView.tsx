@@ -59,6 +59,7 @@ export default function MapView({
   minute,
   palette = "termica",
   initialCamera,
+  fitBounds,
   onCameraChange,
 }: {
   traffic: { id: string; level: TrafficLevel }[];
@@ -70,6 +71,8 @@ export default function MapView({
   onError: () => void;
   palette?: RunnerPalette;
   initialCamera?: MapCamera;
+  /** Encuadre inicial que contiene todo el escenario; tiene prioridad sobre initialCamera */
+  fitBounds?: [[number, number], [number, number]];
   onCameraChange?: (camera: MapCamera) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -95,6 +98,7 @@ export default function MapView({
       style: "https://tiles.openfreemap.org/styles/positron",
       center: initialCamera ? [initialCamera.lng, initialCamera.lat] : scenario.center,
       zoom: initialCamera?.zoom ?? scenario.zoom,
+      ...(fitBounds ? { bounds: fitBounds, fitBoundsOptions: { padding: { top: 120, bottom: 150, left: 40, right: 60 } } } : {}),
       bearing: initialCamera?.bearing ?? 0,
       pitch: initialCamera?.pitch ?? 0,
       attributionControl: { compact: true },

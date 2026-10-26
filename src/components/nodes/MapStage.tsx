@@ -1,9 +1,10 @@
 import { ClientOnly, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Play, Pause, Users, X, ChevronDown, Info, Clock, ChevronRight, Layers } from "lucide-react";
+import { Play, Pause, Users, X, ChevronDown, Info, Clock, ChevronRight, Layers, TriangleAlert } from "lucide-react";
 import type { LiveScenario as Scenario, Scenario as RawScenario } from "@/scenarios/types";
-import { simulate, toMin, fmtClock, trafficAt, trafficTimesAt } from "@/sim/engine";
+import { alertsAt, simulate, toMin, fmtClock, trafficAt, trafficTimesAt } from "@/sim/engine";
+import { scenarios } from "@/scenarios";
 import { ESTIMATE_LABEL, densityLabel, densityLevel } from "@/scenarios/types";
 import { SchematicMap } from "./SchematicMap";
 import { cn } from "@/lib/utils";
@@ -11,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { LayerToggle } from "./AppShell";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { trackNodeClick } from "@/lib/analytics";
-import { buildMapShareUrl, writeMapCache, DEFAULT_MARATHON_MINUTE, DEFAULT_SPEED, type MapCamera, type MapLayers, type RunnerPalette } from "@/lib/map-share";
+import { buildMapShareUrl, writeMapCache, DEFAULT_SPEED, type MapCamera, type MapLayers, type RunnerPalette } from "@/lib/map-share";
 import { ShareMapDialog } from "./ShareMapDialog";
 export type { MapLayers, RunnerPalette } from "@/lib/map-share";
 
@@ -34,10 +35,10 @@ export const levelDot: Record<string, string> = {
 
 const fmt = (n: number) => n.toLocaleString("es-ES");
 
-export function MapStage({ scenario: base, layers, onLayerChange, initialCamera, initialPalette = "termica", initialMinute, initialSpeed = DEFAULT_SPEED }: { scenario: RawScenario; layers: MapLayers; onLayerChange: (key: keyof MapLayers, value: boolean) => void; initialCamera?: MapCamera; initialPalette?: RunnerPalette; initialMinute?: number; initialSpeed?: number }) {
+export function MapStage({ scenario: base, layers, onLayerChange, initialCamera, fitBounds, initialPalette = "termica", initialMinute, initialSpeed = DEFAULT_SPEED }: { scenario: RawScenario; layers: MapLayers; onLayerChange: (key: keyof MapLayers, value: boolean) => void; initialCamera?: MapCamera; fitBounds?: [[number, number], [number, number]]; initialPalette?: RunnerPalette; initialMinute?: number; initialSpeed?: number }) {
   const start = toMin(base.schedule.start);
   const end = toMin(base.schedule.end);
-  const [minute, setMinute] = useState(initialMinute ?? (base.id === "maraton" ? DEFAULT_MARATHON_MINUTE : start));
+  const [minute, setMinute] = useState(initialMinute ?? toMin(base.defaultTime ?? base.schedule.start));
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(initialSpeed);
   useEffect(() => {
@@ -78,10 +79,10 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
   const [camera, setCamera] = useState<MapCamera>(initialCamera ?? { lng: base.center[0], lat: base.center[1], zoom: base.zoom, bearing: 0, pitch: 0 });
   // Persist simulation view so returning to the map resumes where the user left it.
   const savedTick = Math.floor(minute * 6) / 6;
-  useEffect(() => { writeMapCache({ time: savedTick, speed, palette, camera }); }, [savedTick, speed, palette, camera]);
+  useEffect(() => { writeMapCache({ time: savedTick, speed, palette, camera }, base.id); }, [savedTick, speed, palette, camera, base.id]);
   const minuteRef = useRef(minute);
   minuteRef.current = minute;
-  useEffect(() => () => writeMapCache({ time: minuteRef.current }), []);
+  useEffect(() => () => writeMapCache({ time: minuteRef.current }, base.id), [base.id]);
   const [layersSlot, setLayersSlot] = useState<HTMLElement | null>(null);
   useEffect(() => {
     setLayersSlot(document.getElementById("map-layers-slot"));
@@ -89,6 +90,8 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
   const selected = scenario.nodes.find((n) => n.id === selectedId) ?? null;
   const total = scenario.nodes.reduce((s, n) => s + n.snapshot.people, 0);
   const estimated = scenario.nodes.reduce((s, n) => s + n.snapshot.estimated, 0);
+  const alerts = useMemo(() => alertsAt(base, tick, scenario.nodes.map((n) => n.snapshot)), [base, tick, scenario]);
+  const hasRunners = base.nodes.some((n) => n.runnerShare);
   const runners = scenario.nodes.reduce((s, n) => s + n.snapshot.runners, 0);
 
   // Panel de capas: se muestra fijo en la barra lateral (ordenador) y en un desplegable (móvil).
@@ -96,19 +99,21 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
     <>
       <h2 className="mb-2 font-display text-sm font-bold text-brand-ink">Capas</h2>
       <LayerToggle label="Mapa de calor" checked={layers.heat} onChange={(value) => onLayerChange("heat", value)} />
-      <LayerToggle label="Corredores en recorrido" checked={layers.runners} onChange={(value) => onLayerChange("runners", value)} />
+      {base.route && <LayerToggle label="Corredores en recorrido" checked={layers.runners} onChange={(value) => onLayerChange("runners", value)} />}
       <LayerToggle label="Anillos de nodo" checked={layers.rings} onChange={(value) => onLayerChange("rings", value)} />
       <LayerToggle label="Flechas de flujo" checked={layers.flow} onChange={(value) => onLayerChange("flow", value)} />
-      <LayerToggle label="Recorrido" checked={layers.route} onChange={(value) => onLayerChange("route", value)} />
+      {base.route && <LayerToggle label="Recorrido" checked={layers.route} onChange={(value) => onLayerChange("route", value)} />}
       {base.zones?.length ? (
         <LayerToggle label={`Polígonos · ${base.zonesLabel ?? "zonas"}`} checked={Boolean(layers.zones)} onChange={(value) => onLayerChange("zones", value)} />
       ) : null}
-      <LayerToggle
-        label="Tráfico y cortes"
-        checked={showTraffic || Boolean(layers.closures)}
-        onChange={(value) => { onLayerChange("traffic", value); onLayerChange("closures", value); }}
-      />
-      {showTraffic && (
+      {base.traffic && (
+        <LayerToggle
+          label="Tráfico y cortes"
+          checked={showTraffic || Boolean(layers.closures)}
+          onChange={(value) => { onLayerChange("traffic", value); onLayerChange("closures", value); }}
+        />
+      )}
+      {showTraffic && base.traffic && (
         <div className="mt-2 border-t border-border pt-2">
           <p className="text-xs font-semibold">Tráfico y cortes · {fmtClock(trafficTick)}</p>
           <div className="mt-1 flex items-center gap-3 text-[11px]">
@@ -136,7 +141,7 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
           <p className="mt-1 text-[10px] text-muted-foreground">Espera para cruzar el recorrido (simulado)</p>
         </div>
       )}
-      <label className="mt-2 flex items-center justify-between gap-2 border-t border-border pt-2 text-xs text-muted-foreground">
+      {base.route && <label className="mt-2 flex items-center justify-between gap-2 border-t border-border pt-2 text-xs text-muted-foreground">
         Gama de corredores
         <select
           aria-label="Gama de color de corredores"
@@ -146,7 +151,7 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
         >
           {PALETTES.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
         </select>
-      </label>
+      </label>}
     </>
   );
 
@@ -156,10 +161,22 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
       <header className="shrink-0 border-b border-border bg-card px-4 pt-3 sm:px-6">
         <div className="flex flex-col-reverse items-start gap-2 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-3">
           <div className="w-full min-w-0">
-            <button className="flex w-full min-w-0 items-center gap-1.5 text-left">
-              <h1 className="truncate font-display text-lg font-bold text-brand-ink sm:text-xl">{scenario.name}</h1>
-              <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
-            </button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="flex w-full min-w-0 items-center gap-1.5 text-left" aria-label="Cambiar de escenario">
+                  <h1 className="truncate font-display text-lg font-bold text-brand-ink sm:text-xl">{scenario.name}</h1>
+                  <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent align="start" className="w-80 max-w-[calc(100vw-2rem)] p-1.5">
+                {scenarios.map((s) => (
+                  <Link key={s.id} to="/map" search={{ scenario: s.id }} className={cn("block rounded-lg px-3 py-2 text-sm hover:bg-muted", s.id === base.id && "bg-muted font-semibold")}>
+                    {s.name}
+                    <span className="block text-xs font-normal text-muted-foreground">{s.schedule.start}–{s.schedule.end} · {s.nodes.length} nodos</span>
+                  </Link>
+                ))}
+              </PopoverContent>
+            </Popover>
             <p className="truncate text-xs text-muted-foreground">{scenario.nodes.length} nodos{scenario.tagline ? ` · ${scenario.tagline}` : ""}</p>
             <PeopleSummary measured={total} estimated={estimated} />
           </div>
@@ -199,6 +216,7 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
                   minute={tick}
                   palette={palette}
                   {...(initialCamera ? { initialCamera } : {})}
+                  {...(fitBounds ? { fitBounds } : {})}
                   onCameraChange={setCamera}
                   selectedId={selectedId}
                   onSelect={(id) => setSelectedId(id)}
@@ -226,9 +244,21 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
             <div className="hidden rounded-2xl bg-card/95 px-4 py-3 shadow-float backdrop-blur lg:block">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Hora del evento</p>
               <p className="font-display text-3xl font-bold tabular-nums text-brand-ink">{clock}</p>
-              <p className="text-xs text-muted-foreground">{fmt(runners)} corredores · {fmt(total - runners)} público{base.participants ? ` · ${fmt(base.participants)} inscritos${base.participantsBasis ? ` (base: ${base.participantsBasis})` : ""}` : ""}</p>
+              {hasRunners && <p className="text-xs text-muted-foreground">{fmt(runners)} corredores · {fmt(total - runners)} público{base.participants ? ` · ${fmt(base.participants)} inscritos${base.participantsBasis ? ` (base: ${base.participantsBasis})` : ""}` : ""}</p>}
             </div>
           </div>
+
+          {/* Alertas de densidad muy alta con sugerencia */}
+          {alerts.length > 0 && (
+            <div role="alert" className="absolute right-14 top-3 flex max-w-[min(340px,calc(100%-5rem))] flex-col gap-2 sm:top-4">
+              {alerts.map((a) => (
+                <button key={a.id} onClick={() => setSelectedId(a.id)} className="flex items-start gap-2 rounded-2xl border border-dens-crit bg-card px-3 py-2 text-left text-xs shadow-float">
+                  <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0 text-dens-crit" />
+                  <span><span className="font-semibold">Alerta {fmtClock(minute)} · {a.name}</span> en densidad muy alta. {a.message}</span>
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Burbuja del nodo */}
           {selected && (
@@ -299,11 +329,12 @@ function NodeBubble({ node, onClose, detailed, minute }: { node: Scenario["nodes
       {detailed && node.description && <p className="mt-1 text-xs text-muted-foreground">{node.description}</p>}
       <p className="mt-1 text-sm">{fmt(node.snapshot.people)} personas medidas</p>
       <p className="text-sm">≈ {fmt(node.snapshot.estimated)} estimadas en su zona <EstimateTag /></p>
-      <p className="text-xs text-muted-foreground">{fmt(node.snapshot.runners)} corredores · {fmt(node.snapshot.spectators)} público</p>
+      {node.runnerShare && <p className="text-xs text-muted-foreground">{fmt(node.snapshot.runners)} corredores · {fmt(node.snapshot.spectators)} público</p>}
       <p className="mt-0.5 flex items-center gap-1.5 text-sm text-muted-foreground">
         <span className={cn("h-2.5 w-2.5 rounded-full", levelDot[lvl])} />
         {densityLabel[lvl]} · {node.snapshot.density.toLocaleString("es-ES")} pers/m²
       </p>
+      {node.redAlert && lvl === "muy-alta" && <p className="mt-1 text-xs font-semibold text-dens-crit">{node.redAlert}</p>}
       {detailed && node.snapshot.roadway !== undefined && (
         <div className="mt-3 grid grid-cols-2 gap-2">
           <Stat label="En calzada" value={fmt(node.snapshot.roadway)} />

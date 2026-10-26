@@ -17,6 +17,10 @@ export interface ScenarioNode {
   flowBearing: number;
   /** Fracción de corredores (resto público) por hora "HH:MM" */
   runnerShare?: [string, number][];
+  /** Fracción del flujo de paso que se aleja del evento (salidas) por hora "HH:MM"; por defecto 0,5 */
+  exitShare?: [string, number][];
+  /** Sugerencia que se muestra cuando el nodo pasa a densidad muy alta (rojo) */
+  redAlert?: string;
   /** Descripción breve de la zona */
   description?: string;
   /** Tipo de nodo: zona de control o punto de cruce peatonal */
@@ -33,6 +37,8 @@ export interface ScenarioZone {
   name: string;
   /** Anillos GeoJSON [lng, lat]: el primero es el contorno y los siguientes, huecos (p. ej. zona vallada) */
   polygon: [number, number][][];
+  /** Fracción del polígono ocupada a la densidad del nodo (el nodo mide el punto más denso); por defecto 1 */
+  occupancy?: number;
 }
 
 export interface LiveNode extends ScenarioNode {
@@ -52,6 +58,10 @@ export interface Scenario {
   name: string;
   shortName: string;
   schedule: { start: string; end: string };
+  /** Hora con la que se abre el mapa "HH:MM" (por defecto, el inicio) */
+  defaultTime?: string;
+  /** Abrir el mapa encuadrando todos los nodos y polígonos en lugar de usar center/zoom */
+  fitToZones?: boolean;
   center: [number, number];
   zoom: number;
   route?: [number, number][];
@@ -85,10 +95,11 @@ export function nodeAreaM2(streetWidthM: number) {
   return Math.round(2 * (r * r * Math.asin(h / r) + h * Math.sqrt(r * r - h * h)));
 }
 
+/** Umbrales propuestos; con el tope de 6 pers/m², el rojo empieza en 5,5. */
 export function densityLevel(d: number): DensityLevel {
   if (d < 2) return "baja";
   if (d < 4) return "media";
-  if (d <= 6) return "alta";
+  if (d < 5.5) return "alta";
   return "muy-alta";
 }
 

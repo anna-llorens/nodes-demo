@@ -37,19 +37,21 @@ export function restoreMapState(search: ReturnType<typeof validateMapSearch>, sc
   } : { lng: scenario.center[0], lat: scenario.center[1], zoom: scenario.zoom, bearing: 0, pitch: 0 };
   const palette = palettes.find(p => p === search.palette) ?? 'termica';
   const minutes = (clock: string) => { const [h, m] = clock.split(':').map(Number); return (h ?? 0) * 60 + (m ?? 0); };
-  const time = Math.max(minutes(scenario.schedule.start), Math.min(minutes(scenario.schedule.end), search.time ?? (scenario.id === 'maraton' ? DEFAULT_MARATHON_MINUTE : minutes(scenario.schedule.start))));
+  const time = Math.max(minutes(scenario.schedule.start), Math.min(minutes(scenario.schedule.end), search.time ?? minutes(scenario.defaultTime ?? scenario.schedule.start)));
   return { layers, camera, palette, time };
 }
-/** Default event time for the marathon map (08:43). */
+/** Default event time for the marathon map (08:43, its scenario defaultTime). */
 export const DEFAULT_MARATHON_MINUTE = 523;
 export const DEFAULT_SPEED = 100;
 const CACHE_KEY = 'nodes-map-state-v1';
 export interface MapCache { layers?: MapLayers; camera?: MapCamera; palette?: RunnerPalette; time?: number; speed?: number }
-export function readMapCache(): MapCache | null {
-  try { const raw = localStorage.getItem(CACHE_KEY); return raw ? JSON.parse(raw) as MapCache : null; } catch { return null; }
+/** One cache per scenario; the marathon keeps the original key so existing visitors resume as before. */
+const cacheKey = (scenarioId = 'maraton') => scenarioId === 'maraton' ? CACHE_KEY : `${CACHE_KEY}:${scenarioId}`;
+export function readMapCache(scenarioId?: string): MapCache | null {
+  try { const raw = localStorage.getItem(cacheKey(scenarioId)); return raw ? JSON.parse(raw) as MapCache : null; } catch { return null; }
 }
-export function writeMapCache(patch: MapCache) {
-  try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ...(readMapCache() ?? {}), ...patch })); } catch { /* ignore */ }
+export function writeMapCache(patch: MapCache, scenarioId?: string) {
+  try { localStorage.setItem(cacheKey(scenarioId), JSON.stringify({ ...(readMapCache(scenarioId) ?? {}), ...patch })); } catch { /* ignore */ }
 }
 /** Validates cached values through the same rules as shared links. */
 export function restoreFromCache(cache: MapCache, scenario: Scenario) {

@@ -24,6 +24,7 @@ export const maraton: Scenario = {
   name: "Medio Maratón de València",
   shortName: "Medio Maratón",
   schedule: { start: "08:00", end: "11:30" },
+  defaultTime: "08:43",
   center: [-0.3726364867191023, 39.47338819057936],
   zoom: 14.353430624087817,
   route: r,

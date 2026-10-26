@@ -1,6 +1,6 @@
 import area from "@turf/area";
 import type { Scenario, ScenarioNode, TrafficSegment } from "@/scenarios/types";
-import { MAX_NODE_AREA_M2 } from "@/scenarios/types";
+import { MAX_NODE_AREA_M2, densityLevel } from "@/scenarios/types";
 
 /** Densidad máxima permitida en cualquier momento (pers/m²). */
 export const MAX_DENSITY = 6;
@@ -102,7 +102,7 @@ export function zoneAssignments(s: Scenario) {
 }
 
 const areaCache = new WeakMap<Scenario, Map<string, number>>();
-/** Área de extrapolación por nodo (m², @turf/area): suma de sus polígonos, nunca menor que el círculo medido. */
+/** Área de extrapolación por nodo (m², @turf/area): suma de sus polígonos × ocupación, nunca menor que el círculo medido. */
 export function estimateAreas(s: Scenario) {
   const cached = areaCache.get(s);
   if (cached) return cached;
@@ -110,7 +110,7 @@ export function estimateAreas(s: Scenario) {
   const sums = new Map<string, number>();
   for (const zone of s.zones ?? []) {
     const id = assigned.get(zone.id)!;
-    sums.set(id, (sums.get(id) ?? 0) + area({ type: "Polygon", coordinates: zone.polygon }));
+    sums.set(id, (sums.get(id) ?? 0) + area({ type: "Polygon", coordinates: zone.polygon }) * (zone.occupancy ?? 1));
   }
   const out = new Map(s.nodes.map((n) => [n.id, Math.max(nodeArea(n), sums.get(n.id) ?? 0)]));
   areaCache.set(s, out);
@@ -123,6 +123,7 @@ export function nodeState(node: ScenarioNode, min: number, estimateAreaM2 = node
   const estimated = Math.max(people, Math.round(density * estimateAreaM2));
   const delta = people - peopleAt(node, min - 1);
   const base = people * node.turnover;
+  const exit = node.exitShare ? Math.min(1, Math.max(0, interp(node.exitShare, min))) : 0.5;
   const prev10 = peopleAt(node, min - 10);
   const share = node.runnerShare ? Math.min(1, Math.max(0, interp(node.runnerShare, min))) : 0;
   const runners = Math.round(people * share);
@@ -135,8 +136,8 @@ export function nodeState(node: ScenarioNode, min: number, estimateAreaM2 = node
     roadway: node.roadwayShare !== undefined ? Math.round(people * node.roadwayShare) : undefined,
     sidewalk: node.roadwayShare !== undefined ? people - Math.round(people * node.roadwayShare) : undefined,
     density: Math.round(density * 10) / 10,
-    flowIn: Math.round(base + Math.max(delta, 0)),
-    flowOut: Math.round(base + Math.max(-delta, 0)),
+    flowIn: Math.round(2 * base * (1 - exit) + Math.max(delta, 0)),
+    flowOut: Math.round(2 * base * exit + Math.max(-delta, 0)),
     speed: Math.round(Math.max(0.1, 1.4 * (1 - density / 7.5)) * 10) / 10,
     variation10: prev10 > 0 ? (people - prev10) / prev10 : 0,
   };
@@ -176,6 +177,16 @@ export function simulateRunnerHeat(s: Scenario, minute: number) {
     samples.push({ progress, weight, offsetLngM, offsetLatM });
   }
   return samples;
+}
+
+export interface NodeAlert { id: string; name: string; message: string }
+
+/** Alertas activas: nodos con sugerencia configurada que están en densidad muy alta (rojo). */
+export function alertsAt(s: Scenario, min: number, states = simulate(s, min)): NodeAlert[] {
+  return s.nodes.flatMap((node, i) => {
+    const state = states[i];
+    return node.redAlert && state && densityLevel(state.density) === "muy-alta" ? [{ id: node.id, name: node.name, message: node.redAlert }] : [];
+  });
 }
 
 export type TrafficLevel = 1 | 2 | 3;

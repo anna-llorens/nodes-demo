@@ -5,6 +5,7 @@ import { Logo } from "@/components/nodes/Logo";
 import maratonImg from "@/assets/maraton.jpg";
 import mascletaImg from "@/assets/mascleta.jpg";
 import { maraton } from "@/scenarios/maraton";
+import { mascleta } from "@/scenarios/mascleta";
 
 export function HomePage() {
   return (
@@ -14,7 +15,7 @@ export function HomePage() {
           <Logo className="text-4xl sm:text-5xl lg:hidden" />
         </div>
         <h1 className="mt-4 max-w-xl font-display text-2xl font-semibold leading-tight text-brand-ink sm:text-3xl lg:mt-0 lg:text-5xl">
-          Datos para decidir a tiempo en eventos de calle
+          Datos para decidir a tiempo en eventos de gran afluencia de personas.
         </h1>
         <p className="mt-3 max-w-lg text-sm text-muted-foreground sm:text-base">
           Nodos LiDAR temporales que cuentan personas por zona. Sin caras: solo recuentos y densidades.
@@ -22,17 +23,18 @@ export function HomePage() {
 
         <div className="mt-8 grid gap-4 md:grid-cols-2 lg:gap-6">
           <EventCard
-            to="/map"
+            scenarioId={maraton.id}
             img={maratonImg}
             icon={<Activity className="h-8 w-8" strokeWidth={1.8} />}
             title={maraton.name}
             subtitle={`${maraton.schedule.start}–${maraton.schedule.end} · ${maraton.nodes.length} nodos`}
           />
           <EventCard
+            scenarioId={mascleta.id}
             img={mascletaImg}
             icon={<Landmark className="h-8 w-8" strokeWidth={1.8} />}
-            title="Mascletà · plaza del Ayuntamiento"
-            subtitle="12:30–15:30 · 4 nodos · próximamente"
+            title={mascleta.name}
+            subtitle={`${mascleta.schedule.start}–${mascleta.schedule.end} · ${mascleta.nodes.length} nodos`}
           />
         </div>
       </div>
@@ -40,7 +42,7 @@ export function HomePage() {
   );
 }
 
-function EventCard({ to, img, icon, title, subtitle }: { to?: "/map"; img: string; icon: React.ReactNode; title: string; subtitle: string }) {
+function EventCard({ scenarioId, img, icon, title, subtitle }: { scenarioId?: string; img: string; icon: React.ReactNode; title: string; subtitle: string }) {
   const body = (
     <div className="group relative h-52 overflow-hidden rounded-3xl shadow-card sm:h-60 lg:h-72">
       <img src={img} alt="" width={1024} height={640} className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -58,6 +60,6 @@ function EventCard({ to, img, icon, title, subtitle }: { to?: "/map"; img: strin
     </div>
   );
   return <div>
-    {to ? <Link to={to}>{body}</Link> : <div className="cursor-not-allowed opacity-90">{body}</div>}
+    {scenarioId ? <Link to="/map" search={scenarioId === "maraton" ? {} : { scenario: scenarioId }}>{body}</Link> : <div className="cursor-not-allowed opacity-90">{body}</div>}
   </div>;
 }

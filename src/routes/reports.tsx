@@ -4,7 +4,7 @@ import { Users, Clock, MapPin, Radio, Download } from "lucide-react";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AppShell } from "@/components/nodes/AppShell";
 import { Button } from "@/components/ui/button";
-import { maraton } from "@/scenarios/maraton";
+import { getScenario, scenarios } from "@/scenarios";
 import { ESTIMATE_LABEL } from "@/scenarios/types";
 import { fmtClock, toMin } from "@/sim/engine";
 import { buildReport, reportCsv } from "@/sim/reports";
@@ -12,7 +12,7 @@ import { buildReport, reportCsv } from "@/sim/reports";
 export const Route = createFileRoute("/reports")({
   head: () => ({ meta: [
     { title: "Informes de afluencia · NODES" },
-    { name: "description", content: "Resumen del Medio Maratón de València: picos de afluencia, comparación de zonas y descarga de datos simulados." },
+    { name: "description", content: "Resumen por escenario: picos de afluencia medida y estimada, comparación de zonas y descarga de datos simulados." },
     { property: "og:title", content: "Informes de afluencia · NODES" },
     { property: "og:description", content: "Evolución de corredores y público, densidad por zona y descarga CSV del evento simulado." },
     { property: "og:type", content: "website" },
@@ -27,16 +27,23 @@ const tooltipStyle = { background: "var(--card)", border: "1px solid var(--borde
 
 function ReportsPage() {
   const [tab, setTab] = useState<(typeof tabs)[number]>("Resumen");
+  const [scenarioId, setScenarioId] = useState("maraton");
+  const scenario = getScenario(scenarioId);
   const [nodeId, setNodeId] = useState("all");
-  const [start, setStart] = useState(maraton.schedule.start);
-  const [end, setEnd] = useState(maraton.schedule.end);
+  const [start, setStart] = useState(scenario.schedule.start);
+  const [end, setEnd] = useState(scenario.schedule.end);
+  const selectScenario = (id: string) => {
+    const next = getScenario(id);
+    setScenarioId(next.id); setNodeId("all"); setStart(next.schedule.start); setEnd(next.schedule.end);
+  };
+  const hasRunners = scenario.nodes.some((node) => node.runnerShare);
   const [metric, setMetric] = useState("peak");
   const valid = toMin(start) < toMin(end);
-  const report = useMemo(() => buildReport(maraton, toMin(start), toMin(end), nodeId), [start, end, nodeId]);
+  const report = useMemo(() => buildReport(scenario, toMin(start), toMin(end), nodeId), [scenario, start, end, nodeId]);
   const exportCsv = () => {
     const url = URL.createObjectURL(new Blob(["\uFEFF" + reportCsv(report)], { type: "text/csv;charset=utf-8" }));
     const link = document.createElement("a");
-    link.href = url; link.download = `nodes-maraton-${start.replace(":", "")}-${end.replace(":", "")}.csv`;
+    link.href = url; link.download = `nodes-${scenario.id}-${start.replace(":", "")}-${end.replace(":", "")}.csv`;
     link.click(); URL.revokeObjectURL(url);
   };
   return <AppShell>
@@ -44,28 +51,32 @@ function ReportsPage() {
       <header className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-2xl font-bold text-brand-ink">Informes</h1>
       </header>
-      <p className="mt-2 text-sm font-semibold">{maraton.name}</p>
+      <label className="mt-2 grid max-w-md gap-1 text-xs font-semibold text-muted-foreground">Escenario
+        <select aria-label="Escenario del informe" value={scenario.id} onChange={(event) => selectScenario(event.target.value)} className="h-10 min-w-0 rounded-lg border border-input bg-card px-3 text-sm font-semibold text-foreground">
+          {scenarios.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+        </select>
+      </label>
       <div role="tablist" aria-label="Informes" className="mt-5 grid grid-cols-4 border-b border-border">
         {tabs.map((item) => <Button key={item} role="tab" aria-selected={tab === item} variant="ghost" onClick={() => setTab(item)} className={`rounded-none border-b-2 px-1 text-xs sm:text-sm ${tab === item ? "border-primary text-primary" : "border-transparent text-muted-foreground"}`}>{item}</Button>)}
       </div>
       <div className="my-5 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
         <label className="grid gap-1 text-xs font-semibold text-muted-foreground">Zona
           <select aria-label="Zona del informe" value={nodeId} onChange={(event) => setNodeId(event.target.value)} className="h-10 min-w-0 rounded-lg border border-input bg-card px-3 text-sm text-foreground">
-            <option value="all">Todas las zonas</option>{maraton.nodes.map((node) => <option key={node.id} value={node.id}>{node.name}</option>)}
+            <option value="all">Todas las zonas</option>{scenario.nodes.map((node) => <option key={node.id} value={node.id}>{node.name}</option>)}
           </select>
         </label>
-        <label className="grid gap-1 text-xs font-semibold text-muted-foreground">Desde<input type="time" aria-label="Desde" min={maraton.schedule.start} max={maraton.schedule.end} value={start} onChange={(event) => setStart(event.target.value || maraton.schedule.start)} className="h-10 rounded-lg border border-input bg-card px-3 text-sm text-foreground" /></label>
-        <label className="grid gap-1 text-xs font-semibold text-muted-foreground">Hasta<input type="time" aria-label="Hasta" min={maraton.schedule.start} max={maraton.schedule.end} value={end} onChange={(event) => setEnd(event.target.value || maraton.schedule.end)} className="h-10 rounded-lg border border-input bg-card px-3 text-sm text-foreground" /></label>
+        <label className="grid gap-1 text-xs font-semibold text-muted-foreground">Desde<input type="time" aria-label="Desde" min={scenario.schedule.start} max={scenario.schedule.end} value={start} onChange={(event) => setStart(event.target.value || scenario.schedule.start)} className="h-10 rounded-lg border border-input bg-card px-3 text-sm text-foreground" /></label>
+        <label className="grid gap-1 text-xs font-semibold text-muted-foreground">Hasta<input type="time" aria-label="Hasta" min={scenario.schedule.start} max={scenario.schedule.end} value={end} onChange={(event) => setEnd(event.target.value || scenario.schedule.end)} className="h-10 rounded-lg border border-input bg-card px-3 text-sm text-foreground" /></label>
       </div>
       {!valid ? <p role="alert" className="text-destructive">La hora final debe ser posterior a la inicial.</p> : <div role="tabpanel" aria-label={tab}>
         {tab === "Resumen" && <>
           <h2 className="mb-3 font-display text-sm font-bold">Resumen del evento</h2>
           <div className="grid grid-cols-2 gap-3 xl:grid-cols-5">
             <Kpi icon={Users} label="Personas medidas en zonas · pico" value={fmt(report.peak?.people ?? 0)} />
-            <Kpi icon={Users} label={`Estimadas en el área · pico · ${ESTIMATE_LABEL}`} value={`≈ ${fmt(report.peakEstimated?.estimated ?? 0)}`} />
-            <Kpi icon={Clock} label="Hora del pico" value={fmtClock(report.peak?.minute ?? toMin(start))} />
+            <Kpi icon={Users} label={`Estimadas en el área · pico a las ${fmtClock(report.peakEstimated?.minute ?? toMin(start))} · ${ESTIMATE_LABEL}`} value={`≈ ${fmt(report.peakEstimated?.estimated ?? 0)}`} />
+            <Kpi icon={Clock} label="Hora del pico medido" value={fmtClock(report.peak?.minute ?? toMin(start))} />
             <Kpi icon={MapPin} label="Zona más concurrida" value={report.busiest?.name ?? "—"} />
-            <Kpi icon={Radio} label="Nodos incluidos" value={`${report.zones.length} / ${maraton.nodes.length}`} />
+            <Kpi icon={Radio} label="Nodos incluidos" value={`${report.zones.length} / ${scenario.nodes.length}`} />
           </div>
           <section className="mt-7">
             <h2 className="font-display text-sm font-bold">Afluencia a lo largo del tiempo</h2>
@@ -75,7 +86,7 @@ function ReportsPage() {
                 <Tooltip contentStyle={tooltipStyle} formatter={(value: number) => fmt(value)} /><Legend />
                 <Area type="monotone" dataKey="estimated" name={`Estimadas (${ESTIMATE_LABEL})`} stroke="var(--brand-ink)" fill="none" strokeDasharray="4 4" strokeWidth={1.5} />
                 <Area type="monotone" dataKey="people" name="Personas medidas" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.14} strokeWidth={2} />
-                <Area type="monotone" dataKey="runners" name="Corredores" stroke="var(--dens-high)" fill="var(--dens-mid)" fillOpacity={0.12} strokeWidth={2} />
+                {hasRunners && <Area type="monotone" dataKey="runners" name="Corredores" stroke="var(--dens-high)" fill="var(--dens-mid)" fillOpacity={0.12} strokeWidth={2} />}
               </AreaChart></ResponsiveContainer>
             </div>
           </section>

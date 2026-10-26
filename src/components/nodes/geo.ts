@@ -126,6 +126,14 @@ export function zonesGeo(s: Scenario) {
   } as GeoJSON.FeatureCollection;
 }
 
+/** Recuadro [[oeste, sur], [este, norte]] que contiene todos los nodos y polígonos del escenario. */
+export function scenarioBounds(s: BaseScenario): [[number, number], [number, number]] {
+  const pts = [...s.nodes.map((n) => n.lngLat), ...(s.zones ?? []).flatMap((z) => z.polygon[0] ?? [])];
+  const xs = pts.map((p) => p[0]);
+  const ys = pts.map((p) => p[1]);
+  return [[Math.min(...xs), Math.min(...ys)], [Math.max(...xs), Math.max(...ys)]];
+}
+
 export function trafficGeo(s: Scenario, levels: { id: string; level: number }[]) {
   const byId = new Map(levels.map((l) => [l.id, l.level]));
   return {
