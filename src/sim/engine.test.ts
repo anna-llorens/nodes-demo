@@ -51,7 +51,8 @@ describe("simulador", () => {
     const medium = simulate(maraton, toMin("10:15")).find((state) => state.id === "animacion");
     expect(densityLevel(medium?.density ?? 0)).toBe("media");
     const peak = simulate(maraton, toMin("09:10")).find((state) => state.id === "animacion");
-    expect(densityLevel(peak?.density ?? 0)).toBe("alta");
+    expect(peak?.density).toBeGreaterThanOrEqual(3.5);
+    expect(densityLevel(peak?.density ?? 0)).toBe("media");
     expect(peak?.people).toBeGreaterThan(medium?.people ?? 0);
   });
   it("el calor aumenta con la densidad sin cambiar posiciones", () => {
@@ -67,9 +68,10 @@ describe("simulador", () => {
     expect(simulate(maraton, 615.3)).toEqual(simulate(maraton, 615.3));
     expect(trafficAt(maraton, 615.3)).toEqual(trafficAt(maraton, 615.3));
   });
-  it("la meta pasa a naranja hacia las 10:15", () => {
-    const meta = simulate(maraton, toMin("10:15")).find((s) => s.id === "meta")!;
-    expect(densityLevel(meta.density)).toBe("alta");
+  it("la meta pasa a naranja hacia las 10:05 y a rojo a las 10:15", () => {
+    const meta = (t: string) => simulate(maraton, toMin(t)).find((s) => s.id === "meta")!;
+    expect(densityLevel(meta("10:06").density)).toBe("alta");
+    expect(densityLevel(meta("10:15").density)).toBe("muy-alta");
   });
   it("los corredores contados nunca superan los 27.681 inscritos", () => {
     for (let m = toMin("08:00"); m <= toMin("11:30"); m += 1) {

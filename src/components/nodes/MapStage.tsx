@@ -3,7 +3,8 @@ import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Play, Pause, Users, X, ChevronDown, Info, Clock, ChevronRight, Layers, TriangleAlert } from "lucide-react";
 import type { LiveScenario as Scenario, Scenario as RawScenario } from "@/scenarios/types";
-import { alertsAt, simulate, toMin, fmtClock, trafficAt, trafficTimesAt } from "@/sim/engine";
+import { visibleAlerts, simulate, toMin, fmtClock, trafficAt, trafficTimesAt } from "@/sim/engine";
+import { setSimClock } from "@/lib/sim-clock";
 import { scenarios } from "@/scenarios";
 import { ESTIMATE_LABEL, densityLabel, densityLevel } from "@/scenarios/types";
 import { SchematicMap } from "./SchematicMap";
@@ -90,7 +91,12 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
   const selected = scenario.nodes.find((n) => n.id === selectedId) ?? null;
   const total = scenario.nodes.reduce((s, n) => s + n.snapshot.people, 0);
   const estimated = scenario.nodes.reduce((s, n) => s + n.snapshot.estimated, 0);
-  const alerts = useMemo(() => alertsAt(base, tick, scenario.nodes.map((n) => n.snapshot)), [base, tick, scenario]);
+  useEffect(() => { setSimClock({ scenarioId: base.id, minute: tick }); }, [base.id, tick]);
+  // Aviso sobre el mapa: alertas con sugerencia cuyo nodo sigue en esa banda.
+  const alerts = useMemo(() => visibleAlerts(base, tick).filter((a) => {
+    const node = scenario.nodes.find((n) => n.id === a.nodeId);
+    return a.suggestion && node && densityLevel(node.snapshot.density) === a.level;
+  }), [base, tick, scenario]);
   const hasRunners = base.nodes.some((n) => n.runnerShare);
   const runners = scenario.nodes.reduce((s, n) => s + n.snapshot.runners, 0);
 
@@ -252,9 +258,9 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
           {alerts.length > 0 && (
             <div role="alert" className="absolute right-14 top-3 flex max-w-[min(340px,calc(100%-5rem))] flex-col gap-2 sm:top-4">
               {alerts.map((a) => (
-                <button key={a.id} onClick={() => setSelectedId(a.id)} className="flex items-start gap-2 rounded-2xl border border-dens-crit bg-card px-3 py-2 text-left text-xs shadow-float">
-                  <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0 text-dens-crit" />
-                  <span><span className="font-semibold">Alerta {fmtClock(minute)} · {a.name}</span> en densidad muy alta. {a.message}</span>
+                <button key={a.id} onClick={() => setSelectedId(a.nodeId)} className={cn("flex items-start gap-2 rounded-2xl border bg-card px-3 py-2 text-left text-xs shadow-float", a.level === "muy-alta" ? "border-dens-crit" : "border-dens-high")}>
+                  <TriangleAlert className={cn("mt-0.5 h-4 w-4 shrink-0", a.level === "muy-alta" ? "text-dens-crit" : "text-dens-high")} />
+                  <span><span className="font-semibold">{a.time} · {a.node}</span> · {densityLabel[a.level]}. Sugerencia: {a.suggestion}</span>
                 </button>
               ))}
             </div>
@@ -334,7 +340,7 @@ function NodeBubble({ node, onClose, detailed, minute }: { node: Scenario["nodes
         <span className={cn("h-2.5 w-2.5 rounded-full", levelDot[lvl])} />
         {densityLabel[lvl]} · {node.snapshot.density.toLocaleString("es-ES")} pers/m²
       </p>
-      {node.redAlert && lvl === "muy-alta" && <p className="mt-1 text-xs font-semibold text-dens-crit">{node.redAlert}</p>}
+      {(lvl === "alta" || lvl === "muy-alta") && node.suggestions?.[lvl] && <p className="mt-1 text-xs font-semibold text-dens-crit">Sugerencia: {node.suggestions[lvl]}</p>}
       {detailed && node.snapshot.roadway !== undefined && (
         <div className="mt-3 grid grid-cols-2 gap-2">
           <Stat label="En calzada" value={fmt(node.snapshot.roadway)} />

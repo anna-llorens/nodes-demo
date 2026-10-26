@@ -1,5 +1,5 @@
 import area from "@turf/area";
-import type { Scenario, ScenarioNode, TrafficSegment } from "@/scenarios/types";
+import type { AlertLevel, Scenario, ScenarioNode, TrafficSegment } from "@/scenarios/types";
 import { MAX_NODE_AREA_M2, densityLevel } from "@/scenarios/types";
 
 /** Densidad máxima permitida en cualquier momento (pers/m²). */
@@ -179,14 +179,65 @@ export function simulateRunnerHeat(s: Scenario, minute: number) {
   return samples;
 }
 
-export interface NodeAlert { id: string; name: string; message: string }
+export interface DensityAlert {
+  id: string;
+  minute: number;
+  time: string;
+  nodeId: string;
+  node: string;
+  zone: string;
+  level: AlertLevel;
+  /** Densidad del nodo en ese minuto (pers/m², redondeada como en pantalla) */
+  density: number;
+  /** Variación a 10 min, en tanto por uno */
+  variation10: number;
+  suggestion?: string;
+}
 
-/** Alertas activas: nodos con sugerencia configurada que están en densidad muy alta (rojo). */
-export function alertsAt(s: Scenario, min: number, states = simulate(s, min)): NodeAlert[] {
-  return s.nodes.flatMap((node, i) => {
-    const state = states[i];
-    return node.redAlert && state && densityLevel(state.density) === "muy-alta" ? [{ id: node.id, name: node.name, message: node.redAlert }] : [];
-  });
+const alertCache = new WeakMap<Scenario, DensityAlert[]>();
+/**
+ * Alertas de densidad del escenario: recorre cada nodo minuto a minuto y crea una alerta
+ * la primera vez que su densidad entra en cada banda (alta, muy alta). Deterministas y cacheadas.
+ */
+export function scenarioAlerts(s: Scenario): DensityAlert[] {
+  const cached = alertCache.get(s);
+  if (cached) return cached;
+  const out: DensityAlert[] = [];
+  const start = toMin(s.schedule.start);
+  const end = toMin(s.schedule.end);
+  for (const node of s.nodes) {
+    const entered = new Set<AlertLevel>();
+    for (let m = start; m <= end; m++) {
+      const state = scenarioNodeState(s, node, m);
+      const level = densityLevel(state.density);
+      const bands: AlertLevel[] = level === "muy-alta" ? ["alta", "muy-alta"] : level === "alta" ? ["alta"] : [];
+      for (const band of bands) {
+        if (entered.has(band)) continue;
+        entered.add(band);
+        const suggestion = node.suggestions?.[band];
+        out.push({
+          id: `${node.id}-${band}`,
+          minute: m,
+          time: fmtClock(m),
+          nodeId: node.id,
+          node: node.name,
+          zone: node.address ?? node.name,
+          level: band,
+          density: state.density,
+          variation10: state.variation10,
+          ...(suggestion ? { suggestion } : {}),
+        });
+      }
+    }
+  }
+  out.sort((a, b) => a.minute - b.minute || (a.level === "alta" ? -1 : 1));
+  alertCache.set(s, out);
+  return out;
+}
+
+/** Alertas visibles: las que ya han ocurrido a la hora del reproductor, la más reciente primero. */
+export function visibleAlerts(s: Scenario, minute: number) {
+  return scenarioAlerts(s).filter((a) => a.minute <= minute).reverse();
 }
 
 export type TrafficLevel = 1 | 2 | 3;

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as InformesRouteImport } from './routes/informes'
 import { Route as InicioRouteImport } from './routes/inicio'
@@ -37,6 +38,11 @@ const AboutRoute = AboutRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlertsRoute = AlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomeRoute = HomeRouteImport.update({
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/alerts': typeof AlertsRoute
   '/home': typeof HomeRoute
   '/informes': typeof InformesRoute
   '/inicio': typeof InicioRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/alerts': typeof AlertsRoute
   '/home': typeof HomeRoute
   '/informes': typeof InformesRoute
   '/inicio': typeof InicioRoute
@@ -132,6 +140,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/alerts': typeof AlertsRoute
   '/home': typeof HomeRoute
   '/informes': typeof InformesRoute
   '/inicio': typeof InicioRoute
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/alerts'
     | '/home'
     | '/informes'
     | '/inicio'
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/alerts'
     | '/home'
     | '/informes'
     | '/inicio'
@@ -182,6 +193,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/alerts'
     | '/home'
     | '/informes'
     | '/inicio'
@@ -199,6 +211,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
+  AlertsRoute: typeof AlertsRoute
   HomeRoute: typeof HomeRoute
   InformesRoute: typeof InformesRoute
   InicioRoute: typeof InicioRoute
@@ -233,6 +246,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alerts': {
+      id: '/alerts'
+      path: '/alerts'
+      fullPath: '/alerts'
+      preLoaderRoute: typeof AlertsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/home': {
@@ -319,6 +339,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
+  AlertsRoute: AlertsRoute,
   HomeRoute: HomeRoute,
   InformesRoute: InformesRoute,
   InicioRoute: InicioRoute,

@@ -1,18 +1,24 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Map, FileBarChart, MoreHorizontal, Layers } from "lucide-react";
+import { Home, Map, FileBarChart, MoreHorizontal, Layers, Bell } from "lucide-react";
 import type { ReactNode } from "react";
 import { Logo, SimBadge } from "./Logo";
 import { cn } from "@/lib/utils";
+import { getScenario } from "@/scenarios";
+import { visibleAlerts } from "@/sim/engine";
+import { useSimClock } from "@/lib/sim-clock";
 
 export const navItems = [
   { to: "/home", label: "Inicio", icon: Home },
   { to: "/map", label: "Mapa", icon: Map },
+  { to: "/alerts", label: "Alertas", icon: Bell },
   { to: "/reports", label: "Informes", icon: FileBarChart },
   { to: "/about", label: "Más", icon: MoreHorizontal },
 ] as const;
 
 export function AppShell({ children, sidebarExtra }: { children: ReactNode; sidebarExtra?: ReactNode }) {
   const path = useRouterState({ select: (r) => r.location.pathname });
+  const clock = useSimClock();
+  const alertCount = visibleAlerts(getScenario(clock.scenarioId), clock.minute).length;
   return (
     <div className="flex h-dvh w-full overflow-hidden bg-background">
       {/* Barra lateral (ordenador) */}
@@ -35,6 +41,7 @@ export function AppShell({ children, sidebarExtra }: { children: ReactNode; side
               >
                 <it.icon className="h-[18px] w-[18px]" strokeWidth={1.8} />
                 {it.label}
+                {it.to === "/alerts" && <CountDot count={alertCount} className="ml-auto" />}
               </Link>
             );
           })}
@@ -45,13 +52,17 @@ export function AppShell({ children, sidebarExtra }: { children: ReactNode; side
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <div aria-label="Estado de los datos" className="flex shrink-0 justify-end border-b border-border bg-card px-4 py-2 sm:px-6">
+        <div aria-label="Estado de los datos" className="flex shrink-0 items-center justify-end gap-3 border-b border-border bg-card px-4 py-2 sm:px-6">
           <SimBadge />
+          <Link to="/alerts" aria-label={`Alertas: ${alertCount}`} className="relative grid h-8 w-8 place-items-center rounded-full text-muted-foreground hover:bg-muted">
+            <Bell className="h-[18px] w-[18px]" strokeWidth={1.8} />
+            <CountDot count={alertCount} className="absolute -right-0.5 -top-0.5" />
+          </Link>
         </div>
         <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
 
         {/* Barra inferior (móvil y tablet) */}
-        <nav className="grid shrink-0 grid-cols-4 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] lg:hidden">
+        <nav className="grid shrink-0 grid-cols-5 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] lg:hidden">
           {navItems.map((it) => {
             const active = it.to === "/home" ? path === "/" || path === "/home" : path.startsWith(it.to);
             return (
@@ -63,7 +74,10 @@ export function AppShell({ children, sidebarExtra }: { children: ReactNode; side
                   active ? "text-primary" : "text-muted-foreground",
                 )}
               >
-                <it.icon className="h-5 w-5" strokeWidth={active ? 2.2 : 1.6} />
+                <span className="relative">
+                  <it.icon className="h-5 w-5" strokeWidth={active ? 2.2 : 1.6} />
+                  {it.to === "/alerts" && <CountDot count={alertCount} className="absolute -right-2.5 -top-1.5" />}
+                </span>
                 {it.label}
               </Link>
             );
@@ -72,6 +86,12 @@ export function AppShell({ children, sidebarExtra }: { children: ReactNode; side
       </div>
     </div>
   );
+}
+
+/** Punto rojo con el número de alertas visibles (no se muestra si no hay ninguna). */
+function CountDot({ count, className }: { count: number; className?: string }) {
+  if (!count) return null;
+  return <span className={cn("grid h-4 min-w-4 place-items-center rounded-full bg-dens-crit px-1 text-[10px] font-bold leading-none text-white", className)}>{count}</span>;
 }
 
 export function LayerToggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {

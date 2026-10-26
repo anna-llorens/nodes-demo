@@ -1,4 +1,6 @@
 export type DensityLevel = "baja" | "media" | "alta" | "muy-alta";
+/** Bandas que generan alerta: alta (> 4 pers/m²) y muy alta (≥ 6, el tope). */
+export type AlertLevel = "alta" | "muy-alta";
 
 export interface ScenarioNode {
   id: string;
@@ -19,8 +21,8 @@ export interface ScenarioNode {
   runnerShare?: [string, number][];
   /** Fracción del flujo de paso que se aleja del evento (salidas) por hora "HH:MM"; por defecto 0,5 */
   exitShare?: [string, number][];
-  /** Sugerencia que se muestra cuando el nodo pasa a densidad muy alta (rojo) */
-  redAlert?: string;
+  /** Sugerencia que acompaña a la alerta del nodo al entrar en cada banda (texto sin el prefijo "Sugerencia:") */
+  suggestions?: Partial<Record<AlertLevel, string>>;
   /** Descripción breve de la zona */
   description?: string;
   /** Tipo de nodo: zona de control o punto de cruce peatonal */
@@ -95,11 +97,13 @@ export function nodeAreaM2(streetWidthM: number) {
   return Math.round(2 * (r * r * Math.asin(h / r) + h * Math.sqrt(r * r - h * h)));
 }
 
-/** Umbrales propuestos; con el tope de 6 pers/m², el rojo empieza en 5,5. */
+/** Umbrales propuestos: alta por encima de 4 pers/m²; muy alta al llegar al tope de 6 (nunca se supera). */
+export const ALERT_THRESHOLDS = { alta: 4, "muy-alta": 6 } as const;
+
 export function densityLevel(d: number): DensityLevel {
   if (d < 2) return "baja";
-  if (d < 4) return "media";
-  if (d < 5.5) return "alta";
+  if (d <= ALERT_THRESHOLDS.alta) return "media";
+  if (d < ALERT_THRESHOLDS["muy-alta"]) return "alta";
   return "muy-alta";
 }
 

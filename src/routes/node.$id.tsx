@@ -1,17 +1,20 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Users, MapPin } from "lucide-react";
+import { ArrowLeft, Users, UsersRound, MapPin, TrendingUp, TrendingDown, LogIn, LogOut, Gauge, Route as RouteIcon, Footprints, TriangleAlert, type LucideIcon } from "lucide-react";
 import { AppShell } from "@/components/nodes/AppShell";
 import { EstimateTag, levelDot } from "@/components/nodes/MapStage";
 import { findNode } from "@/scenarios";
 import { ESTIMATE_LABEL, densityLabel, densityLevel, type DensityLevel } from "@/scenarios/types";
-import { scenarioNodeState, toMin, fmtClock } from "@/sim/engine";
+import { scenarioAlerts, scenarioNodeState, toMin, fmtClock } from "@/sim/engine";
 import { cn } from "@/lib/utils";
 
 const fmt = (n: number) => n.toLocaleString("es-ES");
 
 export const Route = createFileRoute("/node/$id")({
-  validateSearch: (s: Record<string, unknown>) => ({ t: typeof s["t"] === "number" ? (s["t"] as number) : undefined }),
+  validateSearch: (s: Record<string, unknown>): { t?: number | undefined; alert?: string | undefined } => ({
+    ...(typeof s["t"] === "number" ? { t: s["t"] } : {}),
+    ...(typeof s["alert"] === "string" ? { alert: s["alert"] } : {}),
+  }),
   loader: ({ params }) => {
     const found = findNode(params.id);
     if (!found) throw notFound();
@@ -35,12 +38,13 @@ const LEVELS: DensityLevel[] = ["baja", "media", "alta", "muy-alta"];
 
 function NodePage() {
   const { id } = Route.useParams();
-  const { t } = Route.useSearch();
+  const { t, alert: alertId } = Route.useSearch();
   const { scenario, node } = findNode(id)!;
   const start = toMin(scenario.schedule.start);
   const end = toMin(scenario.schedule.end);
   const [minute, setMinute] = useState(Math.round(t ?? toMin(scenario.defaultTime ?? scenario.schedule.start)));
   const st = scenarioNodeState(scenario, node, minute);
+  const fromAlert = alertId ? scenarioAlerts(scenario).find((a) => a.id === alertId && a.nodeId === node.id) : undefined;
   const lvl = densityLevel(st.density);
 
   const series = useMemo(() => {
@@ -80,17 +84,36 @@ function NodePage() {
             {node.description && node.description !== node.address && <p className="mt-1 text-sm text-muted-foreground">{node.description}</p>}
           </div>
 
+          {fromAlert && (
+            <div className={cn("rounded-2xl border bg-card px-4 py-3 shadow-card", fromAlert.level === "muy-alta" ? "border-dens-crit" : "border-dens-high")}>
+              <p className="flex items-center gap-2 text-sm font-semibold">
+                <TriangleAlert className={cn("h-4 w-4 shrink-0", fromAlert.level === "muy-alta" ? "text-dens-crit" : "text-dens-high")} />
+                {densityLabel[fromAlert.level]} · {fromAlert.time} · {fromAlert.density.toLocaleString("es-ES", { minimumFractionDigits: 1 })} pers/m²
+              </p>
+              {fromAlert.suggestion && (
+                <>
+                  <p className="mt-1 text-sm">Sugerencia: {fromAlert.suggestion}</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">Basada en umbrales propuestos. La decisión es del responsable del dispositivo.</p>
+                </>
+              )}
+            </div>
+          )}
+
           <div className="flex items-center gap-3 rounded-2xl bg-card px-4 py-3 shadow-card">
             <span className="font-display text-lg font-bold tabular-nums">{fmtClock(minute)}</span>
             <input type="range" aria-label="Hora" min={start} max={end} step={1} value={minute} onChange={(e) => setMinute(Number(e.target.value))} className="h-1.5 flex-1 accent-primary" />
           </div>
 
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
-            <Kpi icon={<Users className="h-4 w-4" />} label="Personas medidas" value={fmt(st.people)} sub={node.runnerShare ? `${fmt(st.runners)} corredores · ${fmt(st.spectators)} público` : "Densidad × área del círculo del nodo"} />
-            <Kpi label="Estimadas en su zona" value={`≈ ${fmt(st.estimated)}`} sub={ESTIMATE_LABEL} />
-            <Kpi label="Densidad" value={`${st.density.toLocaleString("es-ES")} pers/m²`} sub={<span className="flex items-center gap-1.5"><span className={cn("h-2.5 w-2.5 rounded-full", levelDot[lvl])} />{densityLabel[lvl]}</span>} />
-            <Kpi label="Entrada / salida" value={`${st.flowIn} / ${st.flowOut}`} sub="pers/min" />
-            <Kpi label="Velocidad media" value={`${st.speed.toLocaleString("es-ES")} m/s`} sub={`Variación 10 min: ${st.variation10 >= 0 ? "+" : ""}${Math.round(st.variation10 * 100)} %`} />
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
+            <Kpi icon={Users} tone={TONE.green} label="Personas medidas" value={fmt(st.people)} sub={node.runnerShare ? `${fmt(st.runners)} corredores · ${fmt(st.spectators)} público` : "Densidad × área del círculo del nodo"} />
+            <Kpi icon={Users} tone={TONE.slate} label="Estimadas en su zona" value={`≈ ${fmt(st.estimated)}`} sub={ESTIMATE_LABEL} />
+            <Kpi icon={UsersRound} tone={TONE[lvl]} label="Densidad" value={`${st.density.toLocaleString("es-ES", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} pers/m²`} sub={densityLabel[lvl]} />
+            <Kpi icon={st.variation10 > 0 ? TrendingUp : TrendingDown} tone={st.variation10 > 0 ? TONE.red : TONE.green} label="Variación 10 min" value={`${st.variation10 >= 0 ? "+" : ""}${Math.round(st.variation10 * 100)} %`} />
+            <Kpi icon={LogIn} tone={TONE.green} label="Entrada" value={`${fmt(st.flowIn)} pers/min`} />
+            <Kpi icon={LogOut} tone={TONE.softRed} label="Salida" value={`${fmt(st.flowOut)} pers/min`} />
+            <Kpi icon={Gauge} tone={TONE.blue} label="Velocidad media" value={`${st.speed.toLocaleString("es-ES")} m/s`} />
+            {st.roadway !== undefined && <Kpi icon={RouteIcon} tone={TONE.slate} label="En calzada" value={fmt(st.roadway)} sub="Estimado por zona" />}
+            {st.sidewalk !== undefined && <Kpi icon={Footprints} tone={TONE.slate} label="En aceras" value={fmt(st.sidewalk)} sub="Estimado por zona" />}
           </div>
 
           <div className="grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
@@ -115,15 +138,6 @@ function NodePage() {
                   </li>
                 ))}
               </ul>
-              {st.roadway !== undefined && (
-                <div className="mt-5">
-                  <p className="text-sm font-semibold">Ahora: calzada / aceras</p>
-                  <div className="mt-1 flex h-2.5 overflow-hidden rounded-full bg-muted">
-                    <div className="bg-primary" style={{ width: `${(st.roadway / Math.max(1, st.people)) * 100}%` }} />
-                  </div>
-                  <p className="mt-1 text-xs text-muted-foreground">{fmt(st.roadway)} en calzada · {fmt(st.sidewalk ?? 0)} en aceras (estimado)</p>
-                </div>
-              )}
             </section>
           </div>
         </div>
@@ -132,12 +146,28 @@ function NodePage() {
   );
 }
 
-function Kpi({ label, value, sub, icon }: { label: string; value: string; sub?: React.ReactNode; icon?: React.ReactNode }) {
+/** Círculo de color suave (fondo al 15 %) con el icono en el color pleno. */
+const TONE = {
+  green: "bg-dens-low/15 text-dens-low",
+  baja: "bg-dens-low/15 text-dens-low",
+  media: "bg-dens-mid/15 text-dens-mid",
+  alta: "bg-dens-high/15 text-dens-high",
+  "muy-alta": "bg-dens-crit/15 text-dens-crit",
+  red: "bg-dens-crit/15 text-dens-crit",
+  softRed: "bg-red-400/15 text-red-400",
+  blue: "bg-blue-500/15 text-blue-500",
+  slate: "bg-slate-500/15 text-slate-500",
+} as const;
+
+function Kpi({ label, value, sub, icon: Icon, tone }: { label: string; value: string; sub?: React.ReactNode; icon: LucideIcon; tone: string }) {
   return (
-    <div className="rounded-2xl bg-card p-3 shadow-card">
-      <p className="flex items-center gap-1.5 text-xs text-muted-foreground">{icon}{label}</p>
-      <p className="mt-1 font-display text-lg font-bold tabular-nums">{value}</p>
-      {sub && <div className="text-[11px] text-muted-foreground">{sub}</div>}
+    <div className="flex items-start gap-3 rounded-2xl bg-card p-3 shadow-card">
+      <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-full", tone)}><Icon className="h-[18px] w-[18px]" strokeWidth={2} /></span>
+      <div className="min-w-0">
+        <p className="text-xs text-muted-foreground">{label}</p>
+        <p className="font-display text-lg font-bold tabular-nums">{value}</p>
+        {sub && <div className="text-[11px] text-muted-foreground">{sub}</div>}
+      </div>
     </div>
   );
 }
