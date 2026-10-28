@@ -1,18 +1,21 @@
 ---
-import Base from "../layouts/Base.astro";
+import Button from "../components/Button.astro";
 import { locales, t } from "../i18n";
+import Base from "../layouts/Base.astro";
 
 // The 404 URL has no language, so the message is shown in both, each linking to its home.
 ---
 
-<Base locale="es">
+<Base locale="es" noindex>
   <section class="section">
     <div class="container not-found">
       {
         locales.map((locale, index) => (
           <div lang={locale}>
             {index === 0 ? <h1>{t(locale, "notFound.title")}</h1> : <p class="title">{t(locale, "notFound.title")}</p>}
-            <a class="button button-primary" href={`/${locale}/`}>{t(locale, "notFound.cta")}</a>
+            <Button href={`/${locale}/`} arrow>
+              {t(locale, "notFound.cta")}
+            </Button>
           </div>
         ))
       }
@@ -22,19 +25,22 @@ import { locales, t } from "../i18n";
 
 <style>
   .not-found {
-    display: flex;
-    flex-direction: column;
-    gap: var(--section-gap-inner);
+    display: grid;
+    gap: var(--space-12);
   }
   .not-found > div {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--space-4);
+    gap: var(--space-5);
+  }
+  .not-found > div + div {
+    padding-top: var(--space-12);
+    border-top: 1px solid var(--color-border);
   }
   .title {
     margin: 0;
-    font-size: var(--text-h2);
+    font-size: var(--text-h1);
     font-weight: 700;
     color: var(--color-text);
     line-height: var(--leading-tight);
