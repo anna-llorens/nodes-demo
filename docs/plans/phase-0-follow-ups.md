@@ -31,7 +31,9 @@ Collected while doing Step 1 (monorepo and domain extraction). Not in scope ther
       `astro check` (`this.bridge.deleteEnv is not a function`). Drop the pin when that peer goes.
 - [ ] **`sharp` build script** is ignored by pnpm (`onlyBuiltDependencies`); fine while the site
       uses no Astro image optimisation, revisit if it does.
-- [ ] **Legal pages** (aviso legal, privacidad, cookies): holder, tax id, address and contact
-      still pending from the team; drafts keep their TODOs.
+- [ ] **Final legal texts are required before publishing the site** (aviso legal, privacidad,
+      cookies, in `apps/site/src/content/legal/{es,en}/`): holder, tax id, address and contact,
+      written and reviewed by the team. Until then the pages are `draft: true` (draft banner and
+      `noindex`).
 - [ ] **Committed `apps/site/.env`** holds public values only (demo URL, contact email). Move them
       to the hosting environment when the site is deployed (Step 3), if preferred.
