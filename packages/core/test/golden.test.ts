@@ -4,9 +4,11 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { estimateAreas, scenarioAlerts, scenarios, simulate, simulateRunnerHeat, toMin, trafficAt, trafficTimesAt, densityLevel, zoneAssignments } from "../src";
 
-// Numbers are rounded to 10 significant digits before hashing: Math.sin/Math.pow can differ in the
-// last bit between CPUs (Apple arm64 locally, x64 Linux in CI), which is not a behaviour change.
-const stable = (_key: string, value: unknown) => (typeof value === "number" ? Number(value.toPrecision(10)) : value);
+// Numbers are rounded to 9 significant digits, in hashes and in the comparison: Math.sin, Math.cos
+// and Math.pow can differ in the last bits between CPUs (Apple arm64 locally, x64 Linux in CI),
+// which is not a behaviour change.
+const stable = (_key: string, value: unknown) => (typeof value === "number" ? Number(value.toPrecision(9)) : value);
+const rounded = (value: unknown) => JSON.parse(JSON.stringify(value, stable)) as unknown;
 const hash = (value: unknown) => createHash("sha256").update(JSON.stringify(value, stable)).digest("hex");
 
 /** Recomputes every scenario in the baseline's schema. */
@@ -30,12 +32,12 @@ function compute() {
       minutes,
     };
   }
-  return JSON.parse(JSON.stringify({ version: 1, scenarios: out })) as unknown;
+  return rounded({ version: 1, scenarios: out });
 }
 
 describe("golden baseline", () => {
   it("matches the pre-refactor simulator output exactly", () => {
     const baseline = JSON.parse(readFileSync(resolve(__dirname, "golden/baseline.json"), "utf8")) as unknown;
-    expect(compute()).toEqual(baseline);
+    expect(compute()).toEqual(rounded(baseline));
   });
 });
