@@ -33,7 +33,8 @@ The site favicons (`apps/site/public/`) are the "O" of the light file in `--colo
 | `icons/runner.svg`, `icons/palm.svg`, `icons/people-group.svg`, `icons/shield.svg` | Tecnología · applications |
 | `icons/status-simulation.svg`, `status-next.svg`, `status-future.svg` | Home · project status |
 | `icons/calendar.svg`, `lightbulb.svg`, `graduation-cap.svg`, `handshake.svg` | Colabora · collaboration types |
-| `icons/mail.svg`, `icons/linkedin.svg`, `icons/clock.svg` | Colabora · "contact directly" card |
+| `icons/mail.svg` | Colabora · "contact directly" card (contact is by email only) |
+| `icons/linkedin.svg`, `icons/clock.svg` | Not used (no LinkedIn row or response-time promise on Colabora) |
 | `social/linkedin.svg`, `social/x.svg` | Footer (only when the URL env variable is set) |
 | `illustrations/use-case-runner.svg`, `use-case-town-hall.svg` | Home · use-case cards |
 | `illustrations/scene-half-marathon.svg`, `scene-mascleta.svg` | Demo entry cards (instead of photos) |

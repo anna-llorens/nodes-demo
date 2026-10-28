@@ -132,17 +132,6 @@ const typeOptions = contactTypes.map((type) => ({ value: type, label: t(locale, 
             </li>
           )
         }
-        {
-          env.linkedinUrl && (
-            <li>
-              <span class="channel-icon"><Svg name="icons/linkedin" /></span>
-              <span>
-                <span class="channel-label">{t(locale, "collab.direct.linkedin")}</span>
-                <a href={env.linkedinUrl} rel="noopener" target="_blank">{t(locale, "collab.direct.linkedinCta")}</a>
-              </span>
-            </li>
-          )
-        }
       </ul>
       <p class="note">{t(locale, "collab.direct.note")}</p>
     </aside>
