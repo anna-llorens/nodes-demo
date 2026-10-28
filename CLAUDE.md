@@ -7,23 +7,35 @@ state: prototype with simulated data only. No real sensor is connected yet.
 ## Language rules
 
 - Code, comments, JSDoc, commit messages, docs, ADRs, test names: English.
-- UI strings shown to users: Spanish, and only through the i18n layer once it exists. Until
-  then they live in `apps/web/src/labels/es.ts` or in the component that shows them.
+- UI strings shown to users come only from i18n files, never hardcoded in components:
+  - `apps/site`: Spanish and English (`src/i18n/es.json`, `en.json`, same keys).
+  - `apps/web` (demo): Spanish only until its own i18n step. Until then its strings live in
+    `apps/web/src/labels/es.ts`, `src/i18n/demo-entry.*.json` or the component that shows them.
 - Never mix: no Spanish comments, no English text hardcoded in the UI.
+- Site languages (ADR 0004): every page exists at `/es/...` and `/en/...` (Valencian `/va/`
+  later, only when translations exist), with `hreflang` for both and `x-default` → `/en/`.
+  Page slugs stay in Spanish in both locales. Only the root `/` chooses the language: a saved
+  choice (cookie `nodes_lang`) first; then Spanish if the browser language is `es`, `ca`, `gl`
+  or `eu`; then Spanish if the visit comes from Spain or a Spanish-speaking country (edge only,
+  arrives with the deployment); English otherwise. Never redirect other pages.
 
 ## Repository layout
 
 ```
-apps/web               TanStack Start app (React + Vite, server-rendered). UI only, plus the
-                       /admin analytics server functions.
+apps/site              Public website (Astro, static HTML; React islands only where needed).
+apps/web               Demo and future dashboard: TanStack Start app (React + Vite,
+                       server-rendered). UI only, plus the /admin analytics server functions.
 packages/core          Pure TypeScript domain: scenarios, simulator, counts, estimation, alerts.
 packages/data-source   DataSource interface + SimulatedSource.
+packages/ui            Design tokens (src/tokens.css), shared components and the SVG assets.
+docs/design            Approved mockups. Take structure, order, components and colours from
+                       them, not spacing or amount of text.
 docs/decisions         ADRs. Read the relevant ones before changing an area.
 docs/plans             Action plans. The active plan is the source of truth for scope.
 docs/sources.md        Sources for real-world figures.
 ```
 
-Dependency direction: `web → data-source → core`. Lint enforces it. `core` must never import
+Dependency direction: `web → data-source → core`, and `site`/`web` → `ui`. Lint enforces it. `core` must never import
 React, DOM APIs or UI text. Web components and routes read data through the hooks in
 `apps/web/src/data/hooks.ts`, never by calling the simulator.
 
@@ -62,6 +74,11 @@ Before finishing any task: `pnpm typecheck && pnpm lint && pnpm test && pnpm bui
   shared links and saved map state, and they seed the noise.
 
 ## Content rules for the UI
+
+- Icons and illustrations come from `packages/ui/assets/`, rendered inline so they take the
+  token colour. Never cut images out of the mockups; lucide only for small UI glyphs with no
+  asset (chevron, arrow, menu, close, check). Colours come from tokens: no raw hex outside
+  `packages/ui/src/tokens.css`.
 
 - A "simulation / data not measured" label is visible on every screen while data is simulated.
 - No cameras, no photos of people with detection overlays, no "live" labels on simulated data.
