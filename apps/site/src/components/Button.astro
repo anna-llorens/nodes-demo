@@ -1,0 +1,18 @@
+---
+import { ArrowRight } from "@lucide/astro";
+
+/** A link styled as a button. `primary` is filled with --color-primary; `outline` is bordered. */
+interface Props {
+  href: string;
+  variant?: "primary" | "outline";
+  /** Show a trailing arrow (lucide glyph, decorative). */
+  arrow?: boolean;
+  class?: string;
+}
+const { href, variant = "primary", arrow = false, class: className } = Astro.props;
+---
+
+<a class:list={["button", `button-${variant}`, className]} href={href}>
+  <slot />
+  {arrow && <ArrowRight aria-hidden="true" size={18} />}
+</a>

@@ -1,0 +1,26 @@
+---
+/** Small uppercase label above a section title. `badge` draws it on a soft-green pill. */
+interface Props {
+  badge?: boolean;
+}
+const { badge = false } = Astro.props;
+---
+
+<p class:list={["eyebrow", { badge }]}><slot /></p>
+
+<style>
+  .eyebrow {
+    margin: 0;
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+  }
+  .badge {
+    display: inline-block;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    background: var(--color-primary-soft);
+  }
+</style>

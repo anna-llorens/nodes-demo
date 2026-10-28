@@ -1,0 +1,24 @@
+---
+/** Initials in a soft-green circle, instead of a photo. Decorative: the name is shown next to it. */
+interface Props {
+  initials: string;
+}
+const { initials } = Astro.props;
+---
+
+<span class="avatar" aria-hidden="true">{initials}</span>
+
+<style>
+  .avatar {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    font-size: 1.375rem;
+    font-weight: 700;
+  }
+</style>

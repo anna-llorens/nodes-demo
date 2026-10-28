@@ -1,0 +1,76 @@
+---
+import Svg from "@nodes/ui/Svg.astro";
+
+/**
+ * Icon in a soft-green circle, a title and one short line. `plain` drops the card background;
+ * `row` puts the icon beside the text (used on mobile by the home solution cards).
+ */
+interface Props {
+  icon: string;
+  title: string;
+  text: string;
+  plain?: boolean;
+  row?: boolean;
+}
+const { icon, title, text, plain = false, row = false } = Astro.props;
+---
+
+<article class:list={["icon-card", { plain, row }]}>
+  <span class="icon"><Svg name={icon} /></span>
+  <div>
+    <h3>{title}</h3>
+    <p>{text}</p>
+  </div>
+</article>
+
+<style>
+  .icon-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    padding: var(--space-6);
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+  }
+  .plain {
+    padding: 0;
+    background: none;
+    box-shadow: none;
+  }
+  .row {
+    flex-direction: row;
+    align-items: center;
+  }
+  .icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
+  .plain .icon {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+  .icon :global(svg) {
+    width: 60%;
+    height: 60%;
+  }
+  h3 {
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+  p {
+    margin: var(--space-2) 0 0;
+  }
+  @media (min-width: 1024px) {
+    .row {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>
