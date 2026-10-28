@@ -40,3 +40,5 @@ Collected while doing Step 1 (monorepo and domain extraction). Not in scope ther
       privacy text, which Spanish/EU law requires to link to the privacy policy).
 - [ ] **Committed `apps/site/.env`** holds public values only (demo URL, contact email). Move them
       to the hosting environment when the site is deployed (Step 3), if preferred.
+- [ ] **`apps/web/src/assets/maraton.jpg` is unused** since the demo entry uses illustrations;
+      remove it together with the photo origin/licence check.

@@ -106,10 +106,10 @@ Before finishing any task: `pnpm typecheck && pnpm lint && pnpm test && pnpm bui
 - Runner heat samples and their density-linked weights come from `simulateRunnerHeat` in core;
   `apps/web/src/components/nodes/geo.ts` only projects them onto the route.
 - English routes are canonical; Spanish legacy URLs redirect to them, and `/` and `/home` share
-  `HomePage`.
+  the demo entry screen (`DemoEntry`).
 - Map layer visibility is one shared state in the map route, exposed through Capas.
-- `AppShell` owns the single simulation status strip and the alerts bell, outside the scrolling
-  content, so every page shows them once.
+- `DemoHeader` (logo to `PUBLIC_SITE_URL`, simulation badge, "Volver a la web", alerts bell inside
+  scenarios) is the single header of every demo screen; `AppShell` and `DemoEntry` render it once.
 - Runner heat colours read semantic CSS tokens through canvas colour conversion so MapLibre uses
   the theme palette.
 - Share-map URL serialization lives in `apps/web/src/lib/map-share.ts` (browser-safe); saved

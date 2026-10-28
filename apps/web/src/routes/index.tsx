@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { HomePage } from "@/components/nodes/HomePage";
+import { DemoEntry } from "@/components/nodes/DemoEntry";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -12,6 +12,6 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: "Nodos LiDAR anónimos que cuentan personas por zona. Simulación para eventos de València." },
     ],
   }),
-  component: HomePage,
+  component: DemoEntry,
 });
 

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { HomePage } from "@/components/nodes/HomePage";
+import { DemoEntry } from "@/components/nodes/DemoEntry";
 
 export const Route = createFileRoute("/home")({
   head: () => ({ meta: [
@@ -10,5 +10,5 @@ export const Route = createFileRoute("/home")({
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
   ] }),
-  component: HomePage,
+  component: DemoEntry,
 });
