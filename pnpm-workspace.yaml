@@ -1,0 +1,20 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Supply-chain guard (carried over from bunfig.toml): skip package versions published
+# less than a day ago. Each exclusion bypasses the guard for one package.
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - "@lovable.dev/vite-tanstack-config"
+  - "@lovable.dev/mcp-js"
+  - "@lovable.dev/ai-gateway"
+  - "@lovable.dev/email-js"
+  - "@lovable.dev/webhooks-js"
+
+overrides:
+  rolldown: 1.2.1
+
+# Packages allowed to run install scripts (esbuild downloads its platform binary).
+onlyBuiltDependencies:
+  - esbuild
