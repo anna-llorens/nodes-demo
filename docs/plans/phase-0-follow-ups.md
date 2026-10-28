@@ -26,3 +26,11 @@ Collected while doing Step 1 (monorepo and domain extraction). Not in scope ther
 - [ ] **i18n (Step 2)**: replace `apps/web/src/labels/es.ts` and inline strings with Lingui
       catalogues.
 - [ ] **Hosting (Step 3)**: Lovable can no longer edit or publish once this lands on `main`.
+- [ ] **Astro 7** needs Node ≥ 22.23.4; `apps/site` uses Astro 6.4.8 because `.nvmrc`/CI are on an
+      older Node 22. Bump Node, then Astro.
+- [ ] **`@emnapi/runtime` pin** in `apps/site` (1.11.3): without it pnpm resolves the
+      `2.0.0-alpha.3` peer wanted by `@lovable.dev/vite-tanstack-config`, which crashes
+      `astro check` (`this.bridge.deleteEnv is not a function`). Drop the pin when that peer goes.
+- [ ] **Site favicon** is missing; add it from `packages/ui/assets` once the logo files exist.
+- [ ] **`sharp` build script** is ignored by pnpm (`onlyBuiltDependencies`); fine while the site
+      uses no Astro image optimisation, revisit if it does.
