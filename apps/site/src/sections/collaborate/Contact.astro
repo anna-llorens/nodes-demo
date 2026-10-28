@@ -9,7 +9,6 @@ import { t, type Locale } from "../../i18n";
 import { withLink } from "../../i18n/with-link";
 import { contactTypes } from "../../lib/contact";
 import { contactEndpoint, env } from "../../lib/env";
-import { pagePath } from "../../lib/routes";
 
 /**
  * The contact form (left) and the "contact directly" card (right; below on mobile). States:
@@ -20,7 +19,6 @@ interface Props {
 }
 const { locale } = Astro.props;
 const endpoint = contactEndpoint();
-const privacyHref = pagePath(locale, "privacy");
 const privacyLink = t(locale, "collab.form.consentLink");
 const consent = withLink(t(locale, "collab.form.consent"));
 const privacyInfo = withLink(t(locale, "collab.form.privacyInfo"));
@@ -79,7 +77,8 @@ const typeOptions = contactTypes.map((type) => ({ value: type, label: t(locale, 
         </div>
         <div class="submit-row">
           <Checkbox id="contact-consent" name="consent" required error={t(locale, "collab.form.errors.consent")}>
-            {consent.before}<a href={privacyHref}>{privacyLink}</a>{consent.after}
+            {/* Link off until the privacy policy exists. Restore (with pagePath from lib/routes): <a href={pagePath(locale, "privacy")}>{privacyLink}</a> */}
+            {consent.before}{privacyLink}{consent.after}
           </Checkbox>
           <button class="button button-primary submit" type="submit">
             <span class="spinner" aria-hidden="true" hidden></span>
@@ -89,7 +88,8 @@ const typeOptions = contactTypes.map((type) => ({ value: type, label: t(locale, 
           </button>
         </div>
         <p class="privacy-info">
-          {privacyInfo.before}<a href={privacyHref}>{privacyLink}</a>{privacyInfo.after}
+          {/* Link off until the privacy policy exists. Restore (with pagePath from lib/routes): <a href={pagePath(locale, "privacy")}>{privacyLink}</a> */}
+          {privacyInfo.before}{privacyLink}{privacyInfo.after}
         </p>
         <div class="send-error" data-send-error role="alert" hidden>
           <p class="state-title">{t(locale, "collab.form.errorTitle")}</p>
