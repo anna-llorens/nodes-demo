@@ -1,0 +1,57 @@
+---
+import IconCard from "../../components/IconCard.astro";
+import SectionHeading from "../../components/SectionHeading.astro";
+import { t, type Locale } from "../../i18n";
+
+/** Sobre nosotras intro: the page's h1 and lead, then the three values. */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const values = [
+  { key: "privacy", icon: "icons/lock" },
+  { key: "honest", icon: "icons/report" },
+  { key: "local", icon: "icons/palm" },
+] as const;
+---
+
+<section class="section" aria-labelledby="about-title">
+  <div class="container content">
+    <SectionHeading level="h1" id="about-title" eyebrow={t(locale, "about.eyebrow")} title={t(locale, "about.title")} lead={t(locale, "about.lead")} />
+    <div class="values">
+      <h2>{t(locale, "about.values.title")}</h2>
+      <div class="items">
+        {values.map(({ key, icon }) => (
+          <IconCard plain icon={icon} title={t(locale, `about.values.${key}.title`)} text={t(locale, `about.values.${key}.text`)} />
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .content {
+    display: grid;
+    gap: var(--space-12);
+  }
+  .content :global(.section-heading .lead) {
+    font-size: 1.125rem;
+  }
+  .values {
+    display: grid;
+    gap: var(--section-gap-inner);
+  }
+  h2 {
+    font-size: var(--text-h2);
+    font-weight: 700;
+  }
+  .items {
+    display: grid;
+    gap: var(--space-8);
+  }
+  @media (min-width: 1024px) {
+    .items {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

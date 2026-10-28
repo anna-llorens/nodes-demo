@@ -10,14 +10,16 @@ import { pagePath } from "../../lib/routes";
 /** Team cards (initials, name, role, one line, LinkedIn when set) and a link to Sobre nosotras. */
 interface Props {
   locale: Locale;
+  /** Show the link to Sobre nosotras (off on that page itself). */
+  showMore?: boolean;
 }
-const { locale } = Astro.props;
+const { locale, showMore = true } = Astro.props;
 ---
 
 <section class="section" aria-labelledby="team-title">
   <div class="container split">
     <SectionHeading id="team-title" eyebrow={t(locale, "team.eyebrow")} title={t(locale, "team.title")} lead={t(locale, "team.lead")}>
-      <Button href={pagePath(locale, "about")} variant="outline" arrow>{t(locale, "team.more")}</Button>
+      {showMore && <Button href={pagePath(locale, "about")} variant="outline" arrow>{t(locale, "team.more")}</Button>}
     </SectionHeading>
     <ul class="members">
       {team.map((member) => {
