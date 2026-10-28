@@ -1,0 +1,32 @@
+---
+import "./form.css";
+
+/**
+ * Labelled text input or textarea with its error message. The message is rendered hidden and
+ * shown by the page script; it is linked with aria-describedby.
+ */
+interface Props {
+  id: string;
+  name: string;
+  label: string;
+  error: string;
+  /** Short visible mark for required fields, e.g. "*", with its full meaning as a title. */
+  requiredLabel?: string | undefined;
+  type?: "text" | "email";
+  multiline?: boolean;
+  placeholder?: string;
+  autocomplete?: string;
+}
+const { id, name, label, error, requiredLabel, type = "text", multiline = false, placeholder, autocomplete } = Astro.props;
+const errorId = `${id}-error`;
+const control = { id, name, placeholder, autocomplete, required: Boolean(requiredLabel), "aria-describedby": errorId, class: "field-control" };
+---
+
+<div class="field">
+  <label class="field-label" for={id}>
+    {label}
+    {requiredLabel && <abbr title={requiredLabel}>*</abbr>}
+  </label>
+  {multiline ? <textarea rows="5" {...control} /> : <input type={type} {...control} />}
+  <p class="field-error" id={errorId} data-error-for={name} hidden>{error}</p>
+</div>

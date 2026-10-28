@@ -1,0 +1,41 @@
+---
+import "./form.css";
+
+/** Checkbox with its label in the default slot (it may contain a link) and an error message. */
+interface Props {
+  id: string;
+  name: string;
+  error: string;
+  required?: boolean;
+}
+const { id, name, error, required = false } = Astro.props;
+const errorId = `${id}-error`;
+---
+
+<div class="field">
+  <div class="checkbox">
+    <input type="checkbox" id={id} name={name} required={required} aria-describedby={errorId} />
+    <label for={id}><slot /></label>
+  </div>
+  <p class="field-error" id={errorId} data-error-for={name} hidden>{error}</p>
+</div>
+
+<style>
+  .checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    font-size: var(--text-small);
+  }
+  input {
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0.125rem 0 0;
+    accent-color: var(--color-primary);
+  }
+  input[aria-invalid="true"] {
+    outline: 2px solid var(--color-error);
+    outline-offset: 1px;
+  }
+</style>

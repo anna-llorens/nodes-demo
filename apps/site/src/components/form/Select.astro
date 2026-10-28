@@ -1,0 +1,43 @@
+---
+import { ChevronDown } from "@lucide/astro";
+import "./form.css";
+
+/** Labelled select with a placeholder option (value ""). Optional field: no error message. */
+interface Props {
+  id: string;
+  name: string;
+  label: string;
+  placeholder: string;
+  options: { value: string; label: string }[];
+}
+const { id, name, label, placeholder, options } = Astro.props;
+---
+
+<div class="field">
+  <label class="field-label" for={id}>{label}</label>
+  <div class="select">
+    <select class="field-control" id={id} name={name}>
+      <option value="">{placeholder}</option>
+      {options.map((option) => <option value={option.value}>{option.label}</option>)}
+    </select>
+    <ChevronDown class="chevron" aria-hidden="true" size={18} />
+  </div>
+</div>
+
+<style>
+  .select {
+    position: relative;
+  }
+  select {
+    appearance: none;
+    padding-right: 2.75rem;
+  }
+  .select :global(.chevron) {
+    position: absolute;
+    top: 50%;
+    right: var(--space-4);
+    transform: translateY(-50%);
+    color: var(--color-text-body);
+    pointer-events: none;
+  }
+</style>

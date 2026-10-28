@@ -20,6 +20,8 @@
   --color-text-muted: #6b6e74;       /* secondary. On surface-muted: 4.9:1 */
   --color-text-inverse: #ffffff;     /* text and logo letters on dark backgrounds */
   --color-border: #e3e8e8;
+  --color-border-strong: #868c90;    /* form control borders. On surface: 3.4:1, on bg: 3.1:1 */
+  --color-error: #b42318;            /* field errors. On surface: 6.6:1 */
 
   /* Density bands, shared with the demo. Exact values of the demo legend:
      apps/web/src/styles.css (--dens-low, --dens-mid, --dens-high, --dens-crit). */

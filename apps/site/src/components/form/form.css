@@ -1,0 +1,44 @@
+/* Shared look of form controls (Field, Select, Checkbox). Imported by each component. */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.field-label {
+  color: var(--color-text);
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+.field-label abbr {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+.field-control {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-button);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+.field-control::placeholder {
+  color: var(--color-text-muted);
+}
+.field-control:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+  border-color: var(--color-primary);
+}
+.field-control[aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+.field-error {
+  margin: 0;
+  color: var(--color-error);
+  font-size: var(--text-small);
+}
+.field-error[hidden] {
+  display: none;
+}
