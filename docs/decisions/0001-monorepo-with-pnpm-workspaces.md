@@ -14,7 +14,7 @@ usable without React and testable on its own.
 - One repository with pnpm workspaces: `apps/web` (the app) and `packages/*` (`core`,
   `data-source`). Internal packages are consumed as TypeScript source (`exports` points at
   `src/index.ts`), with no build step.
-- pnpm 10 pinned in `packageManager`, Node 22 in `.nvmrc`.
+- pnpm 10 pinned in `packageManager`, Node 22 in `.nvmrc` (22.23.4 since Phase 1 M1: Astro 7 needs it).
 - The one-day minimum release age from `bunfig.toml` moves to `pnpm-workspace.yaml`
   (`minimumReleaseAge: 1440`). The new lockfile was generated so that every direct
   dependency resolves to the same version as the old `bun.lock`.

@@ -5,9 +5,10 @@
   "exports": {
     "./tokens.css": "./src/tokens.css",
     "./Svg.astro": "./src/Svg.astro",
+    "./Logo.astro": "./src/Logo.astro",
     "./assets/*": "./assets/*"
   },
   "peerDependencies": {
-    "astro": "^6.0.0"
+    "astro": "^7.0.0"
   }
 }

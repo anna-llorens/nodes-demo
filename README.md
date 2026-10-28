@@ -15,7 +15,7 @@ and no real sensor is connected yet.
 
 ## Run
 
-Requires Node 22 (`.nvmrc`) and pnpm 10 (`corepack enable`, or prefix commands with
+Requires Node 22.23.4 or later 22.x (`.nvmrc`; Astro 7 needs it) and pnpm 10 (`corepack enable`, or prefix commands with
 `npx pnpm@10.34.9`).
 
 ```

@@ -51,7 +51,7 @@ pnpm build
 pnpm format:check # Prettier; not enforced until the formatting PR lands
 ```
 
-pnpm 10 (pinned in `packageManager`) and Node 22 (`.nvmrc`). Without a global pnpm, use
+pnpm 10 (pinned in `packageManager`) and Node 22.23.4 or later 22.x (`.nvmrc`; Astro 7 needs it). Without a global pnpm, use
 `corepack enable` or `npx pnpm@10.34.9 <command>`.
 
 Before finishing any task: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` must pass.

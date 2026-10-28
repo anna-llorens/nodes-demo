@@ -13,7 +13,7 @@
     "@fontsource/inter": "5.3.0",
     "@lucide/astro": "1.61.0",
     "@nodes/ui": "workspace:*",
-    "astro": "6.4.8"
+    "astro": "7.4.2"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.12",
