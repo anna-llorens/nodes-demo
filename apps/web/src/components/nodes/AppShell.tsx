@@ -1,7 +1,8 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Home, Map, FileBarChart, MoreHorizontal, Layers, Bell } from "lucide-react";
 import type { ReactNode } from "react";
-import { Logo, SimBadge } from "./Logo";
+import { DemoHeader } from "./DemoHeader";
+import { SiteLogo } from "./Logo";
 import { cn } from "@/lib/utils";
 import { useAlerts } from "@/data/hooks";
 import { useSimClock } from "@/lib/sim-clock";
@@ -23,7 +24,7 @@ export function AppShell({ children, sidebarExtra }: { children: ReactNode; side
       {/* Barra lateral (ordenador) */}
       <aside className="hidden w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar lg:flex 2xl:w-72">
         <div className="px-6 pb-4 pt-6">
-          <Logo className="text-3xl" />
+          <SiteLogo className="text-3xl" />
           <p className="mt-1 text-xs text-muted-foreground">Datos para decidir a tiempo</p>
         </div>
         <nav className="flex flex-col gap-1 px-3">
@@ -51,13 +52,7 @@ export function AppShell({ children, sidebarExtra }: { children: ReactNode; side
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <div aria-label="Estado de los datos" className="flex shrink-0 items-center justify-end gap-3 border-b border-border bg-card px-4 py-2 sm:px-6">
-          <SimBadge />
-          <Link to="/alerts" aria-label={`Alertas: ${alertCount}`} className="relative grid h-8 w-8 place-items-center rounded-full text-muted-foreground hover:bg-muted">
-            <Bell className="h-[18px] w-[18px]" strokeWidth={1.8} />
-            <CountDot count={alertCount} className="absolute -right-0.5 -top-0.5" />
-          </Link>
-        </div>
+        <DemoHeader alertCount={alertCount} hideLogoOnDesktop />
         <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
 
         {/* Barra inferior (móvil y tablet) */}

@@ -153,3 +153,16 @@
 @utility bg-density { background-image: var(--gradient-density); }
 @utility bg-photo-fade { background-image: var(--gradient-photo); }
 @utility text-on-photo { color: oklch(0.99 0 0); }
+
+/* Official logo (packages/ui/src/logo.ts) in the demo's colours; height follows the font size. */
+.nodes-logo {
+  display: block;
+  height: 0.8em;
+  width: auto;
+}
+.nodes-logo .nodes-logo-letters {
+  fill: var(--brand-ink);
+}
+.nodes-logo .nodes-logo-o {
+  fill: var(--primary);
+}

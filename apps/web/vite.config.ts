@@ -12,4 +12,6 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // PUBLIC_* variables (shared with apps/site, e.g. PUBLIC_SITE_URL) reach the client too.
+  vite: { envPrefix: ["VITE_", "PUBLIC_"] },
 });
