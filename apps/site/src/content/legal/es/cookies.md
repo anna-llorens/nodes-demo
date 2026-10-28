@@ -6,7 +6,7 @@ draft: true
 
 ## TODO
 
-- Holder: TODO (name or company name)
-- Tax id (NIF/CIF): TODO
-- Address: TODO
-- Contact email: TODO
+- Titular: TODO (nombre o razón social)
+- NIF/CIF: TODO
+- Domicilio: TODO
+- Email de contacto: TODO
