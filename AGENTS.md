@@ -20,3 +20,16 @@
 
 - Share-map URL serialization lives in a browser-safe module; MapLibre reports its camera and the route validates saved state so shared links restore the configured scenario, layers, palette and paused simulation time without browser-storage dependencies.
 - Internal analytics identify users with anonymous random IDs (visitor in localStorage, session in sessionStorage) so /admin can count distinct users and sessions without personal data.
+
+## Minimal-change mode (production app on main)
+
+The app on `main` is published from Lovable. Changes here must be small and safe.
+
+- Change only what the task asks. Do not refactor, rename, reformat or move code you do not need to touch.
+- No new dependencies unless the task cannot be done without one; ask first and say why.
+- Do not change build config (vite, tsconfig, eslint, package manager) or Lovable files (`.lovable/`).
+- Do not change existing Spanish texts, styles, routes or behaviour. In Spanish the app must look exactly as before.
+- Reuse existing components and styles; do not add a new UI kit or design tokens.
+- Database: every Supabase change is a new SQL migration, shown to me before applying. RLS on every new table.
+- One small commit per step; plan first, wait for approval, stop after each step.
+- Report: files changed (with a one-line reason each) and anything you chose not to do.
