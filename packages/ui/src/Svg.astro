@@ -1,0 +1,31 @@
+---
+/**
+ * Renders an SVG from packages/ui/assets inline, so it takes the CSS `color` (assets use
+ * currentColor). Decorative by default (aria-hidden); pass `label` (from i18n) when the image
+ * carries meaning. Internal <title> elements are removed so file names never show as tooltips.
+ */
+interface Props {
+  /** Path inside assets/ without the extension, e.g. "icons/bell". */
+  name: string;
+  label?: string;
+  class?: string;
+}
+
+const files = import.meta.glob<string>("../assets/**/*.svg", { query: "?raw", import: "default", eager: true });
+const { name, label, class: className } = Astro.props;
+const raw = files[`../assets/${name}.svg`];
+if (!raw) throw new Error(`Unknown asset: ${name}`);
+
+const escape = (value: string) => value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+const attributes = [
+  className ? `class="${escape(className)}"` : "",
+  label ? `role="img" aria-label="${escape(label)}"` : `aria-hidden="true"`,
+  `focusable="false"`,
+].filter(Boolean).join(" ");
+const svg = raw
+  .slice(raw.indexOf("<svg"))
+  .replace(/<title>[\s\S]*?<\/title>/g, "")
+  .replace("<svg", `<svg ${attributes}`);
+---
+
+<Fragment set:html={svg} />

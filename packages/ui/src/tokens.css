@@ -20,12 +20,12 @@
   --color-text-muted: #6b6e74;       /* secondary. On surface-muted: 4.9:1 */
   --color-border: #e3e8e8;
 
-  /* Density bands (shared with the demo). PLACEHOLDERS: replace with the exact values the
-     demo legend uses today, so both apps show the same colours. */
-  --color-density-low: #3fa66b;      /* < 2 people/m² */
-  --color-density-medium: #e8c23a;   /* 2–4 */
-  --color-density-high: #ef8a2c;     /* 4–6 */
-  --color-density-critical: #d64545; /* ≥ 6 */
+  /* Density bands, shared with the demo. Exact values of the demo legend:
+     apps/web/src/styles.css (--dens-low, --dens-mid, --dens-high, --dens-crit). */
+  --color-density-low: oklch(0.7 0.15 150);      /* < 2 people/m² */
+  --color-density-medium: oklch(0.86 0.16 95);   /* 2–4 */
+  --color-density-high: oklch(0.74 0.17 55);     /* above 4, below 6 */
+  --color-density-critical: oklch(0.6 0.21 27);  /* ≥ 6 (the cap) */
 
   /* Type */
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;

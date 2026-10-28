@@ -1,0 +1,13 @@
+{
+  "name": "@nodes/ui",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./tokens.css": "./src/tokens.css",
+    "./Svg.astro": "./src/Svg.astro",
+    "./assets/*": "./assets/*"
+  },
+  "peerDependencies": {
+    "astro": "^6.0.0"
+  }
+}
