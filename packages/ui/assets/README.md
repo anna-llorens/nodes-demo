@@ -13,6 +13,12 @@ Use them **inline** (Astro: import the file with `?raw` and render with `set:htm
 `<Svg name>` component) so `currentColor` works. Add `aria-hidden="true"` to decorative ones;
 the ones that carry meaning get a label from i18n.
 
+## Logo
+
+`logo/source/` holds the official files untouched. Do not render them directly: use
+`src/Logo.astro`, which recolours them with tokens (`variant="dark"` for dark backgrounds).
+The site favicons (`apps/site/public/`) are the "O" of the light file in `--color-primary`.
+
 ## Where each asset goes
 
 | Asset | Used in |
@@ -42,4 +48,3 @@ the ones that carry meaning get a label from i18n.
   (see the hero of `docs/design/reference/home-desktop-approved.png`). Until then, use
   `hero-lidar-valencia.svg`.
 - Home "how it works" step 3 laptop with map dots: `icons/chart.svg` is an acceptable stand-in.
-- Official NODES logo files: pending from the team.

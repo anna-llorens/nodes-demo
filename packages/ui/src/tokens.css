@@ -18,6 +18,7 @@
   --color-text: #0b0d17;             /* headings. On bg: 17.8:1 */
   --color-text-body: #55595f;        /* body. On bg: 6.5:1 */
   --color-text-muted: #6b6e74;       /* secondary. On surface-muted: 4.9:1 */
+  --color-text-inverse: #ffffff;     /* text and logo letters on dark backgrounds */
   --color-border: #e3e8e8;
 
   /* Density bands, shared with the demo. Exact values of the demo legend:
