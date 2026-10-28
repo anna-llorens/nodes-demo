@@ -42,3 +42,7 @@ Collected while doing Step 1 (monorepo and domain extraction). Not in scope ther
       to the hosting environment when the site is deployed (Step 3), if preferred.
 - [ ] **`apps/web/src/assets/maraton.jpg` is unused** since the demo entry uses illustrations;
       remove it together with the photo origin/licence check.
+- [ ] **Phase 1 · M7 QA (skipped for now)**: screenshots of every page in es/en at 375 and 1440 px,
+      Lighthouse mobile on Home, Tecnología, Colabora (Accessibility ≥ 95, Performance ≥ 90), and
+      the definition of done of `phase-1-public-site.md` §11 item by item
+      (`docs/plans/phase-1-steps/M7-qa.md`).
