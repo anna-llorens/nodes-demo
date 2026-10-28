@@ -1,0 +1,147 @@
+---
+import Svg from "@nodes/ui/Svg.astro";
+import { ArrowRight } from "@lucide/astro";
+import SectionHeading from "../../components/SectionHeading.astro";
+import { t, type Locale } from "../../i18n";
+import type { ContactType } from "../../lib/contact";
+
+/**
+ * The 4 collaboration types as toggle buttons. The page script marks the chosen one
+ * (aria-pressed), sets the form's select and scrolls to the form.
+ */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const types: { type: ContactType; icon: string }[] = [
+  { type: "events", icon: "icons/calendar" },
+  { type: "ideas", icon: "icons/lightbulb" },
+  { type: "research", icon: "icons/graduation-cap" },
+  { type: "funding", icon: "icons/handshake" },
+];
+---
+
+<section class="section" aria-labelledby="collab-types-title">
+  <div class="container content">
+    <SectionHeading id="collab-types-title" title={t(locale, "collab.types.title")} lead={t(locale, "collab.types.lead")} />
+    <ul class="types">
+      {types.map(({ type, icon }) => (
+        <li>
+          <button class="type" type="button" data-contact-type={type} aria-pressed="false">
+            <span class="icon"><Svg name={icon} /></span>
+            <span class="body">
+              <span class="title">{t(locale, `collab.types.${type}.title`)}</span>
+              <span class="text">{t(locale, `collab.types.${type}.text`)}</span>
+            </span>
+            <span class="go" aria-hidden="true"><ArrowRight size={18} /></span>
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .content {
+    display: grid;
+    gap: var(--section-gap-inner);
+  }
+  .types {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .type {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    width: 100%;
+    height: 100%;
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .type:hover {
+    border-color: var(--color-primary-line);
+  }
+  .type[aria-pressed="true"] {
+    border-color: var(--color-primary);
+    box-shadow: inset 0 0 0 1px var(--color-primary);
+    background: var(--color-primary-soft);
+  }
+  .icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
+  .type[aria-pressed="true"] .icon {
+    background: var(--color-surface);
+  }
+  .icon :global(svg) {
+    width: 60%;
+    height: 60%;
+  }
+  .body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  .title {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+  .text {
+    font-size: var(--text-small);
+  }
+  .go {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
+
+  @media (min-width: 640px) {
+    .types {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .types {
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-4);
+    }
+    .type {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-5);
+      padding: var(--space-6);
+    }
+    .icon {
+      width: 4.5rem;
+      height: 4.5rem;
+    }
+    .text {
+      font-size: var(--text-body);
+    }
+    .go {
+      display: none;
+    }
+  }
+</style>

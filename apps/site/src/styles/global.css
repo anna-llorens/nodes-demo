@@ -8,6 +8,8 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* Keeps scrolled-to and focused elements clear of the sticky header. */
+  scroll-padding-top: 6rem;
 }
 
 body {
@@ -109,6 +111,16 @@ a {
 
 main > section + section {
   border-top: 1px solid var(--color-border);
+}
+
+/* Hidden on screen, still read by screen readers. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 @media (prefers-reduced-motion: reduce) {

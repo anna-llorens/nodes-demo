@@ -1,7 +1,10 @@
 ---
-import PlaceholderPage from "../../components/PlaceholderPage.astro";
 import { isLocale } from "../../i18n";
+import Base from "../../layouts/Base.astro";
 import { localePaths } from "../../lib/static-paths";
+import Contact from "../../sections/collaborate/Contact.astro";
+import Hero from "../../sections/collaborate/Hero.astro";
+import Types from "../../sections/collaborate/Types.astro";
 
 export const getStaticPaths = localePaths;
 
@@ -9,4 +12,8 @@ const { locale } = Astro.params;
 if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
 ---
 
-<PlaceholderPage locale={locale} page="collaborate" />
+<Base locale={locale} page="collaborate">
+  <Hero locale={locale} />
+  <Types locale={locale} />
+  <Contact locale={locale} />
+</Base>

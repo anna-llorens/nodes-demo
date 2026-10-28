@@ -1,0 +1,415 @@
+---
+import Svg from "@nodes/ui/Svg.astro";
+import { ArrowRight } from "@lucide/astro";
+import SectionHeading from "../../components/SectionHeading.astro";
+import Checkbox from "../../components/form/Checkbox.astro";
+import Field from "../../components/form/Field.astro";
+import Select from "../../components/form/Select.astro";
+import { t, type Locale } from "../../i18n";
+import { withLink } from "../../i18n/with-link";
+import { contactTypes } from "../../lib/contact";
+import { contactEndpoint, env } from "../../lib/env";
+import { pagePath } from "../../lib/routes";
+
+/**
+ * The contact form (left) and the "contact directly" card (right; below on mobile). States:
+ * idle, field error, sending, sent, send error; switched by the script at the end.
+ */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const endpoint = contactEndpoint();
+const privacyHref = pagePath(locale, "privacy");
+const privacyLink = t(locale, "collab.form.consentLink");
+const consent = withLink(t(locale, "collab.form.consent"));
+const privacyInfo = withLink(t(locale, "collab.form.privacyInfo"));
+const errorText = withLink(t(locale, "collab.form.errorText"), "email");
+const required = t(locale, "collab.form.required");
+const emailParts = env.contactEmail?.split("@");
+const typeOptions = contactTypes.map((type) => ({ value: type, label: t(locale, `collab.types.${type}.title`) }));
+---
+
+<section class="section" aria-labelledby="collab-form-title">
+  <div class="container layout">
+    <div class="form-column">
+      <SectionHeading id="collab-form-title" title={t(locale, "collab.form.title")} lead={t(locale, "collab.form.lead")} />
+
+      <form id="contact-form" class="form" novalidate data-endpoint={endpoint} data-locale={locale}>
+        <div class="row">
+          <Field
+            id="contact-name"
+            name="name"
+            label={t(locale, "collab.form.name")}
+            placeholder={t(locale, "collab.form.namePlaceholder")}
+            autocomplete="name"
+            requiredLabel={required}
+            error={t(locale, "collab.form.errors.name")}
+          />
+          <Field
+            id="contact-email"
+            name="email"
+            type="email"
+            label={t(locale, "collab.form.email")}
+            placeholder={t(locale, "collab.form.emailPlaceholder")}
+            autocomplete="email"
+            requiredLabel={required}
+            error={t(locale, "collab.form.errors.email")}
+          />
+        </div>
+        <Select
+          id="contact-type"
+          name="type"
+          label={t(locale, "collab.form.type")}
+          placeholder={t(locale, "collab.form.typePlaceholder")}
+          options={typeOptions}
+        />
+        <Field
+          id="contact-message"
+          name="message"
+          multiline
+          label={t(locale, "collab.form.message")}
+          placeholder={t(locale, "collab.form.messagePlaceholder")}
+          requiredLabel={required}
+          error={t(locale, "collab.form.errors.message")}
+        />
+        {/* Honeypot: invisible to people and skipped by keyboard; bots that fill it get a fake success. */}
+        <div class="honeypot" aria-hidden="true">
+          <input type="text" name="website" tabindex="-1" autocomplete="off" />
+        </div>
+        <div class="submit-row">
+          <Checkbox id="contact-consent" name="consent" required error={t(locale, "collab.form.errors.consent")}>
+            {consent.before}<a href={privacyHref}>{privacyLink}</a>{consent.after}
+          </Checkbox>
+          <button class="button button-primary submit" type="submit">
+            <span class="spinner" aria-hidden="true" hidden></span>
+            <span data-label="idle">{t(locale, "collab.form.submit")}</span>
+            <span data-label="sending" hidden>{t(locale, "collab.form.sending")}</span>
+            <ArrowRight class="submit-arrow" aria-hidden="true" size={18} />
+          </button>
+        </div>
+        <p class="privacy-info">
+          {privacyInfo.before}<a href={privacyHref}>{privacyLink}</a>{privacyInfo.after}
+        </p>
+        <div class="send-error" data-send-error role="alert" hidden>
+          <p class="state-title">{t(locale, "collab.form.errorTitle")}</p>
+          <p>
+            {
+              env.contactEmail ? (
+                <>
+                  {errorText.before}
+                  <a href={`mailto:${env.contactEmail}`}>{env.contactEmail}</a>
+                  {errorText.after}
+                </>
+              ) : null
+            }
+          </p>
+        </div>
+        <p class="visually-hidden" data-live aria-live="polite"></p>
+      </form>
+
+      <div class="sent" data-sent tabindex="-1" role="status" hidden>
+        <p class="state-title">{t(locale, "collab.form.successTitle")}</p>
+        <p>{t(locale, "collab.form.successText")}</p>
+      </div>
+    </div>
+
+    <aside class="direct" aria-labelledby="collab-direct-title">
+      <h2 id="collab-direct-title">{t(locale, "collab.direct.title")}</h2>
+      <p>{t(locale, "collab.direct.lead")}</p>
+      <ul class="channels">
+        {
+          env.contactEmail && (
+            <li>
+              <span class="channel-icon"><Svg name="icons/mail" /></span>
+              <span>
+                <span class="channel-label">{t(locale, "collab.direct.email")}</span>
+                <a href={`mailto:${env.contactEmail}`}>
+                  {emailParts?.[0]}@<wbr />
+                  {emailParts?.slice(1).join("@")}
+                </a>
+              </span>
+            </li>
+          )
+        }
+        {
+          env.linkedinUrl && (
+            <li>
+              <span class="channel-icon"><Svg name="icons/linkedin" /></span>
+              <span>
+                <span class="channel-label">{t(locale, "collab.direct.linkedin")}</span>
+                <a href={env.linkedinUrl} rel="noopener" target="_blank">{t(locale, "collab.direct.linkedinCta")}</a>
+              </span>
+            </li>
+          )
+        }
+      </ul>
+      <p class="note">{t(locale, "collab.direct.note")}</p>
+    </aside>
+  </div>
+</section>
+
+<script>
+  import { isContactType, submitContact, toPayload, validateContact, type ContactField } from "../../lib/contact";
+
+  const form = document.querySelector<HTMLFormElement>("#contact-form");
+  const sent = document.querySelector<HTMLElement>("[data-sent]");
+  const cards = [...document.querySelectorAll<HTMLButtonElement>("[data-contact-type]")];
+
+  if (form && sent) {
+    const control = <T extends HTMLElement>(name: string) => form.querySelector<T>(`[name="${name}"]`)!;
+    const select = control<HTMLSelectElement>("type");
+    const submit = form.querySelector<HTMLButtonElement>("button[type=submit]")!;
+    const sendError = form.querySelector<HTMLElement>("[data-send-error]")!;
+    const live = form.querySelector<HTMLElement>("[data-live]")!;
+    const fields: ContactField[] = ["name", "email", "message", "consent"];
+    // Not importing isLocale here keeps the i18n dictionaries out of the client bundle.
+    const locale = form.dataset["locale"] === "en" ? "en" : "es";
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const markCards = () => {
+      for (const card of cards) card.setAttribute("aria-pressed", String(card.dataset["contactType"] === select.value));
+    };
+
+    // Choosing a card selects its type, then takes the visitor to the form.
+    for (const card of cards) {
+      card.addEventListener("click", () => {
+        const type = card.dataset["contactType"] ?? "";
+        if (!isContactType(type)) return;
+        select.value = type;
+        markCards();
+        form.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+        control<HTMLInputElement>("name").focus({ preventScroll: true });
+      });
+    }
+    select.addEventListener("change", markCards);
+
+    const setError = (field: ContactField, invalid: boolean) => {
+      control(field).setAttribute("aria-invalid", String(invalid));
+      form.querySelector<HTMLElement>(`[data-error-for="${field}"]`)!.hidden = !invalid;
+    };
+    // Editing a field clears its error; the full check runs again on submit.
+    for (const field of fields) {
+      control(field).addEventListener(field === "consent" ? "change" : "input", () => setError(field, false));
+    }
+
+    const setSending = (sending: boolean) => {
+      submit.disabled = sending;
+      form.setAttribute("aria-busy", String(sending));
+      submit.querySelector<HTMLElement>(".spinner")!.hidden = !sending;
+      submit.querySelector<HTMLElement>("[data-label=idle]")!.hidden = sending;
+      submit.querySelector<HTMLElement>("[data-label=sending]")!.hidden = !sending;
+    };
+
+    const showSent = () => {
+      form.hidden = true;
+      sent.hidden = false;
+      sent.focus();
+    };
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      sendError.hidden = true;
+      if (control<HTMLInputElement>("website").value) return showSent();
+
+      const values = {
+        name: control<HTMLInputElement>("name").value,
+        email: control<HTMLInputElement>("email").value,
+        type: select.value,
+        message: control<HTMLTextAreaElement>("message").value,
+        consent: control<HTMLInputElement>("consent").checked,
+      };
+      const invalid = validateContact(values);
+      for (const field of fields) setError(field, invalid.includes(field));
+      if (invalid.length > 0) {
+        live.textContent = invalid
+          .map((field) => form.querySelector<HTMLElement>(`[data-error-for="${field}"]`)!.textContent)
+          .join(" ");
+        control(invalid[0]!).focus();
+        return;
+      }
+
+      live.textContent = "";
+      setSending(true);
+      const result = await submitContact(toPayload(values, locale), { endpoint: form.dataset["endpoint"] });
+      setSending(false);
+      if (result.ok) showSent();
+      else sendError.hidden = false;
+    });
+  }
+</script>
+
+<style>
+  .layout {
+    display: grid;
+    gap: var(--space-12);
+  }
+  .form-column {
+    display: grid;
+    gap: var(--section-gap-inner);
+    align-content: start;
+  }
+  .form {
+    display: grid;
+    gap: var(--space-5);
+  }
+  .form[hidden] {
+    display: none;
+  }
+  .row {
+    display: grid;
+    gap: var(--space-5);
+  }
+  .honeypot {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .submit-row {
+    display: grid;
+    gap: var(--space-5);
+  }
+  .submit {
+    width: 100%;
+    border: none;
+    cursor: pointer;
+  }
+  .submit:disabled {
+    cursor: progress;
+    opacity: 0.8;
+  }
+  .submit [hidden] {
+    display: none;
+  }
+  .spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .privacy-info {
+    margin: 0;
+    font-size: var(--text-small);
+    color: var(--color-text-muted);
+  }
+  .send-error,
+  .sent {
+    padding: var(--space-5) var(--space-6);
+    border-radius: var(--radius-card);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+  .send-error {
+    border-color: var(--color-error);
+  }
+  .send-error[hidden],
+  .sent[hidden] {
+    display: none;
+  }
+  .send-error p,
+  .sent p {
+    margin: 0;
+  }
+  .state-title {
+    color: var(--color-text);
+    font-weight: 600;
+    margin-bottom: var(--space-1) !important;
+  }
+  .send-error .state-title {
+    color: var(--color-error);
+  }
+  .sent {
+    border-color: var(--color-primary-line);
+    background: var(--color-primary-soft);
+  }
+  .direct {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    border-radius: var(--radius-card);
+    background: var(--color-primary-soft);
+  }
+  .direct h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+  .direct p {
+    margin: 0;
+  }
+  .channels {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-4);
+  }
+  .channels li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  .channels li > span:last-child {
+    display: flex;
+    flex-direction: column;
+  }
+  .channel-icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background: var(--color-surface);
+    color: var(--color-primary);
+  }
+  .channel-icon :global(svg) {
+    width: 55%;
+    height: 55%;
+  }
+  .channel-label {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+  .channels a {
+    overflow-wrap: break-word;
+  }
+  .note {
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-primary-line);
+    font-size: var(--text-small);
+  }
+
+  @media (min-width: 640px) {
+    .row {
+      grid-template-columns: 1fr 1fr;
+    }
+    .submit-row {
+      grid-template-columns: 1fr auto;
+      align-items: start;
+    }
+    .submit {
+      width: auto;
+    }
+  }
+  @media (min-width: 1024px) {
+    .layout {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      align-items: start;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .spinner {
+      animation-duration: 2.4s !important;
+    }
+  }
+</style>

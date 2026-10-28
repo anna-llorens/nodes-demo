@@ -1,0 +1,67 @@
+---
+import Svg from "@nodes/ui/Svg.astro";
+import Eyebrow from "../../components/Eyebrow.astro";
+import { t, type Locale } from "../../i18n";
+
+/** Colabora hero: eyebrow pill, the page's h1 and lead; skyline on the right (below on mobile). */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+---
+
+<section class="hero" aria-labelledby="collab-hero-title">
+  <div class="container layout">
+    <div class="text">
+      <Eyebrow badge>{t(locale, "collab.hero.eyebrow")}</Eyebrow>
+      <h1 id="collab-hero-title">{t(locale, "collab.hero.title")}</h1>
+      <p class="lead">{t(locale, "collab.hero.lead")}</p>
+    </div>
+    <span class="art"><Svg name="illustrations/skyline-header" /></span>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-top: var(--section-padding);
+    overflow: hidden;
+  }
+  .text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-5);
+  }
+  .lead {
+    margin: 0;
+    max-width: 48ch;
+    font-size: 1.125rem;
+  }
+  .art {
+    display: block;
+    margin-top: var(--space-8);
+    color: var(--color-primary);
+  }
+  .art :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  @media (min-width: 1024px) {
+    .hero {
+      padding-bottom: 0;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      align-items: end;
+      gap: var(--space-12);
+    }
+    .text {
+      padding-bottom: var(--space-12);
+    }
+    .art {
+      margin: 0;
+    }
+  }
+</style>
