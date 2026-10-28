@@ -4,7 +4,10 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { estimateAreas, scenarioAlerts, scenarios, simulate, simulateRunnerHeat, toMin, trafficAt, trafficTimesAt, densityLevel, zoneAssignments } from "../src";
 
-const hash = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
+// Numbers are rounded to 10 significant digits before hashing: Math.sin/Math.pow can differ in the
+// last bit between CPUs (Apple arm64 locally, x64 Linux in CI), which is not a behaviour change.
+const stable = (_key: string, value: unknown) => (typeof value === "number" ? Number(value.toPrecision(10)) : value);
+const hash = (value: unknown) => createHash("sha256").update(JSON.stringify(value, stable)).digest("hex");
 
 /** Recomputes every scenario in the baseline's schema. */
 function compute() {
