@@ -1,0 +1,42 @@
+---
+import Base from "../layouts/Base.astro";
+import { locales, t } from "../i18n";
+
+// The 404 URL has no language, so the message is shown in both, each linking to its home.
+---
+
+<Base locale="es">
+  <section class="section">
+    <div class="container not-found">
+      {
+        locales.map((locale, index) => (
+          <div lang={locale}>
+            {index === 0 ? <h1>{t(locale, "notFound.title")}</h1> : <p class="title">{t(locale, "notFound.title")}</p>}
+            <a class="button button-primary" href={`/${locale}/`}>{t(locale, "notFound.cta")}</a>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  .not-found {
+    display: flex;
+    flex-direction: column;
+    gap: var(--section-gap-inner);
+  }
+  .not-found > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+  .title {
+    margin: 0;
+    font-size: var(--text-h2);
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: var(--leading-tight);
+  }
+</style>

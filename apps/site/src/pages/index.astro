@@ -1,0 +1,32 @@
+---
+import { localeCode, locales, t } from "../i18n";
+import { absoluteUrl } from "../lib/env";
+
+// The only page that chooses the language (ADR 0004). Rules 1, 2 and 4 run here, in the
+// browser; rule 3 (country) needs the edge and arrives with the deployment.
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{t("en", "meta.title")}</title>
+    <meta name="description" content={t("en", "meta.description")} />
+    {locales.map((locale) => <link rel="alternate" hreflang={locale} href={absoluteUrl(`/${locale}/`)} />)}
+    <link rel="alternate" hreflang="x-default" href={absoluteUrl("/en/")} />
+    <script>
+      import { LOCALE_COOKIE, pickLocale } from "../i18n/pick-locale";
+
+      const cookie = document.cookie.match(new RegExp(`(?:^|; )${LOCALE_COOKIE}=([^;]*)`))?.[1];
+      location.replace(`/${pickLocale({ cookie, languages: navigator.languages })}/`);
+    </script>
+  </head>
+  <body>
+    <noscript>
+      <p>
+        {locales.map((locale) => <a href={`/${locale}/`} hreflang={locale} lang={locale}>{localeCode(locale)} </a>)}
+      </p>
+    </noscript>
+  </body>
+</html>

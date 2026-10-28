@@ -1,0 +1,50 @@
+---
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/inter/700.css";
+import "../styles/global.css";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import { locales, t, type Locale } from "../i18n";
+import { absoluteUrl } from "../lib/env";
+import { pagePath, pages, type PageId } from "../lib/routes";
+
+/** Page shell: <html lang>, meta, canonical and hreflang, header and footer. */
+interface Props {
+  locale: Locale;
+  /** The page, for canonical, hreflang and the active nav item. Omit for pages without a locale twin (404). */
+  page?: PageId | undefined;
+}
+const { locale, page } = Astro.props;
+
+const title = !page || page === "home" ? t(locale, "meta.title") : `${t(locale, pages[page].titleKey)} · NODES`;
+const description = t(locale, "meta.description");
+const alternates = page ? locales.map((item) => ({ locale: item, href: absoluteUrl(pagePath(item, page)) })) : [];
+const canonical = page ? absoluteUrl(pagePath(locale, page)) : undefined;
+const xDefault = page ? absoluteUrl(pagePath("en", page)) : undefined;
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    {alternates.map((item) => <link rel="alternate" hreflang={item.locale} href={item.href} />)}
+    {xDefault && <link rel="alternate" hreflang="x-default" href={xDefault} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content={locale === "es" ? "es_ES" : "en_GB"} />
+    {canonical && <meta property="og:url" content={canonical} />}
+  </head>
+  <body>
+    <Header locale={locale} page={page} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer locale={locale} />
+  </body>
+</html>

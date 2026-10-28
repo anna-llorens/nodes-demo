@@ -1,0 +1,108 @@
+---
+import Svg from "@nodes/ui/Svg.astro";
+import { t, type Locale } from "../i18n";
+import { env } from "../lib/env";
+import { legalNav, mainNav, pagePath, pages } from "../lib/routes";
+import Logo from "./Logo.astro";
+
+/** Footer: logo · nav · social icons (only when configured) · legal links and © year. */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+
+// Brand names are proper nouns, not translated copy.
+const social = [
+  { href: env.linkedinUrl, icon: "social/linkedin", label: "LinkedIn" },
+  { href: env.xUrl, icon: "social/x", label: "X" },
+].filter((item): item is { href: string; icon: string; label: string } => Boolean(item.href));
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container top">
+    <Logo locale={locale} />
+    <nav>
+      <ul>
+        {mainNav.map((id) => <li><a href={pagePath(locale, id)}>{t(locale, pages[id].titleKey)}</a></li>)}
+      </ul>
+    </nav>
+    {social.length > 0 && (
+      <ul class="social">
+        {social.map((item) => (
+          <li>
+            <a href={item.href} rel="noopener" target="_blank" aria-label={item.label}>
+              <Svg name={item.icon} class="social-icon" />
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+  <div class="container bottom">
+    <ul class="legal">
+      {legalNav.map((item) => <li><a href={pagePath(locale, item.page)}>{t(locale, item.labelKey)}</a></li>)}
+    </ul>
+    <p>{t(locale, "footer.copyright", { year })}</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    padding-block: var(--space-12) var(--space-8);
+    font-size: var(--text-small);
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-6);
+  }
+  a {
+    color: var(--color-text-body);
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+  .top,
+  .bottom {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+  .bottom {
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+  }
+  .bottom p {
+    margin: 0;
+  }
+  .social a {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    color: var(--color-primary);
+  }
+  .social :global(.social-icon) {
+    width: 22px;
+    height: 22px;
+  }
+
+  @media (min-width: 1024px) {
+    .top,
+    .bottom {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+</style>

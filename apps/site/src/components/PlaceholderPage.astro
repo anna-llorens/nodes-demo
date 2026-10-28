@@ -1,0 +1,33 @@
+---
+import { t, type Locale } from "../i18n";
+import Base from "../layouts/Base.astro";
+import { pages, type PageId } from "../lib/routes";
+
+/** Placeholder for pages built in later milestones: the page title and "coming soon". */
+interface Props {
+  locale: Locale;
+  page: PageId;
+}
+const { locale, page } = Astro.props;
+---
+
+<Base locale={locale} page={page}>
+  <section class="section">
+    <div class="container placeholder">
+      <h1>{t(locale, pages[page].titleKey)}</h1>
+      <p>{t(locale, "placeholder.comingSoon")}</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .placeholder {
+    display: flex;
+    flex-direction: column;
+    gap: var(--section-gap-inner);
+    max-width: calc(60ch + 2 * var(--space-5));
+  }
+  .placeholder p {
+    margin: 0;
+  }
+</style>

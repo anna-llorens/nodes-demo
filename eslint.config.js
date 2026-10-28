@@ -1,4 +1,5 @@
 import js from "@eslint/js";
+import astro from "eslint-plugin-astro";
 import eslintConfigPrettier from "eslint-config-prettier";
 import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
@@ -18,7 +19,7 @@ const serverOnly = {
 };
 
 export default tseslint.config(
-  { ignores: ["**/dist", "**/.output", "**/.vinxi", "**/.tanstack", "**/.wrangler", "**/routeTree.gen.ts", ".lovable", ".claude"] },
+  { ignores: ["**/dist", "**/.output", "**/.vinxi", "**/.tanstack", "**/.wrangler", "**/.astro", "**/routeTree.gen.ts", ".lovable", ".claude"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
@@ -53,6 +54,19 @@ export default tseslint.config(
   {
     files: ["apps/web/src/components/ui/**/*.tsx"],
     rules: { "react-refresh/only-export-components": "off" },
+  },
+
+  // apps/site: Astro public website. Only the shared design package; no demo data.
+  ...astro.configs["flat/recommended"],
+  {
+    files: ["apps/site/**/*.{ts,astro}"],
+    languageOptions: { globals: globals.browser },
+    rules: {
+      "no-restricted-imports": ["error", { patterns: [
+        { group: ["@nodes/core", "@nodes/data-source", "@nodes/web"], message: "The site depends only on @nodes/ui." },
+        { group: ["@nodes/*/src/*", "!@nodes/ui/*"], message: "Import packages through their public entry point." },
+      ] }],
+    },
   },
 
   // packages/data-source: no UI.

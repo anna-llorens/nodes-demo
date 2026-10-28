@@ -1,0 +1,24 @@
+---
+import type { Locale } from "../i18n";
+
+/** Text logo until the official SVG files arrive: "NODES" with the O in the primary colour. */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+---
+
+<a class="logo" href={`/${locale}/`}>N<span>O</span>DES</a>
+
+<style>
+  .logo {
+    font-weight: 700;
+    font-size: 1.375rem;
+    letter-spacing: 0.02em;
+    color: var(--color-text);
+    text-decoration: none;
+  }
+  .logo span {
+    color: var(--color-primary);
+  }
+</style>

@@ -1,0 +1,64 @@
+---
+import { localeCode, locales, t, type Locale } from "../i18n";
+import { pagePath, type PageId } from "../lib/routes";
+
+/**
+ * Two plain links, "ES · EN", to the same page in each locale. The current one carries
+ * aria-current. Script only stores the choice in the language cookie.
+ */
+interface Props {
+  locale: Locale;
+  page?: PageId | undefined;
+}
+const { locale, page = "home" } = Astro.props;
+---
+
+<nav class="language" aria-label={t(locale, "nav.language")}>
+  {
+    locales.map((item, index) => (
+      <>
+        {index > 0 && <span aria-hidden="true">·</span>}
+        <a
+          href={pagePath(item, page)}
+          hreflang={item}
+          lang={item}
+          data-locale={item}
+          aria-current={item === locale ? "true" : undefined}
+        >
+          {localeCode(item)}
+        </a>
+      </>
+    ))
+  }
+</nav>
+
+<script>
+  import { LOCALE_COOKIE } from "../i18n/pick-locale";
+
+  for (const link of document.querySelectorAll<HTMLAnchorElement>(".language a[data-locale]")) {
+    link.addEventListener("click", () => {
+      document.cookie = `${LOCALE_COOKIE}=${link.dataset["locale"]}; path=/; max-age=31536000; SameSite=Lax`;
+    });
+  }
+</script>
+
+<style>
+  .language {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-small);
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+  .language a {
+    color: var(--color-text-body);
+    text-decoration: none;
+    padding: var(--space-2) var(--space-1);
+  }
+  .language a[aria-current] {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+</style>

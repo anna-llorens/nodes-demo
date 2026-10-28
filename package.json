@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "pnpm --filter @nodes/web dev",
+    "dev:site": "pnpm --filter @nodes/site dev",
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",
@@ -19,6 +20,7 @@
     "@eslint/js": "^9.32.0",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-astro": "1.7.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^15.15.0",

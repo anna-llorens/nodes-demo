@@ -1,0 +1,12 @@
+---
+import PlaceholderPage from "../../components/PlaceholderPage.astro";
+import { isLocale } from "../../i18n";
+import { localePaths } from "../../lib/static-paths";
+
+export const getStaticPaths = localePaths;
+
+const { locale } = Astro.params;
+if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
+---
+
+<PlaceholderPage locale={locale} page="technology" />
