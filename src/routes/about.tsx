@@ -61,7 +61,7 @@ function MasPage() {
           </div>
         </div>
         <p className="mt-3 text-sm text-muted-foreground">
-          Prototipo de nodos LiDAR temporales para medir densidad y flujo de personas en eventos de calle. Todas las
+          Prototipo de nodos LiDAR temporales para medir densidad y flujo de personas en el exterior de València. Todas las
           cifras son simuladas.
         </p>
         <h2 className="mt-8 font-display text-lg font-bold text-brand-ink">Funcionalidades disponibles</h2>
