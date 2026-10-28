@@ -1,26 +1,36 @@
-# Nodes Demo
+# NODES
 
-tmbien lo quiero responsibe
+NODES uses temporary, relocatable LiDAR nodes to count people and measure density and flow at
+street events in València, so the people running an event can decide in time. This repository
+holds the operator dashboard and its domain logic. It is a prototype: all data is simulated
+and no real sensor is connected yet.
 
-This project was built with [Lovable](https://lovable.dev).
+## Layout
 
-**Live app**: https://nodes-demo.lovable.app
+- `apps/web` — the dashboard (TanStack Start, React, MapLibre). Spanish UI.
+- `packages/core` — pure TypeScript domain: scenarios, seeded simulator, measured and
+  estimated counts, alerts, reports.
+- `packages/data-source` — the `DataSource` interface and `SimulatedSource`.
+- `docs/` — decisions (ADRs), plans and sources for real-world figures.
 
-## Build with Lovable
+## Run
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/103ab4a3-e8db-40d1-b44c-e63c63250588).
+Requires Node 22 (`.nvmrc`) and pnpm 10 (`corepack enable`, or prefix commands with
+`npx pnpm@10.34.9`).
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
 ```
+pnpm install
+pnpm dev
+```
+
+## Test
+
+```
+pnpm typecheck
+pnpm lint
+pnpm test
+pnpm build
+```
+
+`pnpm test` runs vitest in every package, including the golden test in
+`packages/core/test/golden` that proves the simulator output has not changed.
