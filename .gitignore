@@ -36,3 +36,6 @@ dist-ssr
 .env.local
 .env.*.local
 /apps/web/.env
+
+# Local Claude Code settings and preview config
+.claude/
