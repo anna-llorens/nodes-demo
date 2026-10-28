@@ -1,7 +1,14 @@
 ---
-import PlaceholderPage from "../../components/PlaceholderPage.astro";
 import { isLocale } from "../../i18n";
+import Base from "../../layouts/Base.astro";
 import { localePaths } from "../../lib/static-paths";
+import Collaborate from "../../sections/home/Collaborate.astro";
+import Hero from "../../sections/home/Hero.astro";
+import How from "../../sections/home/How.astro";
+import Solution from "../../sections/home/Solution.astro";
+import Status from "../../sections/home/Status.astro";
+import Team from "../../sections/home/Team.astro";
+import UseCases from "../../sections/home/UseCases.astro";
 
 export const getStaticPaths = localePaths;
 
@@ -9,4 +16,12 @@ const { locale } = Astro.params;
 if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
 ---
 
-<PlaceholderPage locale={locale} page="home" />
+<Base locale={locale} page="home">
+  <Hero locale={locale} />
+  <Solution locale={locale} />
+  <How locale={locale} />
+  <UseCases locale={locale} />
+  <Status locale={locale} />
+  <Team locale={locale} />
+  <Collaborate locale={locale} />
+</Base>

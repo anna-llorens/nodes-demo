@@ -1,0 +1,43 @@
+---
+import IconCard from "../../components/IconCard.astro";
+import SectionHeading from "../../components/SectionHeading.astro";
+import { t, type Locale } from "../../i18n";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const cards = [
+  { icon: "icons/lidar-sensor", key: "nodes" },
+  { icon: "icons/chart", key: "dashboard" },
+  { icon: "icons/report", key: "reports" },
+] as const;
+---
+
+<section class="section" id="solution" aria-labelledby="solution-title">
+  <div class="container split">
+    <SectionHeading
+      id="solution-title"
+      eyebrow={t(locale, "solution.eyebrow")}
+      title={t(locale, "solution.title")}
+      lead={t(locale, "solution.lead")}
+    />
+    <div class="cards">
+      {cards.map(({ icon, key }) => (
+        <IconCard row icon={icon} title={t(locale, `solution.${key}.title`)} text={t(locale, `solution.${key}.text`)} />
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .cards {
+    display: grid;
+    gap: var(--space-4);
+  }
+  @media (min-width: 1024px) {
+    .cards {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

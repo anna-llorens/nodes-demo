@@ -1,0 +1,95 @@
+---
+import Svg from "@nodes/ui/Svg.astro";
+import Button from "../../components/Button.astro";
+import Eyebrow from "../../components/Eyebrow.astro";
+import { t, type Locale } from "../../i18n";
+import { pagePath } from "../../lib/routes";
+
+/** Soft-green rounded band: text and 2 buttons, València skyline on the right (below on mobile). */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+---
+
+<section class="section" aria-labelledby="collaborate-title">
+  <div class="container">
+    <div class="band">
+      <div class="text">
+        <Eyebrow>{t(locale, "collaborate.eyebrow")}</Eyebrow>
+        <h2 id="collaborate-title">{t(locale, "collaborate.title")}</h2>
+        <p>{t(locale, "collaborate.lead")}</p>
+        <div class="actions">
+          <Button href={pagePath(locale, "collaborate")} arrow>{t(locale, "collaborate.cta")}</Button>
+          <Button href={pagePath(locale, "collaborate")} variant="outline">{t(locale, "collaborate.contact")}</Button>
+        </div>
+      </div>
+      <span class="art"><Svg name="illustrations/skyline-header" /></span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .band {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    background: var(--color-primary-soft);
+  }
+  .text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+    padding: var(--space-8) var(--space-6) 0;
+  }
+  h2 {
+    font-size: var(--text-h2);
+    font-weight: 700;
+  }
+  p {
+    margin: 0;
+    max-width: 50ch;
+  }
+  .actions {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+  }
+  .art {
+    display: block;
+    margin-top: var(--space-6);
+    color: var(--color-primary);
+  }
+  .art :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (min-width: 1024px) {
+    .band {
+      position: relative;
+    }
+    .text {
+      position: relative;
+      z-index: 1;
+      width: 55%;
+      padding: var(--space-12);
+    }
+    .actions {
+      flex-direction: row;
+      align-self: flex-start;
+    }
+    .art {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 55%;
+      margin: 0;
+    }
+  }
+</style>

@@ -1,0 +1,43 @@
+---
+import IconCard from "../../components/IconCard.astro";
+import SectionHeading from "../../components/SectionHeading.astro";
+import { t, type Locale } from "../../i18n";
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const items = [
+  { icon: "icons/status-simulation", key: "simulation" },
+  { icon: "icons/status-next", key: "next" },
+  { icon: "icons/status-future", key: "future" },
+] as const;
+---
+
+<section class="section" aria-labelledby="status-title">
+  <div class="container split">
+    <SectionHeading
+      id="status-title"
+      eyebrow={t(locale, "status.eyebrow")}
+      title={t(locale, "status.title")}
+      lead={t(locale, "status.lead")}
+    />
+    <div class="items">
+      {items.map(({ icon, key }) => (
+        <IconCard plain icon={icon} title={t(locale, `status.${key}.title`)} text={t(locale, `status.${key}.text`)} />
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .items {
+    display: grid;
+    gap: var(--space-8);
+  }
+  @media (min-width: 1024px) {
+    .items {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

@@ -1,0 +1,149 @@
+---
+import Svg from "@nodes/ui/Svg.astro";
+import { ArrowRight } from "@lucide/astro";
+import Button from "../../components/Button.astro";
+import SectionHeading from "../../components/SectionHeading.astro";
+import { t, type Locale } from "../../i18n";
+import { demoScenarioUrl, type DemoScenario } from "../../lib/demo";
+import { env } from "../../lib/env";
+
+/** The two demo scenarios as cards, each linking to its scenario in the demo. */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const cases: { key: "halfMarathon" | "mascleta"; scenario: DemoScenario; art: string }[] = [
+  { key: "halfMarathon", scenario: "maraton", art: "illustrations/use-case-runner" },
+  { key: "mascleta", scenario: "mascleta", art: "illustrations/use-case-town-hall" },
+];
+---
+
+<section class="section" aria-labelledby="use-cases-title">
+  <div class="container split">
+    <SectionHeading
+      id="use-cases-title"
+      eyebrow={t(locale, "useCases.eyebrow")}
+      title={t(locale, "useCases.title")}
+      lead={t(locale, "useCases.lead")}
+    >
+      {env.demoUrl && <Button class="full-demo-desktop" href={env.demoUrl} arrow>{t(locale, "useCases.fullDemo")}</Button>}
+    </SectionHeading>
+    <ul class="cases">
+      {cases.map(({ key, scenario, art }) => {
+        const href = demoScenarioUrl(env.demoUrl, scenario);
+        const title = t(locale, `useCases.${key}.title`);
+        const Tag = href ? "a" : "div";
+        return (
+          <li>
+            <Tag class="case" href={href} aria-label={href ? `${t(locale, "useCases.open")}: ${title}` : undefined}>
+              <span class="art"><Svg name={art} /></span>
+              <h3>{title}</h3>
+              <p>{t(locale, `useCases.${key}.text`)}</p>
+              {href && <span class="go" aria-hidden="true"><ArrowRight size={18} /></span>}
+            </Tag>
+          </li>
+        );
+      })}
+    </ul>
+    {env.demoUrl && (
+      <a class="full-demo-mobile" href={env.demoUrl}>
+        {t(locale, "useCases.fullDemo")}
+        <ArrowRight aria-hidden="true" size={18} />
+      </a>
+    )}
+    <span class="skyline"><Svg name="illustrations/skyline-footer" /></span>
+  </div>
+</section>
+
+<style>
+  .cases {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-4);
+  }
+  .case {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: var(--space-6);
+    padding-right: calc(var(--space-6) + 2.75rem);
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+    color: inherit;
+    text-decoration: none;
+  }
+  a.case:hover {
+    box-shadow: 0 0 0 1px var(--color-primary-line), var(--shadow-card);
+  }
+  .art {
+    display: block;
+    width: 8rem;
+    margin-bottom: var(--space-4);
+    color: var(--color-primary-decor);
+  }
+  .art :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  h3 {
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+  p {
+    margin: var(--space-2) 0 0;
+  }
+  .go {
+    position: absolute;
+    right: var(--space-6);
+    bottom: var(--space-6);
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
+  /* The "full demo" link sits under the cards on mobile and in the heading block on desktop. */
+  .split :global(.full-demo-desktop) {
+    display: none;
+  }
+  .full-demo-mobile {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .skyline {
+    display: block;
+    color: var(--color-primary-line);
+  }
+  .skyline :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (min-width: 1024px) {
+    .cases {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .art {
+      width: 10rem;
+    }
+    .split :global(.full-demo-desktop) {
+      display: inline-flex;
+    }
+    .full-demo-mobile,
+    .skyline {
+      display: none;
+    }
+  }
+</style>

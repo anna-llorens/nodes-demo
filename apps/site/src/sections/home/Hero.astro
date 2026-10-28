@@ -1,0 +1,120 @@
+---
+import Svg from "@nodes/ui/Svg.astro";
+import { ChevronDown } from "@lucide/astro";
+import Button from "../../components/Button.astro";
+import Eyebrow from "../../components/Eyebrow.astro";
+import { t, type Locale } from "../../i18n";
+import { env } from "../../lib/env";
+import { pagePath } from "../../lib/routes";
+
+/** Home hero: badge, the page's h1, lead and 3 buttons; illustration bleeding to the right edge. */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="container hero-grid">
+    <div class="hero-text">
+      <Eyebrow badge>{t(locale, "hero.eyebrow")}</Eyebrow>
+      <h1 id="hero-title">{t(locale, "hero.title")}</h1>
+      <p class="lead">{t(locale, "hero.lead")}</p>
+      <div class="actions">
+        {env.demoUrl && <Button href={env.demoUrl} arrow>{t(locale, "hero.ctaDemo")}</Button>}
+        <Button href={pagePath(locale, "technology")} variant="outline">{t(locale, "hero.ctaProject")}</Button>
+        <Button href={pagePath(locale, "collaborate")} variant="outline">{t(locale, "hero.ctaContact")}</Button>
+      </div>
+    </div>
+  </div>
+  <div class="hero-art">
+    <Svg name="illustrations/hero-lidar-valencia" label={t(locale, "hero.imageAlt")} />
+  </div>
+  <a class="scroll-hint" href="#solution" aria-label={t(locale, "hero.scrollHint")}>
+    <ChevronDown aria-hidden="true" size={28} />
+  </a>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding-top: var(--section-padding);
+    overflow: hidden;
+  }
+  .hero-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-5);
+  }
+  h1 {
+    max-width: 14ch;
+  }
+  .lead {
+    margin: 0;
+    max-width: 40ch;
+    font-size: 1.125rem;
+  }
+  .actions {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+  }
+  .hero-art {
+    margin-top: var(--space-8);
+    color: var(--color-primary-decor);
+  }
+  .hero-art :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .scroll-hint {
+    align-self: center;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-block: var(--space-4);
+    color: var(--color-primary);
+  }
+
+  @media (min-width: 1024px) {
+    .hero {
+      justify-content: center;
+      min-height: 80svh;
+      padding-block: var(--space-12);
+    }
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+    }
+    .hero-text {
+      width: 50%;
+    }
+    /* The three buttons stay on one row, overlapping the faded edge of the illustration. */
+    .actions {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-self: flex-start;
+    }
+    /* Starts at the text column's end and runs past the right edge of the viewport. */
+    .hero-art {
+      position: absolute;
+      top: 50%;
+      left: max(48%, calc(50% - var(--container-max) / 2 + var(--container-max) * 0.48));
+      width: 62vw;
+      margin: 0;
+      transform: translateY(-50%);
+      /* The illustration has its own tinted background: fade its left edge into the page. */
+      mask-image: linear-gradient(to right, transparent, black 20%);
+    }
+    .scroll-hint {
+      display: none;
+    }
+  }
+</style>
