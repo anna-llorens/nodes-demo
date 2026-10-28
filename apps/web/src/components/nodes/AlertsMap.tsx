@@ -3,7 +3,7 @@ import * as maplibregl from "maplibre-gl";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { Scenario } from "@/scenarios/types";
-import type { DensityAlert } from "@/sim/engine";
+import type { DensityAlert } from "@/data/view";
 import { scenarioBounds } from "./geo";
 
 maplibregl.setWorkerUrl(workerUrl);

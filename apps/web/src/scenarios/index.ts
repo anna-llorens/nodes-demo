@@ -1,4 +1,5 @@
-import { scenarios as coreScenarios, type Scenario as CoreScenario } from "@nodes/core";
+import type { Scenario as CoreScenario } from "@nodes/core";
+import { dataSource } from "@/data/source";
 import { scenarioCopy } from "@/labels/es";
 import { nodeImages } from "./images";
 import type { Scenario } from "./types";
@@ -31,7 +32,7 @@ function withCopy(s: CoreScenario): Scenario {
 }
 
 /** Configured scenarios with their UI copy; all use the same engine and screens. */
-export const scenarios: Scenario[] = coreScenarios.map(withCopy);
+export const scenarios: Scenario[] = dataSource.peekScenarios().map((summary) => withCopy(dataSource.peekScenario(summary.id)));
 
 export const getScenario = (id?: string) => scenarios.find((s) => s.id === id) ?? scenarios[0]!;
 

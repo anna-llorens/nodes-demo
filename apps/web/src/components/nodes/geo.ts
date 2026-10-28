@@ -1,8 +1,7 @@
 import type * as GeoJSON from "geojson";
 import type { LiveScenario as Scenario, Scenario as BaseScenario } from "@/scenarios/types";
 import { densityLevel } from "@/scenarios/types";
-import { simulateRunnerHeat, zoneAssignments } from "@/sim/engine";
-import { circlePolygon, pointAt, routeDistances } from "@nodes/core";
+import { circlePolygon, pointAt, routeDistances, zoneAssignments, type RunnerHeatSample } from "@nodes/core";
 
 export { circlePolygon, scenarioBounds } from "@nodes/core";
 
@@ -33,17 +32,16 @@ export function heatPoints(s: Scenario) {
 }
 
 /**
- * Calor de los corredores sobre el recorrido en un minuto dado (determinista).
- * Cada corredor sale en una oleada (0–35 min) y tarda 70–165 min; los que aún
- * no han salido o ya han llegado no se dibujan (los cubre el calor de los nodos).
+ * Projects runner-heat samples onto the route. Runners not yet started or already finished
+ * are not in the samples (the node heat covers them).
  */
-export function runnerHeatPoints(s: BaseScenario, minute: number) {
+export function runnerHeatPoints(s: BaseScenario, samples: RunnerHeatSample[]) {
   const features: GeoJSON.Feature[] = [];
   if (!s.route || s.route.length < 2) return { type: "FeatureCollection", features } as GeoJSON.FeatureCollection;
   const route = s.route;
   const acc = routeDistances(route);
   const total = acc[acc.length - 1] ?? 0;
-  for (const { progress, weight, offsetLngM, offsetLatM } of simulateRunnerHeat(s, minute)) {
+  for (const { progress, weight, offsetLngM, offsetLatM } of samples) {
     const [lng, lat] = pointAt(route, acc, progress * total);
     features.push({
       type: "Feature",

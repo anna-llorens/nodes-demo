@@ -4,7 +4,9 @@ import { ChevronRight, TriangleAlert, X } from "lucide-react";
 import { AppShell } from "@/components/nodes/AppShell";
 import { getScenario, scenarios } from "@/scenarios";
 import { densityLabel } from "@/scenarios/types";
-import { fmtClock, visibleAlerts, type DensityAlert } from "@/sim/engine";
+import { fmtClock } from "@nodes/core";
+import { useAlerts } from "@/data/hooks";
+import { labelAlert, type DensityAlert } from "@/data/view";
 import { selectSimScenario, useSimClock } from "@/lib/sim-clock";
 import { cn } from "@/lib/utils";
 
@@ -31,7 +33,8 @@ const tone = (a: DensityAlert) => (a.level === "very_high" ? "bg-dens-crit" : "b
 function AlertsPage() {
   const clock = useSimClock();
   const scenario = getScenario(clock.scenarioId);
-  const alerts = useMemo(() => visibleAlerts(scenario, clock.minute), [scenario, clock.minute]);
+  const raised = useAlerts(scenario.id, clock.minute);
+  const alerts = useMemo(() => raised.map((a) => labelAlert(scenario, a)), [scenario, raised]);
   const [filter, setFilter] = useState<Filter>("todas");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [mapFailed, setMapFailed] = useState(false);

@@ -3,7 +3,9 @@ import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Play, Pause, Users, X, ChevronDown, Info, Clock, ChevronRight, Layers, TriangleAlert } from "lucide-react";
 import type { LiveScenario as Scenario, Scenario as RawScenario } from "@/scenarios/types";
-import { visibleAlerts, simulate, toMin, fmtClock, trafficAt, trafficTimesAt } from "@/sim/engine";
+import { fmtClock, toMin, type RunnerHeatSample } from "@nodes/core";
+import { useAlerts, useSnapshot } from "@/data/hooks";
+import { NO_TRAFFIC, labelAlert, labelTrafficTimes } from "@/data/view";
 import { setSimClock } from "@/lib/sim-clock";
 import { scenarios } from "@/scenarios";
 import { ESTIMATE_LABEL, densityLabel, densityLevel } from "@/scenarios/types";
@@ -36,6 +38,7 @@ export const levelDot: Record<string, string> = {
 };
 
 const fmt = (n: number) => n.toLocaleString("es-ES");
+const NO_RUNNERS: RunnerHeatSample[] = [];
 
 export function MapStage({ scenario: base, layers, onLayerChange, initialCamera, fitBounds, initialPalette = "termica", initialMinute, initialSpeed = DEFAULT_SPEED }: { scenario: RawScenario; layers: MapLayers; onLayerChange: (key: keyof MapLayers, value: boolean) => void; initialCamera?: MapCamera; fitBounds?: [[number, number], [number, number]]; initialPalette?: RunnerPalette; initialMinute?: number; initialSpeed?: number }) {
   const start = toMin(base.schedule.start);
@@ -55,19 +58,21 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
     return () => clearInterval(id);
   }, [playing, speed, end]);
   const tick = Math.floor(minute * 6) / 6; // recalcula cada 10 s simulados
+  const snapshot = useSnapshot(base.id, tick);
   const scenario: Scenario = useMemo(() => {
-    const st = simulate(base, tick);
+    const st = snapshot.nodes;
     return { ...base, nodes: base.nodes.flatMap((n, i) => {
-      const snapshot = st[i];
-      return snapshot ? [{ ...n, snapshot }] : [];
+      const nodeSnapshot = st[i];
+      return nodeSnapshot ? [{ ...n, snapshot: nodeSnapshot }] : [];
     }) };
-  }, [base, tick]);
+  }, [base, snapshot]);
   const clock = fmtClock(minute, true);
   const trafficTick = Math.floor(minute);
-  const traffic = useMemo(() => trafficAt(base, trafficTick), [base, trafficTick]);
+  const trafficSnapshot = useSnapshot(base.id, trafficTick);
+  const traffic = useMemo(() => trafficSnapshot.traffic?.segments ?? [], [trafficSnapshot]);
   const showTraffic = Boolean(layers.traffic);
   const jammed = traffic.filter((t) => t.level === 3).length;
-  const times = useMemo(() => trafficTimesAt(base, trafficTick, traffic), [base, trafficTick, traffic]);
+  const times = useMemo(() => labelTrafficTimes(base, trafficSnapshot.traffic?.times ?? NO_TRAFFIC), [base, trafficSnapshot]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   useEffect(() => {
     if (!selectedId) return;
@@ -94,10 +99,11 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
   const estimated = scenario.nodes.reduce((s, n) => s + n.snapshot.estimated, 0);
   useEffect(() => { setSimClock({ scenarioId: base.id, minute: tick }); }, [base.id, tick]);
   // Aviso sobre el mapa: alertas con sugerencia cuyo nodo sigue en esa banda.
-  const alerts = useMemo(() => visibleAlerts(base, tick).filter((a) => {
+  const raised = useAlerts(base.id, tick);
+  const alerts = useMemo(() => raised.map((a) => labelAlert(base, a)).filter((a) => {
     const node = scenario.nodes.find((n) => n.id === a.nodeId);
     return a.suggestion && node && densityLevel(node.snapshot.density) === a.level;
-  }), [base, tick, scenario]);
+  }), [base, raised, scenario]);
   const hasRunners = base.nodes.some((n) => n.runnerShare);
   const runners = scenario.nodes.reduce((s, n) => s + n.snapshot.runners, 0);
 
@@ -220,7 +226,7 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
                   scenario={scenario}
                   layers={layers}
                   traffic={traffic}
-                  minute={tick}
+                  runnerHeat={snapshot.runnerHeat ?? NO_RUNNERS}
                   palette={palette}
                   {...(initialCamera ? { initialCamera } : {})}
                   {...(fitBounds ? { fitBounds } : {})}

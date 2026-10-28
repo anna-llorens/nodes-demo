@@ -3,8 +3,7 @@ import { Home, Map, FileBarChart, MoreHorizontal, Layers, Bell } from "lucide-re
 import type { ReactNode } from "react";
 import { Logo, SimBadge } from "./Logo";
 import { cn } from "@/lib/utils";
-import { getScenario } from "@/scenarios";
-import { visibleAlerts } from "@/sim/engine";
+import { useAlerts } from "@/data/hooks";
 import { useSimClock } from "@/lib/sim-clock";
 
 export const navItems = [
@@ -18,7 +17,7 @@ export const navItems = [
 export function AppShell({ children, sidebarExtra }: { children: ReactNode; sidebarExtra?: ReactNode }) {
   const path = useRouterState({ select: (r) => r.location.pathname });
   const clock = useSimClock();
-  const alertCount = visibleAlerts(getScenario(clock.scenarioId), clock.minute).length;
+  const alertCount = useAlerts(clock.scenarioId, clock.minute).length;
   return (
     <div className="flex h-dvh w-full overflow-hidden bg-background">
       {/* Barra lateral (ordenador) */}

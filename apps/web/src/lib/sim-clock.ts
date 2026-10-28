@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { getScenario } from "@/scenarios";
-import { toMin } from "@/sim/engine";
+import { toMin } from "@nodes/core";
 import { readMapCache } from "./map-share";
 
 /** Escenario y hora del reproductor del mapa, compartidos con la campana y la pestaña Alertas. */

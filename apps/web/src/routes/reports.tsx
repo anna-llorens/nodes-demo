@@ -6,8 +6,9 @@ import { AppShell } from "@/components/nodes/AppShell";
 import { Button } from "@/components/ui/button";
 import { getScenario, scenarios } from "@/scenarios";
 import { ESTIMATE_LABEL } from "@/scenarios/types";
-import { fmtClock, toMin } from "@/sim/engine";
-import { buildReport, reportCsv } from "@/sim/reports";
+import { fmtClock, toMin } from "@nodes/core";
+import { useNodeSeriesList } from "@/data/hooks";
+import { buildReportView, reportCsv, type ReportView } from "@/data/view";
 
 export const Route = createFileRoute("/reports")({
   head: () => ({ meta: [
@@ -39,7 +40,10 @@ function ReportsPage() {
   const hasRunners = scenario.nodes.some((node) => node.runnerShare);
   const [metric, setMetric] = useState("peak");
   const valid = toMin(start) < toMin(end);
-  const report = useMemo(() => buildReport(scenario, toMin(start), toMin(end), nodeId), [scenario, start, end, nodeId]);
+  const series = useNodeSeriesList(scenario.id, nodeId === "all" ? scenario.nodes.map((node) => node.id) : [nodeId]);
+  const seriesKey = series.map((item) => item.nodeId).join(",");
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- series objects are cached per node; the key tracks the selection
+  const report = useMemo(() => buildReportView(scenario, series, toMin(start), toMin(end)), [scenario, seriesKey, start, end]);
   const exportCsv = () => {
     const url = URL.createObjectURL(new Blob(["\uFEFF" + reportCsv(report)], { type: "text/csv;charset=utf-8" }));
     const link = document.createElement("a");
@@ -113,7 +117,7 @@ function Kpi({ icon: Icon, label, value }: { icon: typeof Users; label: string; 
   return <div className="flex min-w-0 flex-col items-start gap-2 rounded-lg bg-card p-4 shadow-card sm:flex-row sm:gap-3"><Icon className="mt-1 h-5 w-5 shrink-0 text-primary" /><div className="min-w-0"><p className="font-display text-base font-bold leading-snug sm:text-lg">{value}</p><p className="mt-1 text-xs text-muted-foreground">{label}</p></div></div>;
 }
 
-function Comparison({ zones, metric, onMetric }: { zones: ReturnType<typeof buildReport>["zones"]; metric: string; onMetric: (value: string) => void }) {
+function Comparison({ zones, metric, onMetric }: { zones: ReportView["zones"]; metric: string; onMetric: (value: string) => void }) {
   return <section className="mt-7">
     <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="font-display text-sm font-bold">Comparación de zonas</h2><select aria-label="Métrica de comparación" value={metric} onChange={(event) => onMetric(event.target.value)} className="h-9 rounded-lg border border-input bg-card px-3 text-xs"><option value="peak">Afluencia máxima</option><option value="density">Tiempo en densidad alta</option></select></div>
     <div className="mt-3 h-80 w-full min-w-0"><ResponsiveContainer width="100%" height="100%"><BarChart data={zones} layout="vertical" margin={{ top: 10, right: 15, left: 0, bottom: 0 }}>

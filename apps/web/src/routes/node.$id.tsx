@@ -6,7 +6,9 @@ import { EstimateTag, levelDot } from "@/components/nodes/MapStage";
 import { findNode } from "@/scenarios";
 import { kindLabel } from "@/labels/es";
 import { ESTIMATE_LABEL, densityLabel, densityLevel, type DensityLevel } from "@/scenarios/types";
-import { scenarioAlerts, scenarioNodeState, toMin, fmtClock } from "@/sim/engine";
+import { toMin, fmtClock } from "@nodes/core";
+import { useAlerts, useNodeSeries, useSnapshot } from "@/data/hooks";
+import { labelAlert } from "@/data/view";
 import { cn } from "@/lib/utils";
 
 const fmt = (n: number) => n.toLocaleString("es-ES");
@@ -44,18 +46,16 @@ function NodePage() {
   const start = toMin(scenario.schedule.start);
   const end = toMin(scenario.schedule.end);
   const [minute, setMinute] = useState(Math.round(t ?? toMin(scenario.defaultTime ?? scenario.schedule.start)));
-  const st = scenarioNodeState(scenario, node, minute);
-  const fromAlert = alertId ? scenarioAlerts(scenario).find((a) => a.id === alertId && a.nodeId === node.id) : undefined;
+  const st = useSnapshot(scenario.id, minute).nodes.find((n) => n.id === node.id)!;
+  const raised = useAlerts(scenario.id, end).find((a) => a.id === alertId && a.nodeId === node.id);
+  const fromAlert = alertId && raised ? labelAlert(scenario, raised) : undefined;
+  const nodeSeries = useNodeSeries(scenario.id, node.id);
   const lvl = densityLevel(st.density);
 
-  const series = useMemo(() => {
-    const out: { m: number; people: number; estimated: number; runners: number; density: number }[] = [];
-    for (let m = start; m <= end; m++) {
-      const s = scenarioNodeState(scenario, node, m);
-      out.push({ m, people: s.people, estimated: s.estimated, runners: s.runners, density: s.density });
-    }
-    return out;
-  }, [scenario, node, start, end]);
+  const series = useMemo(
+    () => nodeSeries.points.map((s) => ({ m: s.minute, people: s.people, estimated: s.estimated, runners: s.runners, density: s.density })),
+    [nodeSeries],
+  );
   const dist = useMemo(() => {
     const c: Record<DensityLevel, number> = { low: 0, medium: 0, high: 0, very_high: 0 };
     series.forEach((p) => c[densityLevel(p.density)]++);

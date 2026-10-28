@@ -6,7 +6,7 @@ import { createRoot } from "react-dom/client";
 import { ArrowUp } from "lucide-react";
 import type { LiveScenario as Scenario } from "@/scenarios/types";
 import { heatPoints, ringsGeo, runnerHeatPoints, trafficGeo, zonesGeo } from "./geo";
-import type { TrafficLevel } from "@/sim/engine";
+import type { RunnerHeatSample, TrafficLevel } from "@nodes/core";
 import type { MapCamera, MapLayers, RunnerPalette } from "@/lib/map-share";
 
 // maplibre necesita colores literales en su paint (no lee variables CSS)
@@ -56,14 +56,15 @@ export default function MapView({
   onSelect,
   onError,
   traffic,
-  minute,
+  runnerHeat,
   palette = "termica",
   initialCamera,
   fitBounds,
   onCameraChange,
 }: {
   traffic: { id: string; level: TrafficLevel }[];
-  minute: number;
+  /** Representative runners at the current tick (empty when the scenario has no route). */
+  runnerHeat: RunnerHeatSample[];
   scenario: Scenario;
   layers: MapLayers;
   selectedId: string | null;
@@ -159,7 +160,7 @@ export default function MapView({
           },
         });
       }
-      map.addSource("runners", { type: "geojson", data: runnerHeatPoints(scenario, 0) });
+      map.addSource("runners", { type: "geojson", data: runnerHeatPoints(scenario, []) });
       map.addLayer({
         id: "runners",
         type: "heatmap",
@@ -253,8 +254,8 @@ export default function MapView({
   // Actualiza el calor de corredores según la hora simulada
   useEffect(() => {
     const src = mapRef.current?.getSource("runners") as maplibregl.GeoJSONSource | undefined;
-    if (ready && src) src.setData(runnerHeatPoints(scenario, minute));
-  }, [scenario, minute, ready]);
+    if (ready && src) src.setData(runnerHeatPoints(scenario, runnerHeat));
+  }, [scenario, runnerHeat, ready]);
 
   // Cambia la gama de color de los corredores
   useEffect(() => {
