@@ -4,6 +4,7 @@ import { ArrowLeft, Users, UsersRound, MapPin, TrendingUp, TrendingDown, LogIn, 
 import { AppShell } from "@/components/nodes/AppShell";
 import { EstimateTag, levelDot } from "@/components/nodes/MapStage";
 import { findNode } from "@/scenarios";
+import { kindLabel } from "@/labels/es";
 import { ESTIMATE_LABEL, densityLabel, densityLevel, type DensityLevel } from "@/scenarios/types";
 import { scenarioAlerts, scenarioNodeState, toMin, fmtClock } from "@/sim/engine";
 import { cn } from "@/lib/utils";
@@ -34,7 +35,7 @@ export const Route = createFileRoute("/node/$id")({
   component: NodePage,
 });
 
-const LEVELS: DensityLevel[] = ["baja", "media", "alta", "muy-alta"];
+const LEVELS: DensityLevel[] = ["low", "medium", "high", "very_high"];
 
 function NodePage() {
   const { id } = Route.useParams();
@@ -56,7 +57,7 @@ function NodePage() {
     return out;
   }, [scenario, node, start, end]);
   const dist = useMemo(() => {
-    const c: Record<DensityLevel, number> = { baja: 0, media: 0, alta: 0, "muy-alta": 0 };
+    const c: Record<DensityLevel, number> = { low: 0, medium: 0, high: 0, very_high: 0 };
     series.forEach((p) => c[densityLevel(p.density)]++);
     return LEVELS.map((l) => ({ l, min: c[l], pct: c[l] / series.length }));
   }, [series]);
@@ -78,16 +79,16 @@ function NodePage() {
 
         <div className="mx-auto max-w-5xl space-y-5 p-4 sm:p-6">
           <div>
-            <p className="text-xs font-semibold text-muted-foreground">{node.short} · {node.kind === "cruce" ? "Punto de cruce" : "Zona de control"}</p>
+            <p className="text-xs font-semibold text-muted-foreground">{node.short} · {kindLabel[node.kind ?? "zone"]}</p>
             <h1 className="font-display text-2xl font-bold text-brand-ink sm:text-3xl">{node.name}</h1>
             {node.address && <p className="mt-1 flex items-start gap-1.5 text-sm text-muted-foreground"><MapPin className="mt-0.5 h-4 w-4 shrink-0" />{node.address}</p>}
             {node.description && node.description !== node.address && <p className="mt-1 text-sm text-muted-foreground">{node.description}</p>}
           </div>
 
           {fromAlert && (
-            <div className={cn("rounded-2xl border bg-card px-4 py-3 shadow-card", fromAlert.level === "muy-alta" ? "border-dens-crit" : "border-dens-high")}>
+            <div className={cn("rounded-2xl border bg-card px-4 py-3 shadow-card", fromAlert.level === "very_high" ? "border-dens-crit" : "border-dens-high")}>
               <p className="flex items-center gap-2 text-sm font-semibold">
-                <TriangleAlert className={cn("h-4 w-4 shrink-0", fromAlert.level === "muy-alta" ? "text-dens-crit" : "text-dens-high")} />
+                <TriangleAlert className={cn("h-4 w-4 shrink-0", fromAlert.level === "very_high" ? "text-dens-crit" : "text-dens-high")} />
                 {densityLabel[fromAlert.level]} · {fromAlert.time} · {fromAlert.density.toLocaleString("es-ES", { minimumFractionDigits: 1 })} pers/m²
               </p>
               {fromAlert.suggestion && (
@@ -149,10 +150,10 @@ function NodePage() {
 /** Círculo de color suave (fondo al 15 %) con el icono en el color pleno. */
 const TONE = {
   green: "bg-dens-low/15 text-dens-low",
-  baja: "bg-dens-low/15 text-dens-low",
-  media: "bg-dens-mid/15 text-dens-mid",
-  alta: "bg-dens-high/15 text-dens-high",
-  "muy-alta": "bg-dens-crit/15 text-dens-crit",
+  low: "bg-dens-low/15 text-dens-low",
+  medium: "bg-dens-mid/15 text-dens-mid",
+  high: "bg-dens-high/15 text-dens-high",
+  very_high: "bg-dens-crit/15 text-dens-crit",
   red: "bg-dens-crit/15 text-dens-crit",
   softRed: "bg-red-400/15 text-red-400",
   blue: "bg-blue-500/15 text-blue-500",

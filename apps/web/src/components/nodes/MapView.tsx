@@ -141,7 +141,7 @@ export default function MapView({
       }
       if (scenario.zones?.length) {
         map.addSource("zones", { type: "geojson", data: zonesGeo(scenario) });
-        const levelColor = ["match", ["get", "level"], "muy-alta", C.crit, "alta", C.high, "media", C.mid, "#2bb673"];
+        const levelColor = ["match", ["get", "level"], "very_high", C.crit, "high", C.high, "medium", C.mid, "#2bb673"];
         map.addLayer({ id: "zones-fill", type: "fill", source: "zones", paint: { "fill-color": levelColor as never, "fill-opacity": 0.16 } });
         map.addLayer({ id: "zones-line", type: "line", source: "zones", paint: { "line-color": levelColor as never, "line-width": 1.5, "line-dasharray": [3, 2], "line-opacity": 0.9 } });
       }

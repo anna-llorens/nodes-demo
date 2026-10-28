@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { maraton } from '@/scenarios/maraton';
-import { mascleta } from '@/scenarios/mascleta';
+import { getScenario } from '@/scenarios';
+
+const maraton = getScenario('maraton');
+const mascleta = getScenario('mascleta');
 import { buildMapShareUrl, restoreMapState, validateMapSearch, defaultLayers, restoreFromCache, DEFAULT_SPEED } from './map-share';
 
 describe('shared map state', () => {

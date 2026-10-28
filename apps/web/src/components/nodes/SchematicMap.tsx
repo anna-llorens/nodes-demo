@@ -3,10 +3,10 @@ import { densityLevel } from "@/scenarios/types";
 import { cn } from "@/lib/utils";
 
 const fillCls: Record<string, string> = {
-  baja: "fill-dens-low",
-  media: "fill-dens-mid",
-  alta: "fill-dens-high",
-  "muy-alta": "fill-dens-crit",
+  low: "fill-dens-low",
+  medium: "fill-dens-mid",
+  high: "fill-dens-high",
+  very_high: "fill-dens-crit",
 };
 
 /** Plano esquemático SVG cuando el mapa base no está disponible. */

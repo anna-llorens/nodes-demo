@@ -1,0 +1,22 @@
+{
+  "name": "@nodes/core",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@turf/area": "^7.4.0"
+  },
+  "devDependencies": {
+    "@types/geojson": "^7946.0.16",
+    "@types/node": "^22.16.5",
+    "typescript": "^5.8.3",
+    "vitest": "^4.1.10"
+  }
+}

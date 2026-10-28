@@ -2,17 +2,9 @@ import type * as GeoJSON from "geojson";
 import type { LiveScenario as Scenario, Scenario as BaseScenario } from "@/scenarios/types";
 import { densityLevel } from "@/scenarios/types";
 import { simulateRunnerHeat, zoneAssignments } from "@/sim/engine";
+import { circlePolygon, pointAt, routeDistances } from "@nodes/core";
 
-export function circlePolygon([lng, lat]: [number, number], radiusM: number, steps = 64): [number, number][] {
-  const out: [number, number][] = [];
-  const dLat = radiusM / 111320;
-  const dLng = radiusM / (111320 * Math.cos((lat * Math.PI) / 180));
-  for (let i = 0; i <= steps; i++) {
-    const a = (i / steps) * Math.PI * 2;
-    out.push([lng + dLng * Math.cos(a), lat + dLat * Math.sin(a)]);
-  }
-  return out;
-}
+export { circlePolygon, scenarioBounds } from "@nodes/core";
 
 /** Puntos deterministas alrededor de cada nodo para el mapa de calor (semilla fija). */
 export function heatPoints(s: Scenario) {
@@ -38,36 +30,6 @@ export function heatPoints(s: Scenario) {
     }
   }
   return { type: "FeatureCollection", features } as GeoJSON.FeatureCollection;
-}
-
-/** Distancia acumulada (m) a lo largo del recorrido. */
-function routeDistances(route: [number, number][]) {
-  const acc: number[] = [0];
-  for (let i = 1; i < route.length; i++) {
-    const previous = route[i - 1];
-    const current = route[i];
-    if (!previous || !current) continue;
-    const [x1, y1] = previous;
-    const [x2, y2] = current;
-    const dx = (x2 - x1) * 111320 * Math.cos((y1 * Math.PI) / 180);
-    const dy = (y2 - y1) * 111320;
-    acc.push((acc[i - 1] ?? 0) + Math.hypot(dx, dy));
-  }
-  return acc;
-}
-
-/** Punto del recorrido a una distancia dada (m) desde la salida. */
-function pointAt(route: [number, number][], acc: number[], d: number): [number, number] {
-  const total = acc[acc.length - 1] ?? 0;
-  const target = Math.max(0, Math.min(total, d));
-  let i = 1;
-  while (i < acc.length - 1 && (acc[i] ?? 0) < target) i++;
-  const a = acc[i - 1] ?? 0;
-  const b = acc[i] ?? 0;
-  const t = b > a ? (target - a) / (b - a) : 0;
-  const [x1, y1] = route[i - 1] ?? [0, 0];
-  const [x2, y2] = route[i] ?? [x1, y1];
-  return [x1 + (x2 - x1) * t, y1 + (y2 - y1) * t];
 }
 
 /**
@@ -124,14 +86,6 @@ export function zonesGeo(s: Scenario) {
       };
     }),
   } as GeoJSON.FeatureCollection;
-}
-
-/** Recuadro [[oeste, sur], [este, norte]] que contiene todos los nodos y polígonos del escenario. */
-export function scenarioBounds(s: BaseScenario): [[number, number], [number, number]] {
-  const pts = [...s.nodes.map((n) => n.lngLat), ...(s.zones ?? []).flatMap((z) => z.polygon[0] ?? [])];
-  const xs = pts.map((p) => p[0]);
-  const ys = pts.map((p) => p[1]);
-  return [[Math.min(...xs), Math.min(...ys)], [Math.max(...xs), Math.max(...ys)]];
 }
 
 export function trafficGeo(s: Scenario, levels: { id: string; level: number }[]) {

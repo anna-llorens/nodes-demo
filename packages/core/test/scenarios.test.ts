@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { scenarios } from "@/scenarios";
-import { mascleta } from "@/scenarios/mascleta";
-import { maraton } from "@/scenarios/maraton";
-import { MAX_NODE_AREA_M2, densityLevel } from "@/scenarios/types";
-import { densityAt, scenarioAlerts, simulate, toMin, visibleAlerts } from "./engine";
+import { MAX_NODE_AREA_M2, densityAt, densityLevel, maraton, mascleta, scenarioAlerts, scenarios, simulate, toMin, visibleAlerts } from "../src";
+import type { AlertLevel, SuggestionCode } from "../src";
 
 const minutes = (s: (typeof scenarios)[number]) => {
   const out: number[] = [];
@@ -12,8 +9,8 @@ const minutes = (s: (typeof scenarios)[number]) => {
 };
 const estimatedTotal = (m: number) => simulate(mascleta, m).reduce((sum, s) => sum + s.estimated, 0);
 
-describe.each(scenarios.map((s) => [s.id, s] as const))("escenario %s, minuto a minuto", (_id, scenario) => {
-  it("densidad ≤ 6, medido ≤ densidad × 1.257 + 1 y estimado ≥ medido", () => {
+describe.each(scenarios.map((s) => [s.id, s] as const))("scenario %s, minute by minute", (_id, scenario) => {
+  it("keeps density ≤ 6, measured ≤ density × 1,257 + 1 and estimated ≥ measured", () => {
     for (const m of minutes(scenario)) {
       const states = simulate(scenario, m);
       scenario.nodes.forEach((node, i) => {
@@ -29,7 +26,7 @@ describe.each(scenarios.map((s) => [s.id, s] as const))("escenario %s, minuto a 
 });
 
 describe("mascletà", () => {
-  it("el total estimado en el pico está entre 20.000 y 30.000 y cae dentro de 14:00–14:08", () => {
+  it("peaks at 20,000–30,000 estimated people between 14:00 and 14:08", () => {
     const all = minutes(mascleta).map((m) => ({ m, total: estimatedTotal(m) }));
     const peak = all.reduce((best, x) => (x.total > best.total ? x : best));
     expect(peak.total).toBeGreaterThanOrEqual(20000);
@@ -37,7 +34,7 @@ describe("mascletà", () => {
     expect(peak.m).toBeGreaterThanOrEqual(toMin("14:00"));
     expect(peak.m).toBeLessThanOrEqual(toMin("14:08"));
   });
-  it("la plaza está entre 4 y 6 pers/m² de 14:00 a 14:08 y se vacía desde las 14:10", () => {
+  it("keeps the square at 4–6 people/m² from 14:00 to 14:08 and empties it from 14:10", () => {
     for (let m = toMin("14:00"); m <= toMin("14:08"); m++) {
       const plaza = simulate(mascleta, m).find((s) => s.id === "m-plaza")!;
       expect(plaza.density).toBeGreaterThanOrEqual(4);
@@ -46,35 +43,35 @@ describe("mascletà", () => {
     const at = (t: string) => simulate(mascleta, toMin(t)).find((s) => s.id === "m-plaza")!.people;
     expect(at("14:16")).toBeLessThan(at("14:08") * 0.35);
   });
-  it("en el vaciado salen más personas de las que entran por Xàtiva y Estación del Norte", () => {
+  it("lets more people out than in at Xàtiva and Estación del Norte while emptying", () => {
     for (let m = toMin("14:10"); m <= toMin("14:30"); m++)
       for (const s of simulate(mascleta, m).filter((x) => x.id === "m-xativa" || x.id === "m-estacion"))
         expect(s.flowOut).toBeGreaterThan(s.flowIn);
   });
-  it("Calle Xàtiva pasa a muy alta a las 14:12", () => {
+  it("turns Calle Xàtiva very high at 14:12", () => {
     const xativa = (t: string) => simulate(mascleta, toMin(t)).find((s) => s.id === "m-xativa")!;
-    expect(densityLevel(xativa("14:11").density)).not.toBe("muy-alta");
-    expect(densityLevel(xativa("14:12").density)).toBe("muy-alta");
+    expect(densityLevel(xativa("14:11").density)).not.toBe("very_high");
+    expect(densityLevel(xativa("14:12").density)).toBe("very_high");
   });
 });
 
-/** Alertas objetivo: [hora, nodo, nivel, densidad, sugerencia]. */
-const TARGETS: Record<string, [string, string, "alta" | "muy-alta", number, string?][]> = {
+/** Target alerts: [time, node, level, density, suggestion]. */
+const TARGETS: Record<string, [string, string, AlertLevel, number, SuggestionCode?][]> = {
   mascleta: [
-    ["13:45", "m-plaza", "alta", 4.3],
-    ["13:56", "m-xativa", "alta", 4.1],
-    ["14:12", "m-xativa", "muy-alta", 6.0, "desviar flujo hacia Gran Vía"],
-    ["14:14", "m-plaza-sur", "alta", 4.2],
+    ["13:45", "m-plaza", "high", 4.3],
+    ["13:56", "m-xativa", "high", 4.1],
+    ["14:12", "m-xativa", "very_high", 6.0, "divert_to_gran_via"],
+    ["14:14", "m-plaza-sur", "high", 4.2],
   ],
   maraton: [
-    ["08:10", "salida", "alta", 4.4],
-    ["10:05", "meta", "alta", 4.2],
-    ["10:15", "meta", "muy-alta", 6.0, "abrir salida lateral"],
+    ["08:10", "salida", "high", 4.4],
+    ["10:05", "meta", "high", 4.2],
+    ["10:15", "meta", "very_high", 6.0, "open_side_exit"],
   ],
 };
 
-describe.each([mascleta, maraton].map((s) => [s.id, s] as const))("alertas de %s", (id, scenario) => {
-  it("son exactamente las objetivo (±2 min, ±0,2 pers/m²) y llevan su sugerencia", () => {
+describe.each([mascleta, maraton].map((s) => [s.id, s] as const))("alerts of %s", (id, scenario) => {
+  it("match the targets exactly (±2 min, ±0.2 people/m²) with their suggestion codes", () => {
     const alerts = scenarioAlerts(scenario);
     const targets = TARGETS[id]!;
     expect(alerts).toHaveLength(targets.length);
@@ -86,7 +83,7 @@ describe.each([mascleta, maraton].map((s) => [s.id, s] as const))("alertas de %s
       expect(a.suggestion).toBe(suggestion);
     });
   });
-  it("solo son visibles las alertas con hora ≤ la del reproductor", () => {
+  it("are visible only once the playback time reaches them", () => {
     const alerts = scenarioAlerts(scenario);
     const second = alerts[1]!;
     expect(visibleAlerts(scenario, second.minute - 1)).toHaveLength(1);

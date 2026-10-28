@@ -4,8 +4,10 @@ import { AppShell } from "@/components/nodes/AppShell";
 import { Logo } from "@/components/nodes/Logo";
 import maratonImg from "@/assets/maraton.jpg";
 import mascletaImg from "@/assets/mascleta.jpg";
-import { maraton } from "@/scenarios/maraton";
-import { mascleta } from "@/scenarios/mascleta";
+import { getScenario } from "@/scenarios";
+
+const maraton = getScenario("maraton");
+const mascleta = getScenario("mascleta");
 
 export function HomePage() {
   return (

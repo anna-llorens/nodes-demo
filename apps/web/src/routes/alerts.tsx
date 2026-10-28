@@ -23,10 +23,10 @@ export const Route = createFileRoute("/alerts")({
   component: AlertsPage,
 });
 
-type Filter = "todas" | "muy-alta" | "alta";
+type Filter = "todas" | "very_high" | "high";
 const pct = (v: number) => `${v >= 0 ? "+" : ""}${Math.round(v * 100)} %`;
 const dens = (d: number) => d.toLocaleString("es-ES", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-const tone = (a: DensityAlert) => (a.level === "muy-alta" ? "bg-dens-crit" : "bg-dens-high");
+const tone = (a: DensityAlert) => (a.level === "very_high" ? "bg-dens-crit" : "bg-dens-high");
 
 function AlertsPage() {
   const clock = useSimClock();
@@ -82,7 +82,7 @@ function AlertsPage() {
         )}
 
         <div role="tablist" aria-label="Filtrar alertas" className="flex flex-wrap gap-2">
-          {(["todas", "muy-alta", "alta"] as const).map((f) => (
+          {(["todas", "very_high", "high"] as const).map((f) => (
             <button
               key={f}
               role="tab"
@@ -90,7 +90,7 @@ function AlertsPage() {
               onClick={() => setFilter(f)}
               className={cn("rounded-full border px-3 py-1.5 text-sm font-semibold", filter === f ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-muted-foreground")}
             >
-              {f === "todas" ? "Todas" : f === "muy-alta" ? "Muy alta" : "Alta"} ({count(f)})
+              {f === "todas" ? "Todas" : f === "very_high" ? "Muy alta" : "Alta"} ({count(f)})
             </button>
           ))}
         </div>

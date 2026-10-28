@@ -7,6 +7,7 @@ import { visibleAlerts, simulate, toMin, fmtClock, trafficAt, trafficTimesAt } f
 import { setSimClock } from "@/lib/sim-clock";
 import { scenarios } from "@/scenarios";
 import { ESTIMATE_LABEL, densityLabel, densityLevel } from "@/scenarios/types";
+import { suggestionLabel } from "@/labels/es";
 import { SchematicMap } from "./SchematicMap";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -28,10 +29,10 @@ const PALETTES: { id: RunnerPalette; label: string }[] = [
 ];
 
 export const levelDot: Record<string, string> = {
-  baja: "bg-dens-low",
-  media: "bg-dens-mid",
-  alta: "bg-dens-high",
-  "muy-alta": "bg-dens-crit",
+  low: "bg-dens-low",
+  medium: "bg-dens-mid",
+  high: "bg-dens-high",
+  very_high: "bg-dens-crit",
 };
 
 const fmt = (n: number) => n.toLocaleString("es-ES");
@@ -258,8 +259,8 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
           {alerts.length > 0 && (
             <div role="alert" className="absolute right-14 top-3 flex max-w-[min(340px,calc(100%-5rem))] flex-col gap-2 sm:top-4">
               {alerts.map((a) => (
-                <button key={a.id} onClick={() => setSelectedId(a.nodeId)} className={cn("flex items-start gap-2 rounded-2xl border bg-card px-3 py-2 text-left text-xs shadow-float", a.level === "muy-alta" ? "border-dens-crit" : "border-dens-high")}>
-                  <TriangleAlert className={cn("mt-0.5 h-4 w-4 shrink-0", a.level === "muy-alta" ? "text-dens-crit" : "text-dens-high")} />
+                <button key={a.id} onClick={() => setSelectedId(a.nodeId)} className={cn("flex items-start gap-2 rounded-2xl border bg-card px-3 py-2 text-left text-xs shadow-float", a.level === "very_high" ? "border-dens-crit" : "border-dens-high")}>
+                  <TriangleAlert className={cn("mt-0.5 h-4 w-4 shrink-0", a.level === "very_high" ? "text-dens-crit" : "text-dens-high")} />
                   <span><span className="font-semibold">{a.time} · {a.node}</span> · {densityLabel[a.level]}. Sugerencia: {a.suggestion}</span>
                 </button>
               ))}
@@ -340,7 +341,7 @@ function NodeBubble({ node, onClose, detailed, minute }: { node: Scenario["nodes
         <span className={cn("h-2.5 w-2.5 rounded-full", levelDot[lvl])} />
         {densityLabel[lvl]} · {node.snapshot.density.toLocaleString("es-ES")} pers/m²
       </p>
-      {(lvl === "alta" || lvl === "muy-alta") && node.suggestions?.[lvl] && <p className="mt-1 text-xs font-semibold text-dens-crit">Sugerencia: {node.suggestions[lvl]}</p>}
+      {(lvl === "high" || lvl === "very_high") && node.suggestions?.[lvl] && <p className="mt-1 text-xs font-semibold text-dens-crit">Sugerencia: {suggestionLabel[node.suggestions[lvl]]}</p>}
       {detailed && node.snapshot.roadway !== undefined && (
         <div className="mt-3 grid grid-cols-2 gap-2">
           <Stat label="En calzada" value={fmt(node.snapshot.roadway)} />

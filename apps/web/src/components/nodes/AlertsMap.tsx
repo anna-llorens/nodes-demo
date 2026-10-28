@@ -52,8 +52,8 @@ export default function AlertsMap({ scenario, alerts, selectedId, onSelect, onEr
       perNode.set(a.nodeId, i + 1);
       const el = document.createElement("button");
       el.type = "button";
-      el.setAttribute("aria-label", `${a.level === "muy-alta" ? "Densidad muy alta" : "Densidad alta"} · ${a.node}`);
-      el.className = `grid h-7 w-7 place-items-center rounded-full border-2 border-card text-sm font-bold text-white shadow-float ${a.level === "muy-alta" ? "bg-dens-crit" : "bg-dens-high"}`;
+      el.setAttribute("aria-label", `${a.level === "very_high" ? "Densidad muy alta" : "Densidad alta"} · ${a.node}`);
+      el.className = `grid h-7 w-7 place-items-center rounded-full border-2 border-card text-sm font-bold text-white shadow-float ${a.level === "very_high" ? "bg-dens-crit" : "bg-dens-high"}`;
       el.textContent = "!";
       el.addEventListener("click", (ev) => { ev.stopPropagation(); onSelectRef.current(a.id); });
       return new maplibregl.Marker({ element: el, offset: [i * 18, -i * 6] }).setLngLat(node.lngLat).addTo(map);
