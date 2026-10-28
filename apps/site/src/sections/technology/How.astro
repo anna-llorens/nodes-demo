@@ -1,0 +1,181 @@
+---
+import Svg from "@nodes/ui/Svg.astro";
+import { ArrowRight } from "@lucide/astro";
+import SectionHeading from "../../components/SectionHeading.astro";
+import { t, type Locale } from "../../i18n";
+
+/** Four numbered steps joined by arrows (vertical list on mobile) and the privacy card. */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const steps = [
+  { icon: "icons/lidar-sensor", key: "step1" },
+  { icon: "icons/point-cloud", key: "step2" },
+  { icon: "icons/people-count", key: "step3" },
+  { icon: "icons/chart", key: "step4" },
+] as const;
+---
+
+<section class="section" aria-labelledby="tech-how-title">
+  <div class="container layout">
+    <div class="main">
+      <SectionHeading id="tech-how-title" title={t(locale, "tech.how.title")} lead={t(locale, "tech.how.lead")} />
+      <ol class="steps">
+        {steps.map(({ icon, key }, index) => (
+          <li class="step">
+            <span class="number" aria-hidden="true">{index + 1}</span>
+            <span class="icon"><Svg name={icon} /></span>
+            <div>
+              <h3>{t(locale, `tech.how.${key}.title`)}</h3>
+              <p>{t(locale, `tech.how.${key}.text`)}</p>
+            </div>
+            {index < steps.length - 1 && <ArrowRight class="arrow" aria-hidden="true" size={20} />}
+          </li>
+        ))}
+      </ol>
+    </div>
+    <aside class="privacy" aria-labelledby="tech-privacy-title">
+      <div class="privacy-head">
+        <span class="lock"><Svg name="icons/lock" /></span>
+        <div>
+          <h3 id="tech-privacy-title">{t(locale, "tech.privacy.title")}</h3>
+          <p>{t(locale, "tech.privacy.text")}</p>
+        </div>
+      </div>
+      <span class="cloud"><Svg name="icons/point-cloud" /></span>
+    </aside>
+  </div>
+</section>
+
+<style>
+  .layout {
+    display: grid;
+    gap: var(--section-gap-inner);
+  }
+  .main {
+    display: grid;
+    gap: var(--section-gap-inner);
+  }
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-6);
+  }
+  .step {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    align-items: start;
+    align-content: start;
+    gap: var(--space-4);
+  }
+  .number {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    font-size: var(--text-small);
+    font-weight: 700;
+  }
+  .icon {
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
+  .icon :global(svg) {
+    width: 60%;
+    height: 60%;
+  }
+  h3 {
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+  p {
+    margin: var(--space-2) 0 0;
+  }
+  .step :global(.arrow) {
+    display: none;
+  }
+  .privacy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    padding: var(--space-6);
+    border-radius: var(--radius-card);
+    background: var(--color-primary-soft);
+  }
+  .privacy-head {
+    display: flex;
+    gap: var(--space-4);
+  }
+  .privacy h3 {
+    color: var(--color-primary);
+  }
+  .lock {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background: var(--color-surface);
+    color: var(--color-primary);
+  }
+  .lock :global(svg) {
+    width: 60%;
+    height: 60%;
+  }
+  .cloud {
+    display: block;
+    align-self: center;
+    width: min(12rem, 60%);
+    color: var(--color-primary-decor);
+  }
+  .cloud :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (min-width: 1024px) {
+    .layout {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      gap: var(--space-12);
+      align-items: start;
+    }
+    .steps {
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-8);
+      margin-top: var(--space-4);
+    }
+    /* Number beside the icon, text below both. */
+    .step {
+      grid-template-columns: auto 1fr;
+      gap: var(--space-4) var(--space-2);
+    }
+    .step > div {
+      grid-column: 1 / -1;
+    }
+    .icon {
+      width: 4.5rem;
+      height: 4.5rem;
+    }
+    .step :global(.arrow) {
+      display: block;
+      position: absolute;
+      top: 1.5rem;
+      right: calc(-1 * var(--space-8) / 2 - 10px);
+      color: var(--color-primary-line);
+    }
+  }
+</style>
