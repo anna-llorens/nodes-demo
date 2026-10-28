@@ -31,3 +31,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local overrides of committed env files
+.env.local
+.env.*.local
