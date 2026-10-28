@@ -15,8 +15,10 @@ interface Props {
   locale: Locale;
   /** The page, for canonical, hreflang and the active nav item. Omit for pages without a locale twin (404). */
   page?: PageId | undefined;
+  /** Keep the page out of search results (404, legal drafts). */
+  noindex?: boolean;
 }
-const { locale, page } = Astro.props;
+const { locale, page, noindex = false } = Astro.props;
 
 const title = !page || page === "home" ? t(locale, "meta.title") : `${t(locale, pages[page].titleKey)} · NODES`;
 const description = t(locale, "meta.description");
@@ -33,6 +35,7 @@ const xDefault = page ? absoluteUrl(pagePath("en", page)) : undefined;
     <title>{title}</title>
     <Favicons />
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
     {canonical && <link rel="canonical" href={canonical} />}
     {alternates.map((item) => <link rel="alternate" hreflang={item.locale} href={item.href} />)}
     {xDefault && <link rel="alternate" hreflang="x-default" href={xDefault} />}

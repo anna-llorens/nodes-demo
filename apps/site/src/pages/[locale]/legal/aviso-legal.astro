@@ -1,5 +1,5 @@
 ---
-import PlaceholderPage from "../../../components/PlaceholderPage.astro";
+import LegalPage from "../../../components/LegalPage.astro";
 import { isLocale } from "../../../i18n";
 import { localePaths } from "../../../lib/static-paths";
 
@@ -9,4 +9,4 @@ const { locale } = Astro.params;
 if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
 ---
 
-<PlaceholderPage locale={locale} page="legalNotice" />
+<LegalPage locale={locale} page="legalNotice" />
