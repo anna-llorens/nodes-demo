@@ -4,8 +4,7 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "vite.config.ts",
-    "vitest.config.ts",
-    "eslint.config.js"
+    "vitest.config.ts"
   ],
   "compilerOptions": {
     "jsx": "react-jsx",
