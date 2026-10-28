@@ -1,0 +1,16 @@
+{
+  "demoEntry.eyebrow": "Interactive demo",
+  "demoEntry.title": "See NODES in action.",
+  "demoEntry.lead": "Choose a scenario and see how the information would look at a simulated event.",
+  "demoEntry.simulationBadge": "Simulation · data not measured",
+  "demoEntry.backToSite": "Back to the website",
+  "demoEntry.halfMarathon.title": "València Half Marathon",
+  "demoEntry.halfMarathon.time": "08:00–11:30",
+  "demoEntry.halfMarathon.place": "City route",
+  "demoEntry.halfMarathon.nodes": "{count} nodes",
+  "demoEntry.mascleta.title": "Mascletà at the Town Hall square",
+  "demoEntry.mascleta.time": "12:30–15:30",
+  "demoEntry.mascleta.place": "Plaza del Ayuntamiento",
+  "demoEntry.mascleta.nodes": "{count} nodes",
+  "demoEntry.open": "Open the {name} scenario"
+}
