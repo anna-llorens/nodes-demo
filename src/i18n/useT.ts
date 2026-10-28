@@ -1,0 +1,21 @@
+import { useSearch } from "@tanstack/react-router";
+import { dictionaries, type Lang } from "./dictionary";
+
+/** Only `?lang=en` switches language; anything else (or no param) stays Spanish. */
+export function parseLang(value: unknown): Lang {
+  return value === "en" ? "en" : "es";
+}
+
+export function useLang(): Lang {
+  return useSearch({ strict: false, select: (s) => parseLang(s.lang) });
+}
+
+export function useT() {
+  return dictionaries[useLang()];
+}
+
+const numberLocale: Record<Lang, string> = { es: "es-ES", en: "en-GB" };
+
+export function fmtNum(lang: Lang, value: number, options?: Intl.NumberFormatOptions) {
+  return value.toLocaleString(numberLocale[lang], options);
+}

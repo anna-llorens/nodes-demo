@@ -6,6 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  retainSearchParams,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
@@ -14,6 +15,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { initAnalytics, initClickTracking, trackPageView } from "../lib/analytics";
 import { useRouterState } from "@tanstack/react-router";
+import { dictionaries } from "../i18n/dictionary";
+import { parseLang, useLang } from "../i18n/useT";
 
 function NotFoundComponent() {
   return (
@@ -76,12 +79,16 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  head: () => ({
+  // `?lang=en` is the only language switch; links keep it so English stays on while navigating.
+  validateSearch: (search: Record<string, unknown>): { lang?: "en" } =>
+    search["lang"] === "en" ? { lang: "en" } : {},
+  search: { middlewares: [retainSearchParams(["lang"])] },
+  head: ({ match }) => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "NODES" },
-      { name: "description", content: "NODES · simulación de densidad en exteriores" },
+      { name: "description", content: dictionaries[parseLang(match.search.lang)].meta.description },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
@@ -104,8 +111,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  const lang = useLang();
   return (
-    <html lang="es">
+    <html lang={lang}>
       <head>
         <HeadContent />
       </head>
