@@ -2,6 +2,7 @@ import type { Scenario, ScenarioNode } from "./types";
 import { interp } from "./curves";
 import { densityAt, nodeArea } from "./density";
 import { estimateAreas } from "./estimation";
+import { toMin, type EventTime } from "./time";
 
 /** Values of one node at one minute. */
 export interface NodeState {
@@ -65,4 +66,16 @@ export function simulate(s: Scenario, min: number): NodeState[] {
 /** State of one node using its scenario's extrapolation area. */
 export function scenarioNodeState(s: Scenario, node: ScenarioNode, min: number) {
   return nodeState(node, min, estimateAreas(s).get(node.id));
+}
+
+/** A node's state at one whole minute of the schedule. */
+export interface SeriesPoint extends NodeState {
+  minute: EventTime;
+}
+
+/** A node's state at every whole minute of its scenario's schedule, start and end included. */
+export function nodeSeries(s: Scenario, node: ScenarioNode): SeriesPoint[] {
+  const points: SeriesPoint[] = [];
+  for (let m = toMin(s.schedule.start); m <= toMin(s.schedule.end); m++) points.push({ minute: m, ...scenarioNodeState(s, node, m) });
+  return points;
 }

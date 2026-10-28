@@ -23,3 +23,17 @@ describe("simulation reports", () => {
     expect(row?.people).toBe((row?.runners ?? 0) + (row?.spectators ?? 0));
   });
 });
+
+describe("aggregateReport", () => {
+  it("gives the same report from node series as from the simulator", async () => {
+    const { aggregateReport, nodeSeries } = await import("../src");
+    const series = maraton.nodes.map((node) => ({ nodeId: node.id, points: nodeSeries(maraton, node) }));
+    expect(aggregateReport(maraton.schedule, series, toMin("09:00"), toMin("10:30"))).toEqual(buildReport(maraton, toMin("09:00"), toMin("10:30")));
+  });
+  it("covers every whole minute of the schedule in a node series", async () => {
+    const { nodeSeries } = await import("../src");
+    const points = nodeSeries(maraton, maraton.nodes[0]!);
+    expect(points).toHaveLength(toMin("11:30") - toMin("08:00") + 1);
+    expect(points[15]).toEqual({ minute: toMin("08:15"), ...simulate(maraton, toMin("08:15"))[0] });
+  });
+});
