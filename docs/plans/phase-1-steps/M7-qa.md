@@ -15,7 +15,7 @@
 
 - Do **only** this step. Do not start the next one, even if it looks quick.
 - Plan mode first: propose what you will do and wait for approval before writing code.
-- Branch `chore/monorepo`. Never merge into `main`.
+- Branch `feat/move-from-lovable`. Never merge into `main`.
 - The full spec is `docs/plans/phase-1-public-site.md`; this file says which parts apply now.
 - Before reporting: `pnpm typecheck && pnpm lint && pnpm test && pnpm build` pass; commit with
   Conventional Commits, in English.

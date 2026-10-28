@@ -13,8 +13,16 @@ Collected while doing Step 1 (monorepo and domain extraction). Not in scope ther
       (language rule: English only).
 - [ ] **Lint warnings**: two `react-refresh/only-export-components` (`AppShell.tsx`,
       `MapStage.tsx`) and one `react-hooks/exhaustive-deps` (`MapStage.tsx`).
-- [ ] **`.env` is tracked** in `apps/web` (Supabase publishable keys, Lovable analytics key):
-      decide whether it stays in git when hosting moves.
+- [ ] **`.env` is tracked** in `apps/web`. Checked 2026-10-28: it holds no secrets (Supabase URL,
+      project id and `sb_publishable_` keys, and a GA4 measurement id, all public by design; the
+      real secrets come from the hosting environment). Decide whether it stays in git when
+      hosting moves.
+- [ ] **Density colours differ between the demo's legend and its heat map.** Legend, node dots and
+      alert icons use the OKLCH tokens in `apps/web/src/styles.css` (`--dens-*`); the MapLibre heat
+      map and zone polygons use hard-coded hex in `apps/web/src/components/nodes/MapView.tsx`
+      (`#2bb673`/`rgba(76,190,120,…)`, `#f2d14b`, `#f08a3c`, `#e0453a`). `packages/ui` copies the
+      legend values; align the map with them (MapLibre needs literal colours, so convert the
+      tokens like the runner heat already does).
 - [ ] **i18n (Step 2)**: replace `apps/web/src/labels/es.ts` and inline strings with Lingui
       catalogues.
 - [ ] **Hosting (Step 3)**: Lovable can no longer edit or publish once this lands on `main`.

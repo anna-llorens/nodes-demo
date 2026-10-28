@@ -3,7 +3,7 @@
 **Status:** proposed
 **Owner:** Anna Llorens Roig
 **Executor:** Claude Code. Plan mode first; one milestone at a time; stop and report after each.
-**Branch:** keep working on `chore/monorepo`. **Do not merge into `main` and do not open a
+**Branch:** keep working on `feat/move-from-lovable`. **Do not merge into `main` and do not open a
 merge**: `main` still feeds the published Lovable demo until the new deployment is ready.
 
 ## 1. Context
