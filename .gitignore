@@ -35,3 +35,4 @@ dist-ssr
 # Local overrides of committed env files
 .env.local
 .env.*.local
+/apps/web/.env
