@@ -6,16 +6,18 @@ import { cn } from "@/lib/utils";
 import { getScenario } from "@/scenarios";
 import { visibleAlerts } from "@/sim/engine";
 import { useSimClock } from "@/lib/sim-clock";
+import { useLang, useT } from "@/i18n/useT";
 
 export const navItems = [
-  { to: "/home", label: "Inicio", icon: Home },
-  { to: "/map", label: "Mapa", icon: Map },
-  { to: "/alerts", label: "Alertas", icon: Bell },
-  { to: "/reports", label: "Informes", icon: FileBarChart },
-  { to: "/about", label: "Más", icon: MoreHorizontal },
+  { to: "/home", key: "home", icon: Home },
+  { to: "/map", key: "map", icon: Map },
+  { to: "/alerts", key: "alerts", icon: Bell },
+  { to: "/reports", key: "reports", icon: FileBarChart },
+  { to: "/about", key: "about", icon: MoreHorizontal },
 ] as const;
 
 export function AppShell({ children, sidebarExtra }: { children: ReactNode; sidebarExtra?: ReactNode }) {
+  const t = useT();
   const path = useRouterState({ select: (r) => r.location.pathname });
   const clock = useSimClock();
   const alertCount = visibleAlerts(getScenario(clock.scenarioId), clock.minute).length;
@@ -25,7 +27,7 @@ export function AppShell({ children, sidebarExtra }: { children: ReactNode; side
       <aside className="hidden w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar lg:flex 2xl:w-72">
         <div className="px-6 pb-4 pt-6">
           <Logo className="text-3xl" />
-          <p className="mt-1 text-xs text-muted-foreground">Datos para decidir a tiempo</p>
+          <p className="mt-1 text-xs text-muted-foreground">{t.shell.tagline}</p>
         </div>
         <nav className="flex flex-col gap-1 px-3">
           {navItems.map((it) => {
@@ -40,7 +42,7 @@ export function AppShell({ children, sidebarExtra }: { children: ReactNode; side
                 )}
               >
                 <it.icon className="h-[18px] w-[18px]" strokeWidth={1.8} />
-                {it.label}
+                {t.shell.nav[it.key]}
                 {it.to === "/alerts" && <CountDot count={alertCount} className="ml-auto" />}
               </Link>
             );
@@ -52,9 +54,10 @@ export function AppShell({ children, sidebarExtra }: { children: ReactNode; side
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <div aria-label="Estado de los datos" className="flex shrink-0 items-center justify-end gap-3 border-b border-border bg-card px-4 py-2 sm:px-6">
+        <div aria-label={t.shell.dataStatus} className="flex shrink-0 items-center justify-end gap-3 border-b border-border bg-card px-4 py-2 sm:px-6">
+          <LangSwitch />
           <SimBadge />
-          <Link to="/alerts" aria-label={`Alertas: ${alertCount}`} className="relative grid h-8 w-8 place-items-center rounded-full text-muted-foreground hover:bg-muted">
+          <Link to="/alerts" aria-label={`${t.shell.nav.alerts}: ${alertCount}`} className="relative grid h-8 w-8 place-items-center rounded-full text-muted-foreground hover:bg-muted">
             <Bell className="h-[18px] w-[18px]" strokeWidth={1.8} />
             <CountDot count={alertCount} className="absolute -right-0.5 -top-0.5" />
           </Link>
@@ -78,13 +81,47 @@ export function AppShell({ children, sidebarExtra }: { children: ReactNode; side
                   <it.icon className="h-5 w-5" strokeWidth={active ? 2.2 : 1.6} />
                   {it.to === "/alerts" && <CountDot count={alertCount} className="absolute -right-2.5 -top-1.5" />}
                 </span>
-                {it.label}
+                {t.shell.nav[it.key]}
               </Link>
             );
           })}
         </nav>
       </div>
     </div>
+  );
+}
+
+/** ES / EN: stays on the same page and only toggles `?lang=en`. */
+function LangSwitch() {
+  const t = useT();
+  const lang = useLang();
+  const item = (active: boolean) =>
+    cn(
+      "px-1.5 py-0.5 rounded-full",
+      active ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground",
+    );
+  return (
+    <span
+      aria-label={t.shell.language}
+      className="inline-flex items-center rounded-full border border-border px-1 py-0.5 text-[11px] font-bold uppercase tracking-wide"
+    >
+      <Link
+        to="."
+        search={(prev) => ({ ...prev, lang: undefined })}
+        hrefLang="es"
+        className={item(lang === "es")}
+      >
+        ES
+      </Link>
+      <Link
+        to="."
+        search={(prev) => ({ ...prev, lang: "en" })}
+        hrefLang="en"
+        className={item(lang === "en")}
+      >
+        EN
+      </Link>
+    </span>
   );
 }
 

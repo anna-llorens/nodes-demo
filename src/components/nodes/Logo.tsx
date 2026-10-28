@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { useT } from "@/i18n/useT";
 
 export function Logo({ className }: { className?: string }) {
   return (
@@ -9,6 +10,7 @@ export function Logo({ className }: { className?: string }) {
 }
 
 export function SimBadge({ className }: { className?: string }) {
+  const t = useT();
   return (
     <span
       className={cn(
@@ -17,7 +19,7 @@ export function SimBadge({ className }: { className?: string }) {
       )}
     >
       <span className="h-1.5 w-1.5 rounded-full bg-warning-foreground" />
-      Simulación
+      {t.shell.simulation}
     </span>
   );
 }

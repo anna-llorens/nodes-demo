@@ -80,7 +80,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   // `?lang=en` is the only language switch; links keep it so English stays on while navigating.
-  validateSearch: (search: Record<string, unknown>): { lang?: "en" } =>
+  validateSearch: (search: Record<string, unknown>): { lang?: "en" | undefined } =>
     search["lang"] === "en" ? { lang: "en" } : {},
   search: { middlewares: [retainSearchParams(["lang"])] },
   head: ({ match }) => ({
