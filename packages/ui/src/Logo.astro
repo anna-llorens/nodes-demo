@@ -6,7 +6,7 @@
  * --color-primary-soft "O" (4.5:1 on --color-primary, 16.6:1 on --color-text).
  * Size it with CSS height; the width follows the aspect ratio.
  */
-import source from "../assets/logo/source/NODES_sin_eslogan_fondo_claro.svg?raw";
+import { logoSvg } from "./logo";
 
 interface Props {
   /** Accessible name; the wordmark is a proper noun, so "NODES" is the default. */
@@ -15,23 +15,8 @@ interface Props {
   class?: string;
 }
 
-const LETTERS_FILL = 'fill="#082D2A"';
-const O_FILL = 'fill="#00615F"';
-if (!source.includes(LETTERS_FILL) || !source.includes(O_FILL)) {
-  throw new Error("Logo source colours changed: update the fills in Logo.astro");
-}
-
 const { label = "NODES", variant = "light", class: className } = Astro.props;
-const escape = (value: string) => value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
-const classes = ["nodes-logo", `nodes-logo-${variant}`, className].filter(Boolean).join(" ");
-
-const svg = source
-  .slice(source.indexOf("<svg"))
-  .replace(/<title>[\s\S]*?<\/title>/g, "")
-  .replace(/\s(width|height|role|aria-label)="[^"]*"/g, "")
-  .replace("<svg", `<svg class="${escape(classes)}" role="img" aria-label="${escape(label)}" focusable="false"`)
-  .replace(LETTERS_FILL, 'class="nodes-logo-letters"')
-  .replace(O_FILL, 'class="nodes-logo-o"');
+const svg = logoSvg({ className: ["nodes-logo", `nodes-logo-${variant}`, className].filter(Boolean).join(" "), label });
 ---
 
 <Fragment set:html={svg} />

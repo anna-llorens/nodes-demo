@@ -6,9 +6,15 @@
     "./tokens.css": "./src/tokens.css",
     "./Svg.astro": "./src/Svg.astro",
     "./Logo.astro": "./src/Logo.astro",
+    "./logo": "./src/logo.ts",
     "./assets/*": "./assets/*"
   },
   "peerDependencies": {
     "astro": "^7.0.0"
+  },
+  "peerDependenciesMeta": {
+    "astro": {
+      "optional": true
+    }
   }
 }
