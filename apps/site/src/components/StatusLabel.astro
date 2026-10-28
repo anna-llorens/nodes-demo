@@ -1,0 +1,17 @@
+---
+/** Small soft-green pill with a short status, e.g. "En la demo". */
+---
+
+<span class="status-label"><slot /></span>
+
+<style>
+  .status-label {
+    display: inline-block;
+    padding: 0.125rem var(--space-3);
+    border-radius: var(--radius-pill);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+  }
+</style>

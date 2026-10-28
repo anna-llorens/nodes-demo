@@ -1,9 +1,9 @@
 ---
 import Eyebrow from "./Eyebrow.astro";
 
-/** Eyebrow, title and lead of a section, in a column of at most 60 characters. */
+/** Optional eyebrow, title and lead of a section, in a column of at most 60 characters. */
 interface Props {
-  eyebrow: string;
+  eyebrow?: string | undefined;
   title: string;
   lead?: string | undefined;
   /** Heading level: the page's h1 lives in its hero, sections use h2. */
@@ -15,7 +15,7 @@ const Heading = level;
 ---
 
 <div class="section-heading">
-  <Eyebrow>{eyebrow}</Eyebrow>
+  {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
   <Heading id={id}>{title}</Heading>
   {lead && <p class="lead">{lead}</p>}
   <slot />

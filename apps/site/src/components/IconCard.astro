@@ -2,24 +2,30 @@
 import Svg from "@nodes/ui/Svg.astro";
 
 /**
- * Icon in a soft-green circle, a title and one short line. `plain` drops the card background;
- * `row` puts the icon beside the text (used on mobile by the home solution cards).
+ * Icon, a title and one short line, plus an optional slot under the text (e.g. a StatusLabel).
+ * - `plain`: no card background. `bordered`: thin border instead of the shadow.
+ * - `bareIcon`: the icon alone in primary, without the soft-green circle.
+ * - `layout`: `stack` (icon above), `row` (icon beside the text), or `row-mobile` (beside on
+ *   mobile, above on desktop; the home solution cards).
  */
 interface Props {
   icon: string;
   title: string;
   text: string;
   plain?: boolean;
-  row?: boolean;
+  bordered?: boolean;
+  bareIcon?: boolean;
+  layout?: "stack" | "row" | "row-mobile";
 }
-const { icon, title, text, plain = false, row = false } = Astro.props;
+const { icon, title, text, plain = false, bordered = false, bareIcon = false, layout = "stack" } = Astro.props;
 ---
 
-<article class:list={["icon-card", { plain, row }]}>
+<article class:list={["icon-card", `layout-${layout}`, { plain, bordered, "bare-icon": bareIcon }]}>
   <span class="icon"><Svg name={icon} /></span>
   <div>
     <h3>{title}</h3>
     <p>{text}</p>
+    <slot />
   </div>
 </article>
 
@@ -38,9 +44,18 @@ const { icon, title, text, plain = false, row = false } = Astro.props;
     background: none;
     box-shadow: none;
   }
-  .row {
+  .bordered {
+    border: 1px solid var(--color-border);
+    box-shadow: none;
+  }
+  .layout-row,
+  .layout-row-mobile {
     flex-direction: row;
     align-items: center;
+  }
+  .layout-row {
+    align-items: flex-start;
+    gap: var(--space-4);
   }
   .icon {
     flex: none;
@@ -60,6 +75,15 @@ const { icon, title, text, plain = false, row = false } = Astro.props;
     width: 60%;
     height: 60%;
   }
+  .bare-icon .icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    background: none;
+  }
+  .bare-icon .icon :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
   h3 {
     font-size: 1.0625rem;
     font-weight: 600;
@@ -67,8 +91,11 @@ const { icon, title, text, plain = false, row = false } = Astro.props;
   p {
     margin: var(--space-2) 0 0;
   }
+  div > :global(.status-label) {
+    margin-top: var(--space-3);
+  }
   @media (min-width: 1024px) {
-    .row {
+    .layout-row-mobile {
       flex-direction: column;
       align-items: flex-start;
     }

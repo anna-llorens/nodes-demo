@@ -24,7 +24,7 @@ const cards = [
     />
     <div class="cards">
       {cards.map(({ icon, key }) => (
-        <IconCard row icon={icon} title={t(locale, `solution.${key}.title`)} text={t(locale, `solution.${key}.text`)} />
+        <IconCard layout="row-mobile" icon={icon} title={t(locale, `solution.${key}.title`)} text={t(locale, `solution.${key}.text`)} />
       ))}
     </div>
   </div>
