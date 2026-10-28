@@ -23,3 +23,14 @@ export function absoluteUrl(path: string) {
   }
   return `${env.siteUrl ?? ""}${path}`;
 }
+
+let warnedEndpoint = false;
+
+/** Contact form endpoint. Unset means every send fails with the email fallback; a production build warns once. */
+export function contactEndpoint() {
+  if (!env.contactEndpoint && import.meta.env.PROD && !warnedEndpoint) {
+    warnedEndpoint = true;
+    console.warn("[site] PUBLIC_CONTACT_ENDPOINT is not set: the contact form will show the email fallback.");
+  }
+  return env.contactEndpoint;
+}
