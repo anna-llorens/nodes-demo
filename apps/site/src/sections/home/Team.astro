@@ -12,13 +12,15 @@ interface Props {
   locale: Locale;
   /** Show the link to Sobre nosotras (off on that page itself). */
   showMore?: boolean;
+  /** Show the "Sobre nosotras" eyebrow (off on that page, whose own heading already says it). */
+  showEyebrow?: boolean;
 }
-const { locale, showMore = true } = Astro.props;
+const { locale, showMore = true, showEyebrow = true } = Astro.props;
 ---
 
 <section class="section" aria-labelledby="team-title">
   <div class="container split">
-    <SectionHeading id="team-title" eyebrow={t(locale, "team.eyebrow")} title={t(locale, "team.title")} lead={t(locale, "team.lead")}>
+    <SectionHeading id="team-title" eyebrow={showEyebrow ? t(locale, "team.eyebrow") : undefined} title={t(locale, "team.title")} lead={t(locale, "team.lead")}>
       {showMore && <Button href={pagePath(locale, "about")} variant="outline" arrow>{t(locale, "team.more")}</Button>}
     </SectionHeading>
     <ul class="members">
