@@ -1,5 +1,6 @@
 ---
 import { localeCode, locales, t } from "../i18n";
+import Favicons from "../components/Favicons.astro";
 import { absoluteUrl } from "../lib/env";
 
 // The only page that chooses the language (ADR 0004). Rules 1, 2 and 4 run here, in the
@@ -12,6 +13,7 @@ import { absoluteUrl } from "../lib/env";
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{t("en", "meta.title")}</title>
+    <Favicons />
     <meta name="description" content={t("en", "meta.description")} />
     {locales.map((locale) => <link rel="alternate" hreflang={locale} href={absoluteUrl(`/${locale}/`)} />)}
     <link rel="alternate" hreflang="x-default" href={absoluteUrl("/en/")} />

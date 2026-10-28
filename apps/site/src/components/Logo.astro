@@ -1,24 +1,24 @@
 ---
+import NodesLogo from "@nodes/ui/Logo.astro";
 import type { Locale } from "../i18n";
 
-/** Text logo until the official SVG files arrive: "NODES" with the O in the primary colour. */
+/** The wordmark linking to the home page of the current locale. */
 interface Props {
   locale: Locale;
+  variant?: "light" | "dark";
 }
-const { locale } = Astro.props;
+const { locale, variant = "light" } = Astro.props;
 ---
 
-<a class="logo" href={`/${locale}/`}>N<span>O</span>DES</a>
+<a class="logo" href={`/${locale}/`}><NodesLogo variant={variant} /></a>
 
 <style>
   .logo {
-    font-weight: 700;
-    font-size: 1.375rem;
-    letter-spacing: 0.02em;
-    color: var(--color-text);
-    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
   }
-  .logo span {
-    color: var(--color-primary);
+  .logo :global(.nodes-logo) {
+    height: 1.375rem;
   }
 </style>

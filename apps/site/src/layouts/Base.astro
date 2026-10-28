@@ -3,6 +3,7 @@ import "@fontsource/inter/400.css";
 import "@fontsource/inter/600.css";
 import "@fontsource/inter/700.css";
 import "../styles/global.css";
+import Favicons from "../components/Favicons.astro";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 import { locales, t, type Locale } from "../i18n";
@@ -30,6 +31,7 @@ const xDefault = page ? absoluteUrl(pagePath("en", page)) : undefined;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+    <Favicons />
     <meta name="description" content={description} />
     {canonical && <link rel="canonical" href={canonical} />}
     {alternates.map((item) => <link rel="alternate" hreflang={item.locale} href={item.href} />)}
