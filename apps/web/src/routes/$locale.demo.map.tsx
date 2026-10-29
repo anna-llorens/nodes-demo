@@ -1,3 +1,4 @@
+import { Routes } from "@/lib/routes";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { ScenarioMap } from "./map";
 import { getScenario } from "@/scenarios";
@@ -8,7 +9,7 @@ export const Route = createFileRoute("/$locale/demo/map")({
   validateSearch: validateMapSearch,
   beforeLoad: ({ params, search }) => {
     if (!isMapLocale(params.locale)) {
-      throw redirect({ to: "/demo/map", search, replace: true });
+      throw redirect({ to: Routes.demoMap, search, replace: true });
     }
   },
   head: ({ params, match }) => {

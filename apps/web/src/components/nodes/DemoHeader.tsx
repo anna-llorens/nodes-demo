@@ -1,3 +1,4 @@
+import { Routes } from "@/lib/routes";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { ArrowLeft, Bell } from "lucide-react";
 import { SiteLogo, SimBadge } from "./Logo";
@@ -14,7 +15,7 @@ import { mapRoutePath, mapText, type MapLocale } from "@/i18n/map";
 export function DemoHeader({ alertCount, hideLogoOnDesktop = false, mapLocale }: { alertCount?: number; hideLogoOnDesktop?: boolean; mapLocale?: MapLocale }) {
   const path = useRouterState({ select: (router) => router.location.pathname });
   const searchStr = useRouterState({ select: (router) => router.location.searchStr });
-  const showSiteLink = Boolean(siteUrl && (path === "/demo/map" || (mapLocale && path === mapRoutePath(mapLocale))));
+  const showSiteLink = Boolean(siteUrl && (path === Routes.demoMap || (mapLocale && path === mapRoutePath(mapLocale))));
   const back = mapLocale ? mapText(mapLocale, "demo.backToSite") : demoText("demoEntry.backToSite");
   const badgeLabel = mapLocale ? mapText(mapLocale, "demo.simulationBadge") : undefined;
   const siteHref = localizedSiteUrl(siteUrl, mapLocale ?? "es");
@@ -53,7 +54,7 @@ export function DemoHeader({ alertCount, hideLogoOnDesktop = false, mapLocale }:
           )}
           {showSiteLink && <SimBadge className="hidden lg:inline-flex" label={badgeLabel} />}
           {alertCount !== undefined && (
-            <Link to="/alerts" aria-label={`Alertas: ${alertCount}`} className="relative grid h-11 w-11 place-items-center rounded-full text-muted-foreground hover:bg-muted">
+            <Link to={Routes.alerts} aria-label={`Alertas: ${alertCount}`} className="relative grid h-11 w-11 place-items-center rounded-full text-muted-foreground hover:bg-muted">
               <Bell className="h-[18px] w-[18px]" strokeWidth={1.8} />
               {alertCount > 0 && (
                 <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-dens-crit px-1 text-[10px] font-bold leading-none text-white">{alertCount}</span>

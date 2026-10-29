@@ -1,3 +1,4 @@
+import { Routes } from "@/lib/routes";
 import type { Scenario } from '@/scenarios/types';
 
 export interface MapLayers {
@@ -64,7 +65,7 @@ export function restoreFromCache(cache: MapCache, scenario: Scenario) {
   const speed = typeof cache.speed === 'number' && cache.speed > 0 ? cache.speed : DEFAULT_SPEED;
   return { ...restoreMapState(search, scenario), speed };
 }
-export function buildMapShareUrl(origin: string, state: { scenario: string; layers: MapLayers; camera: MapCamera; palette: RunnerPalette; time: number }, path = "/map") {
+export function buildMapShareUrl(origin: string, state: { scenario: string; layers: MapLayers; camera: MapCamera; palette: RunnerPalette; time: number }, path: string = Routes.map) {
   const url = new URL(path, origin);
   url.searchParams.set('scenario', state.scenario);
   url.searchParams.set('layers', layerKeys.filter(k => state.layers[k]).join(','));

@@ -17,7 +17,7 @@ and remove the legacy redirects, including the Spanish home alias.
 - Keep `/es/` and `/en/` locale prefixes and translated UI labels. Route names do not determine
   the content language. This supersedes ADR 0004's Spanish-slug decision.
 - Keep `/` and `/home` as demo entry pages. Keep the site's root locale selection and the
-  existing English demo-map and zones redirects.
+  existing English demo-map redirect. Remove the unused `/zones` alias and its redirect.
 - Preserve scenario and node identifiers, query parameters and simulation behaviour.
 
 ## Consequences

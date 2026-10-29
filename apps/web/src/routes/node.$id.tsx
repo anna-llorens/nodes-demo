@@ -1,3 +1,4 @@
+import { Routes } from "@/lib/routes";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ArrowLeft, Users, UsersRound, MapPin, TrendingUp, TrendingDown, LogIn, LogOut, Gauge, Route as RouteIcon, Footprints, TriangleAlert, type LucideIcon } from "lucide-react";
@@ -33,7 +34,7 @@ export const Route = createFileRoute("/node/$id")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  notFoundComponent: () => <div className="p-8">Nodo no encontrado. <Link to="/map" className="text-primary underline">Volver al mapa</Link></div>,
+  notFoundComponent: () => <div className="p-8">Nodo no encontrado. <Link to={Routes.map} className="text-primary underline">Volver al mapa</Link></div>,
   component: NodePage,
 });
 
@@ -71,7 +72,7 @@ function NodePage() {
             <img src={node.image} alt={node.name} width={1024} height={640} className="h-48 w-full object-cover sm:h-64 lg:h-72" />
           )}
           <div className="absolute inset-x-0 top-0 flex items-center justify-between p-3 sm:p-4">
-            <Link to="/map" search={scenario.id === "maraton" ? {} : { scenario: scenario.id }} className="flex items-center gap-1.5 rounded-full bg-card/95 px-3 py-2 text-sm font-semibold shadow-float backdrop-blur hover:bg-card">
+            <Link to={Routes.map} search={scenario.id === "maraton" ? {} : { scenario: scenario.id }} className="flex items-center gap-1.5 rounded-full bg-card/95 px-3 py-2 text-sm font-semibold shadow-float backdrop-blur hover:bg-card">
               <ArrowLeft className="h-4 w-4" /> Volver al mapa
             </Link>
           </div>

@@ -108,6 +108,9 @@ Before finishing any task: `pnpm typecheck && pnpm lint && pnpm test && pnpm bui
   `apps/web/src/components/nodes/geo.ts` only projects them onto the route.
 - Only English route names are supported; Spanish aliases and their redirects are removed (ADR 0006). `/` and `/home` share
   the demo entry screen (`DemoEntry`).
+- Web navigation uses the typed `Routes` catalog in `apps/web/src/lib/routes.ts`; keep literal
+  paths in `createFileRoute` calls because the TanStack generator requires them. Add new routes
+  to the catalog after generation; the routing test checks it against the registered pages.
 - Map layer visibility is one shared state in the map route, exposed through Capas.
 - `DemoHeader` (logo to `PUBLIC_SITE_URL`, simulation badge, "Volver a la web", alerts bell inside
   scenarios) is the single header of every demo screen; `AppShell` and `DemoEntry` render it once.

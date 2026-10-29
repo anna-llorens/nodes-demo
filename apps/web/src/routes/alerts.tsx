@@ -1,3 +1,4 @@
+import { Routes } from "@/lib/routes";
 import { ClientOnly, createFileRoute, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useMemo, useState } from "react";
 import { ChevronRight, TriangleAlert, X } from "lucide-react";
@@ -76,7 +77,7 @@ function AlertsPage() {
                   </div>
                   <button onClick={() => setSelectedId(null)} aria-label="Cerrar" className="rounded-full p-1 text-muted-foreground hover:bg-muted"><X className="h-4 w-4" /></button>
                 </div>
-                <Link to="/node/$id" params={{ id: selected.nodeId }} search={{ t: selected.minute, alert: selected.id }} className="mt-2 flex items-center justify-between rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground">
+                <Link to={Routes.node} params={{ id: selected.nodeId }} search={{ t: selected.minute, alert: selected.id }} className="mt-2 flex items-center justify-between rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground">
                   Abrir el nodo <ChevronRight className="h-4 w-4" />
                 </Link>
               </div>
@@ -105,7 +106,7 @@ function AlertsPage() {
             {shown.map((a) => (
               <li key={a.id}>
                 <Link
-                  to="/node/$id"
+                  to={Routes.node}
                   params={{ id: a.nodeId }}
                   search={{ t: a.minute, alert: a.id }}
                   className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-card hover:bg-muted/60"

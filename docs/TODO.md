@@ -106,3 +106,8 @@ every item below. Confirm each item is still outstanding before scheduling chang
       approach, accounting for the existing map-scoped catalogs.
       Additional references: [two-app decision](decisions/0004-one-repo-two-apps.md),
       [localized-map decision](decisions/0005-localized-demo-map.md).
+- [ ] Plan a public `/demo/app` route and private access for the other web-app routes, as
+      requested on 2026-10-29. Confirm how this entry relates to the current localized demo map,
+      then decide authentication and roles in a separate plan before implementing access control.
+      References: [current demo-map routes](decisions/0005-localized-demo-map.md),
+      [undecided authentication and roles](../CLAUDE.md).

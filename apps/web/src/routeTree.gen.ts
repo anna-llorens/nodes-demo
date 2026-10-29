@@ -16,7 +16,6 @@ import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as ReportsRouteImport } from './routes/reports'
-import { Route as ZonesRouteImport } from './routes/zones'
 import { Route as DemoMapRouteImport } from './routes/demo.map'
 import { Route as NodeIdRouteImport } from './routes/node.$id'
 import { Route as LocaleDemoMapRouteImport } from './routes/$locale.demo.map'
@@ -56,11 +55,6 @@ const ReportsRoute = ReportsRouteImport.update({
   path: '/reports',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ZonesRoute = ZonesRouteImport.update({
-  id: '/zones',
-  path: '/zones',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DemoMapRoute = DemoMapRouteImport.update({
   id: '/demo/map',
   path: '/demo/map',
@@ -85,7 +79,6 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeRoute
   '/map': typeof MapRoute
   '/reports': typeof ReportsRoute
-  '/zones': typeof ZonesRoute
   '/demo/map': typeof DemoMapRoute
   '/node/$id': typeof NodeIdRoute
   '/$locale/demo/map': typeof LocaleDemoMapRoute
@@ -98,7 +91,6 @@ export interface FileRoutesByTo {
   '/home': typeof HomeRoute
   '/map': typeof MapRoute
   '/reports': typeof ReportsRoute
-  '/zones': typeof ZonesRoute
   '/demo/map': typeof DemoMapRoute
   '/node/$id': typeof NodeIdRoute
   '/$locale/demo/map': typeof LocaleDemoMapRoute
@@ -112,7 +104,6 @@ export interface FileRoutesById {
   '/home': typeof HomeRoute
   '/map': typeof MapRoute
   '/reports': typeof ReportsRoute
-  '/zones': typeof ZonesRoute
   '/demo/map': typeof DemoMapRoute
   '/node/$id': typeof NodeIdRoute
   '/$locale/demo/map': typeof LocaleDemoMapRoute
@@ -127,7 +118,6 @@ export interface FileRouteTypes {
     | '/home'
     | '/map'
     | '/reports'
-    | '/zones'
     | '/demo/map'
     | '/node/$id'
     | '/$locale/demo/map'
@@ -140,7 +130,6 @@ export interface FileRouteTypes {
     | '/home'
     | '/map'
     | '/reports'
-    | '/zones'
     | '/demo/map'
     | '/node/$id'
     | '/$locale/demo/map'
@@ -153,7 +142,6 @@ export interface FileRouteTypes {
     | '/home'
     | '/map'
     | '/reports'
-    | '/zones'
     | '/demo/map'
     | '/node/$id'
     | '/$locale/demo/map'
@@ -167,7 +155,6 @@ export interface RootRouteChildren {
   HomeRoute: typeof HomeRoute
   MapRoute: typeof MapRoute
   ReportsRoute: typeof ReportsRoute
-  ZonesRoute: typeof ZonesRoute
   DemoMapRoute: typeof DemoMapRoute
   NodeIdRoute: typeof NodeIdRoute
   LocaleDemoMapRoute: typeof LocaleDemoMapRoute
@@ -224,13 +211,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReportsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/zones': {
-      id: '/zones'
-      path: '/zones'
-      fullPath: '/zones'
-      preLoaderRoute: typeof ZonesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/demo/map': {
       id: '/demo/map'
       path: '/demo/map'
@@ -263,7 +243,6 @@ const rootRouteChildren: RootRouteChildren = {
   HomeRoute: HomeRoute,
   MapRoute: MapRoute,
   ReportsRoute: ReportsRoute,
-  ZonesRoute: ZonesRoute,
   DemoMapRoute: DemoMapRoute,
   NodeIdRoute: NodeIdRoute,
   LocaleDemoMapRoute: LocaleDemoMapRoute,

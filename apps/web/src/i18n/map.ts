@@ -1,3 +1,4 @@
+import { localizedDemoMapPath } from "@/lib/routes";
 import en from "./map.en.json";
 import es from "./map.es.json";
 import type { DensityLevel, SuggestionCode } from "@nodes/core";
@@ -12,7 +13,7 @@ export function isMapLocale(value: unknown): value is MapLocale {
   return typeof value === "string" && mapLocales.includes(value as MapLocale);
 }
 
-export const mapRoutePath = (locale: MapLocale) => (locale === "en" ? "/en/demo/map" : "/es/demo/map");
+export const mapRoutePath = localizedDemoMapPath;
 
 export const mapDensityLabel = (locale: MapLocale): Record<DensityLevel, string> => ({
   low: mapText(locale, "density.low"),

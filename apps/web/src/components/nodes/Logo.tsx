@@ -1,9 +1,10 @@
+import { Routes } from "@/lib/routes";
 import { logoSvg } from "@nodes/ui/logo";
 import { useRouterState } from "@tanstack/react-router";
 import { demoText } from "@/i18n/demo-entry";
 import { localizedSiteUrl, siteUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
-import type { MapLocale } from "@/i18n/map";
+import { mapLocales, mapRoutePath } from "@/i18n/map";
 
 const svg = logoSvg({ className: "nodes-logo" });
 
@@ -15,9 +16,8 @@ export function Logo({ className }: { className?: string | undefined }) {
 /** Links to the public website from the dedicated map route, and to the demo home elsewhere. */
 export function SiteLogo({ className }: { className?: string | undefined }) {
   const path = useRouterState({ select: (router) => router.location.pathname });
-  const mapMatch = path.match(/^\/(es|en)\/demo\/map$/);
-  const locale: MapLocale | undefined = mapMatch ? (mapMatch[1] === "en" ? "en" : "es") : undefined;
-  const href = locale ? localizedSiteUrl(siteUrl, locale) : path === "/demo/map" ? localizedSiteUrl(siteUrl, "es") ?? "/" : "/";
+  const locale = mapLocales.find((item) => path === mapRoutePath(item));
+  const href = locale ? localizedSiteUrl(siteUrl, locale) : path === Routes.demoMap ? localizedSiteUrl(siteUrl, "es") ?? Routes.root : Routes.root;
   return (
     <a href={href} className="inline-flex rounded-md">
       <Logo className={className} />

@@ -1,3 +1,4 @@
+import { Routes } from "@/lib/routes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DataSourceProvider } from "@/data/DataSourceProvider";
 import {
@@ -27,7 +28,7 @@ function NotFoundComponent() {
         </p>
         <div className="mt-6">
           <Link
-            to="/"
+            to={Routes.root}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Go home
@@ -65,7 +66,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
             Try again
           </button>
           <a
-            href="/"
+            href={Routes.root}
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
             Go home
@@ -126,7 +127,7 @@ function RootComponent() {
     return initClickTracking();
   }, []);
   useEffect(() => {
-    if (!path.startsWith("/admin")) trackPageView(path);
+    if (!path.startsWith(Routes.admin)) trackPageView(path);
   }, [path]);
 
 

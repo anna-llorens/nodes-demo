@@ -1,3 +1,4 @@
+import { Routes } from "@/lib/routes";
 import { trackEvent } from "./tracking.functions";
 
 // Google Analytics 4 (public measurement ID — safe in browser code).
@@ -55,7 +56,7 @@ export function initClickTracking() {
   if (typeof window === "undefined") return () => {};
   const onClick = (e: MouseEvent) => {
     const path = window.location.pathname;
-    if (path.startsWith("/admin")) return;
+    if (path.startsWith(Routes.admin)) return;
     const el = (e.target as HTMLElement | null)?.closest("a,button,[role=button],input,select,label");
     if (!el) return;
     const label = (el.getAttribute("aria-label") || el.textContent || el.tagName).trim().replace(/\s+/g, " ").slice(0, 60);

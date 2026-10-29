@@ -1,3 +1,4 @@
+import { Routes } from "@/lib/routes";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Home, Map, FileBarChart, MoreHorizontal, Layers, Bell } from "lucide-react";
 import type { ReactNode } from "react";
@@ -9,11 +10,11 @@ import { useSimClock } from "@/lib/sim-clock";
 import { mapRoutePath, mapText, type MapLocale } from "@/i18n/map";
 
 export const navItems = [
-  { to: "/home", label: "Inicio", icon: Home },
-  { to: "/map", label: "Mapa", icon: Map },
-  { to: "/alerts", label: "Alertas", icon: Bell },
-  { to: "/reports", label: "Informes", icon: FileBarChart },
-  { to: "/about", label: "Más", icon: MoreHorizontal },
+  { to: Routes.home, label: "Inicio", icon: Home },
+  { to: Routes.map, label: "Mapa", icon: Map },
+  { to: Routes.alerts, label: "Alertas", icon: Bell },
+  { to: Routes.reports, label: "Informes", icon: FileBarChart },
+  { to: Routes.about, label: "Más", icon: MoreHorizontal },
 ] as const;
 
 export function AppShell({
@@ -51,7 +52,7 @@ export function AppShell({
               {mapText(mapLocale, "nav.map")}
             </a>
           ) : navItems.map((navItem) => {
-            const active = navItem.to === "/home" ? path === "/" || path === "/home" : path.startsWith(navItem.to);
+            const active = navItem.to === Routes.home ? path === Routes.root || path === Routes.home : path.startsWith(navItem.to);
             return (
               <Link
                 key={navItem.to}
@@ -63,7 +64,7 @@ export function AppShell({
               >
                 <navItem.icon className="h-[18px] w-[18px]" strokeWidth={1.8} />
                 {navItem.label}
-                {navItem.to === "/alerts" && <CountDot count={alertCount} className="ml-auto" />}
+                {navItem.to === Routes.alerts && <CountDot count={alertCount} className="ml-auto" />}
               </Link>
             );
           })}
@@ -98,7 +99,7 @@ export function AppShell({
               {mapText(mapLocale, "nav.map")}
             </a>
           ) : navItems.map((it) => {
-            const active = it.to === "/home" ? path === "/" || path === "/home" : path.startsWith(it.to);
+            const active = it.to === Routes.home ? path === Routes.root || path === Routes.home : path.startsWith(it.to);
             return (
               <Link
                 key={it.to}
@@ -110,7 +111,7 @@ export function AppShell({
               >
                 <span className="relative">
                   <it.icon className="h-5 w-5" strokeWidth={active ? 2.2 : 1.6} />
-                  {it.to === "/alerts" && <CountDot count={alertCount} className="absolute -right-2.5 -top-1.5" />}
+                  {it.to === Routes.alerts && <CountDot count={alertCount} className="absolute -right-2.5 -top-1.5" />}
                 </span>
                 {it.label}
               </Link>

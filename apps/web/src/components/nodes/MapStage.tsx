@@ -1,3 +1,4 @@
+import { Routes } from "@/lib/routes";
 import { ClientOnly, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -188,7 +189,7 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
                 {localizedScenarios.map((s) => (
                   <Link
                     key={s.id}
-                    to={mapOnlyNavigation ? "/$locale/demo/map" : "/map"}
+                    to={mapOnlyNavigation ? Routes.localizedDemoMap : Routes.map}
                     {...(mapOnlyNavigation ? { params: { locale } } : {})}
                     search={{ scenario: s.id }}
                     className={cn("block rounded-lg px-3 py-2 text-sm hover:bg-muted", s.id === base.id && "bg-muted font-semibold")}
@@ -206,7 +207,7 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
             <span className="hidden items-center gap-2 text-sm text-muted-foreground lg:flex"><Clock className="h-4 w-4" /> {scenario.schedule.start}–{scenario.schedule.end}</span>
             <ShareMapDialog
               locale={locale}
-              getUrl={() => buildMapShareUrl(window.location.origin, { scenario: base.id, layers, camera, palette, time: minute }, mapOnlyNavigation ? mapRoutePath(locale) : "/map")}
+              getUrl={() => buildMapShareUrl(window.location.origin, { scenario: base.id, layers, camera, palette, time: minute }, mapOnlyNavigation ? mapRoutePath(locale) : Routes.map)}
             />
           </div>
         </div>
@@ -376,7 +377,7 @@ function NodeBubble({ node, onClose, detailed, minute, locale, mapOnlyNavigation
         </div>
       )}
       {!mapOnlyNavigation && <Link
-        to="/node/$id"
+        to={Routes.node}
         params={{ id: node.id }}
         search={{ t: Math.round(minute) }}
         className="mt-3 flex items-center justify-center gap-1 rounded-full bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground"

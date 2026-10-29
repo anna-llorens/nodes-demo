@@ -1,3 +1,4 @@
+import { Routes } from "@/lib/routes";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import calendarSvg from "@nodes/ui/assets/icons/calendar.svg?raw";
@@ -40,7 +41,7 @@ function ScenarioCard({ id, copy, scene }: { id: "maraton" | "mascleta"; copy: "
   return (
     <li className="flex">
       <Link
-        to="/map"
+        to={Routes.map}
         search={id === "maraton" ? {} : { scenario: id }}
         aria-label={demoText("demoEntry.open", { name: title })}
         className="group flex w-full flex-col overflow-hidden rounded-3xl bg-card shadow-card ring-primary transition-shadow hover:ring-2 focus-visible:ring-2"
