@@ -1,14 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { HomePage } from "@/components/nodes/HomePage";
+import { tFor } from "@/i18n/useT";
 
 export const Route = createFileRoute("/home")({
-  head: () => ({ meta: [
-    { title: "Inicio · Eventos de València — NODES" },
-    { name: "description", content: "Escenarios de afluencia de NODES para eventos en el exterior de València." },
-    { property: "og:title", content: "Inicio · Eventos de València — NODES" },
-    { property: "og:description", content: "Medio Maratón de València y escenarios de simulación de personas por zona." },
+  head: ({ match }) => {
+    const t = tFor(match.search.lang).home;
+    return { meta: [
+    { title: t.title },
+    { name: "description", content: t.description },
+    { property: "og:title", content: t.title },
+    { property: "og:description", content: t.ogDescription },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
-  ] }),
+  ] };
+  },
   component: HomePage,
 });

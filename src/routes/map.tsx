@@ -5,20 +5,22 @@ import { MapStage, type MapLayers } from "@/components/nodes/MapStage";
 import { getScenario } from "@/scenarios";
 import type { Scenario } from "@/scenarios/types";
 import { scenarioBounds } from "@/components/nodes/geo";
+import { tFor, useT } from "@/i18n/useT";
 import { DEFAULT_SPEED, readMapCache, restoreFromCache, restoreMapState, validateMapSearch, writeMapCache, type MapSearch } from "@/lib/map-share";
 
 export const Route = createFileRoute("/map")({
   validateSearch: validateMapSearch,
   head: ({ match }) => {
     const scenario = getScenario(match.search.scenario);
+    const t = tFor(match.search.lang).map;
     return {
     meta: [
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { title: `Mapa · ${scenario.name} — NODES` },
-      { name: "description", content: `Mapa simulado de densidad y flujo por zonas cubiertas con nodos LiDAR: ${scenario.name}.` },
-      { property: "og:title", content: `Mapa · ${scenario.name} — NODES` },
-      { property: "og:description", content: "Simulación de densidad por zona con nodos LiDAR anónimos." },
+      { title: t.title(scenario.name) },
+      { name: "description", content: t.description(scenario.name) },
+      { property: "og:title", content: t.title(scenario.name) },
+      { property: "og:description", content: t.ogDescription },
     ],
     };
   },
@@ -33,6 +35,7 @@ function MapaPage() {
 }
 
 function ScenarioMap({ scenario, search }: { scenario: Scenario; search: MapSearch }) {
+  const t = useT();
   const [initial, setInitial] = useState(() => ({ ...restoreMapState(search, scenario), speed: DEFAULT_SPEED }));
   // Scenarios that ask for it open framing every node and polygon unless a link or the cache brings a camera.
   const [fit, setFit] = useState(Boolean(scenario.fitToZones && !search.camera));
@@ -58,9 +61,9 @@ function ScenarioMap({ scenario, search }: { scenario: Scenario; search: MapSear
       sidebarExtra={
         <div className="flex flex-col gap-5">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Escenario</p>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t.map.scenario}</p>
             <p className="mt-1 font-display font-semibold text-brand-ink">{scenario.name}</p>
-            <p className="text-xs text-muted-foreground">Simulación · {scenario.schedule.start}–{scenario.schedule.end}</p>
+            <p className="text-xs text-muted-foreground">{t.map.simulation(scenario.schedule.start, scenario.schedule.end)}</p>
           </div>
           {/* Hueco donde MapStage monta el panel de capas en ordenador */}
           <div id="map-layers-slot" />

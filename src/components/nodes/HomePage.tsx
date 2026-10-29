@@ -6,8 +6,10 @@ import maratonImg from "@/assets/maraton.jpg";
 import mascletaImg from "@/assets/mascleta.jpg";
 import { maraton } from "@/scenarios/maraton";
 import { mascleta } from "@/scenarios/mascleta";
+import { useT } from "@/i18n/useT";
 
 export function HomePage() {
+  const t = useT();
   return (
     <AppShell>
       <div className="mx-auto flex min-h-full w-full max-w-5xl flex-col px-5 py-6 sm:px-8 lg:py-12">
@@ -15,10 +17,10 @@ export function HomePage() {
           <Logo className="text-4xl sm:text-5xl lg:hidden" />
         </div>
         <h1 className="mt-4 max-w-xl font-display text-2xl font-semibold leading-tight text-brand-ink sm:text-3xl lg:mt-0 lg:text-5xl">
-          Datos para decidir a tiempo en eventos de gran afluencia de personas.
+          {t.home.heading}
         </h1>
         <p className="mt-3 max-w-lg text-sm text-muted-foreground sm:text-base">
-          Nodos LiDAR temporales que cuentan personas por zona. Sin caras: solo recuentos y densidades.
+          {t.home.lede}
         </p>
 
         <div className="mt-8 grid gap-4 md:grid-cols-2 lg:gap-6">
@@ -27,14 +29,14 @@ export function HomePage() {
             img={maratonImg}
             icon={<Activity className="h-8 w-8" strokeWidth={1.8} />}
             title={maraton.name}
-            subtitle={`${maraton.schedule.start}–${maraton.schedule.end} · ${maraton.nodes.length} nodos`}
+            subtitle={`${maraton.schedule.start}–${maraton.schedule.end} · ${t.common.nodes(maraton.nodes.length)}`}
           />
           <EventCard
             scenarioId={mascleta.id}
             img={mascletaImg}
             icon={<Landmark className="h-8 w-8" strokeWidth={1.8} />}
             title={mascleta.name}
-            subtitle={`${mascleta.schedule.start}–${mascleta.schedule.end} · ${mascleta.nodes.length} nodos`}
+            subtitle={`${mascleta.schedule.start}–${mascleta.schedule.end} · ${t.common.nodes(mascleta.nodes.length)}`}
           />
         </div>
       </div>

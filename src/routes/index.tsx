@@ -1,17 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { HomePage } from "@/components/nodes/HomePage";
+import { tFor } from "@/i18n/useT";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
+  head: ({ match }) => {
+    const t = tFor(match.search.lang).index;
+    return {
     meta: [
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { title: "NODES — Datos para decidir a tiempo en eventos de exterior" },
-      { name: "description", content: "Prototipo de nodos LiDAR temporales para medir densidad y flujo en eventos en el exterior de València. Simulación." },
-      { property: "og:title", content: "NODES — Datos para decidir a tiempo en eventos de exterior" },
-      { property: "og:description", content: "Nodos LiDAR anónimos que cuentan personas por zona. Simulación para eventos de València." },
+      { title: t.title },
+      { name: "description", content: t.description },
+      { property: "og:title", content: t.title },
+      { property: "og:description", content: t.ogDescription },
     ],
-  }),
+    };
+  },
   component: HomePage,
 });
 

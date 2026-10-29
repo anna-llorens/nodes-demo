@@ -15,17 +15,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { trackNodeClick } from "@/lib/analytics";
 import { buildMapShareUrl, writeMapCache, DEFAULT_SPEED, type MapCamera, type MapLayers, type RunnerPalette } from "@/lib/map-share";
 import { ShareMapDialog } from "./ShareMapDialog";
+import { useFmt, useT } from "@/i18n/useT";
 export type { MapLayers, RunnerPalette } from "@/lib/map-share";
 
 const MapView = lazy(() => import("./MapView"));
 
-const PALETTES: { id: RunnerPalette; label: string }[] = [
-  { id: "termica", label: "Térmica (amarillo → rojo)" },
-  { id: "verde", label: "Verde bosque" },
-  { id: "azul", label: "Azul cobalto" },
-  { id: "terracota", label: "Terracota" },
-  { id: "grafito", label: "Grafito" },
-];
+const PALETTES: RunnerPalette[] = ["termica", "verde", "azul", "terracota", "grafito"];
 
 export const levelDot: Record<string, string> = {
   baja: "bg-dens-low",
@@ -34,9 +29,9 @@ export const levelDot: Record<string, string> = {
   "muy-alta": "bg-dens-crit",
 };
 
-const fmt = (n: number) => n.toLocaleString("es-ES");
-
 export function MapStage({ scenario: base, layers, onLayerChange, initialCamera, fitBounds, initialPalette = "termica", initialMinute, initialSpeed = DEFAULT_SPEED }: { scenario: RawScenario; layers: MapLayers; onLayerChange: (key: keyof MapLayers, value: boolean) => void; initialCamera?: MapCamera; fitBounds?: [[number, number], [number, number]]; initialPalette?: RunnerPalette; initialMinute?: number; initialSpeed?: number }) {
+  const t = useT();
+  const fmt = useFmt();
   const start = toMin(base.schedule.start);
   const end = toMin(base.schedule.end);
   const [minute, setMinute] = useState(initialMinute ?? toMin(base.defaultTime ?? base.schedule.start));
@@ -103,36 +98,36 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
   // Panel de capas: se muestra fijo en la barra lateral (ordenador) y en un desplegable (móvil).
   const layersPanel = (
     <>
-      <h2 className="mb-2 font-display text-sm font-bold text-brand-ink">Capas</h2>
-      <LayerToggle label="Mapa de calor" checked={layers.heat} onChange={(value) => onLayerChange("heat", value)} />
-      {base.route && <LayerToggle label="Corredores en recorrido" checked={layers.runners} onChange={(value) => onLayerChange("runners", value)} />}
-      <LayerToggle label="Anillos de nodo" checked={layers.rings} onChange={(value) => onLayerChange("rings", value)} />
-      <LayerToggle label="Flechas de flujo" checked={layers.flow} onChange={(value) => onLayerChange("flow", value)} />
-      {base.route && <LayerToggle label="Recorrido" checked={layers.route} onChange={(value) => onLayerChange("route", value)} />}
+      <h2 className="mb-2 font-display text-sm font-bold text-brand-ink">{t.map.layers}</h2>
+      <LayerToggle label={t.map.layerHeat} checked={layers.heat} onChange={(value) => onLayerChange("heat", value)} />
+      {base.route && <LayerToggle label={t.map.layerRunners} checked={layers.runners} onChange={(value) => onLayerChange("runners", value)} />}
+      <LayerToggle label={t.map.layerRings} checked={layers.rings} onChange={(value) => onLayerChange("rings", value)} />
+      <LayerToggle label={t.map.layerFlow} checked={layers.flow} onChange={(value) => onLayerChange("flow", value)} />
+      {base.route && <LayerToggle label={t.map.layerRoute} checked={layers.route} onChange={(value) => onLayerChange("route", value)} />}
       {base.zones?.length ? (
-        <LayerToggle label={`Polígonos · ${base.zonesLabel ?? "zonas"}`} checked={Boolean(layers.zones)} onChange={(value) => onLayerChange("zones", value)} />
+        <LayerToggle label={t.map.layerZones(base.zonesLabel ?? t.map.zonesDefault)} checked={Boolean(layers.zones)} onChange={(value) => onLayerChange("zones", value)} />
       ) : null}
       {base.traffic && (
         <LayerToggle
-          label="Tráfico y cortes"
+          label={t.map.layerTraffic}
           checked={showTraffic || Boolean(layers.closures)}
           onChange={(value) => { onLayerChange("traffic", value); onLayerChange("closures", value); }}
         />
       )}
       {showTraffic && base.traffic && (
         <div className="mt-2 border-t border-border pt-2">
-          <p className="text-xs font-semibold">Tráfico y cortes · {fmtClock(trafficTick)}</p>
+          <p className="text-xs font-semibold">{t.map.trafficAt(fmtClock(trafficTick))}</p>
           <div className="mt-1 flex items-center gap-3 text-[11px]">
-            <span className="flex items-center gap-1"><span className="h-1.5 w-4 rounded-full bg-dens-low" />Fluido</span>
-            <span className="flex items-center gap-1"><span className="h-1.5 w-4 rounded-full bg-dens-mid" />Denso</span>
-            <span className="flex items-center gap-1"><span className="h-1.5 w-4 rounded-full bg-dens-crit" />Congestionado</span>
+            <span className="flex items-center gap-1"><span className="h-1.5 w-4 rounded-full bg-dens-low" />{t.map.trafficFluid}</span>
+            <span className="flex items-center gap-1"><span className="h-1.5 w-4 rounded-full bg-dens-mid" />{t.map.trafficDense}</span>
+            <span className="flex items-center gap-1"><span className="h-1.5 w-4 rounded-full bg-dens-crit" />{t.map.trafficJammed}</span>
           </div>
           <p className="mt-1 text-[11px] text-muted-foreground">
-            {jammed} tramos congestionados · calles cortadas {base.closure?.start}–{base.closure?.end}
+            {t.map.jammedSummary(jammed, base.closure?.start ?? "", base.closure?.end ?? "")}
           </p>
           <p className="mt-1 text-[11px] text-muted-foreground">
             <span className="h-2 w-2 mr-1 inline-block animate-pulse rounded-full bg-dens-crit" />
-            Velocidad media {times.avgSpeed} km/h · retraso +{times.delay} min / 5 km
+            {t.map.trafficSpeed(times.avgSpeed, times.delay)}
           </p>
           {times.waits.length > 0 && (
             <ul className="mt-1 space-y-0.5 text-[11px]">
@@ -144,18 +139,18 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
               ))}
             </ul>
           )}
-          <p className="mt-1 text-[10px] text-muted-foreground">Espera para cruzar el recorrido (simulado)</p>
+          <p className="mt-1 text-[10px] text-muted-foreground">{t.map.crossWait}</p>
         </div>
       )}
       {base.route && <label className="mt-2 flex items-center justify-between gap-2 border-t border-border pt-2 text-xs text-muted-foreground">
-        Gama de corredores
+        {t.map.runnerPalette}
         <select
-          aria-label="Gama de color de corredores"
+          aria-label={t.map.runnerPaletteAria}
           value={palette}
           onChange={(e) => setPalette(e.target.value as RunnerPalette)}
           className="max-w-[9.5rem] rounded-lg border border-input bg-card px-2 py-1 text-xs text-foreground"
         >
-          {PALETTES.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
+          {PALETTES.map((p) => <option key={p} value={p}>{t.map.palettes[p]}</option>)}
         </select>
       </label>}
     </>
@@ -169,7 +164,7 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
           <div className="w-full min-w-0">
             <Popover>
               <PopoverTrigger asChild>
-                <button className="flex w-full min-w-0 items-center gap-1.5 text-left" aria-label="Cambiar de escenario">
+                <button className="flex w-full min-w-0 items-center gap-1.5 text-left" aria-label={t.map.changeScenario}>
                   <h1 className="truncate font-display text-lg font-bold text-brand-ink sm:text-xl">{scenario.name}</h1>
                   <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
                 </button>
@@ -178,12 +173,12 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
                 {scenarios.map((s) => (
                   <Link key={s.id} to="/map" search={{ scenario: s.id }} className={cn("block rounded-lg px-3 py-2 text-sm hover:bg-muted", s.id === base.id && "bg-muted font-semibold")}>
                     {s.name}
-                    <span className="block text-xs font-normal text-muted-foreground">{s.schedule.start}–{s.schedule.end} · {s.nodes.length} nodos</span>
+                    <span className="block text-xs font-normal text-muted-foreground">{s.schedule.start}–{s.schedule.end} · {t.common.nodes(s.nodes.length)}</span>
                   </Link>
                 ))}
               </PopoverContent>
             </Popover>
-            <p className="truncate text-xs text-muted-foreground">{scenario.nodes.length} nodos{scenario.tagline ? ` · ${scenario.tagline}` : ""}</p>
+            <p className="truncate text-xs text-muted-foreground">{t.common.nodes(scenario.nodes.length)}{scenario.tagline ? ` · ${scenario.tagline}` : ""}</p>
             <PeopleSummary measured={total} estimated={estimated} />
           </div>
           <div className="flex w-full items-center justify-end gap-3 sm:w-auto">
@@ -192,16 +187,16 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
           </div>
         </div>
         <div className="mt-2 grid grid-cols-2 text-sm font-semibold lg:hidden">
-          {(["mapa", "indicadores"] as const).map((t) => (
+          {(["mapa", "indicadores"] as const).map((tabId) => (
             <Button variant="ghost"
-              key={t}
-              onClick={() => setTab(t)}
+              key={tabId}
+              onClick={() => setTab(tabId)}
               className={cn(
                 "border-b-2 py-2.5",
-                tab === t ? "border-primary text-foreground" : "border-transparent text-muted-foreground",
+                tab === tabId ? "border-primary text-foreground" : "border-transparent text-muted-foreground",
               )}
             >
-              {t === "mapa" ? "Mapa" : "Nodos"}
+              {tabId === "mapa" ? t.map.tabMap : t.map.tabNodes}
             </Button>
           ))}
         </div>
@@ -237,8 +232,8 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
             {/* El botón Capas solo flota sobre el mapa en móvil y tablet; en ordenador vive en la barra lateral */}
             <div className="flex flex-wrap gap-2 lg:hidden">
               <Popover open={layersOpen} onOpenChange={setLayersOpen}>
-                <PopoverTrigger asChild><Button variant={layersOpen ? "default" : "secondary"} size="sm" className="rounded-full bg-card text-foreground shadow-float"><Layers />Capas</Button></PopoverTrigger>
-                <PopoverContent align="start" aria-label="Capas del mapa" className="w-72 max-w-[calc(100vw-2rem)]">
+                <PopoverTrigger asChild><Button variant={layersOpen ? "default" : "secondary"} size="sm" className="rounded-full bg-card text-foreground shadow-float"><Layers />{t.map.layers}</Button></PopoverTrigger>
+                <PopoverContent align="start" aria-label={t.map.layersAria} className="w-72 max-w-[calc(100vw-2rem)]">
                   {layersPanel}
                 </PopoverContent>
               </Popover>
@@ -248,9 +243,9 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
               layersSlot,
             )}
             <div className="hidden rounded-2xl bg-card/95 px-4 py-3 shadow-float backdrop-blur lg:block">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Hora del evento</p>
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t.map.eventTime}</p>
               <p className="font-display text-3xl font-bold tabular-nums text-brand-ink">{clock}</p>
-              {hasRunners && <p className="text-xs text-muted-foreground">{fmt(runners)} corredores · {fmt(total - runners)} público{base.participants ? ` · ${fmt(base.participants)} inscritos${base.participantsBasis ? ` (base: ${base.participantsBasis})` : ""}` : ""}</p>}
+              {hasRunners && <p className="text-xs text-muted-foreground">{t.map.runnersLine(fmt(runners), fmt(total - runners), base.participants ? fmt(base.participants) : undefined, base.participantsBasis)}</p>}
             </div>
           </div>
 
@@ -260,7 +255,7 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
               {alerts.map((a) => (
                 <button key={a.id} onClick={() => setSelectedId(a.nodeId)} className={cn("flex items-start gap-2 rounded-2xl border bg-card px-3 py-2 text-left text-xs shadow-float", a.level === "muy-alta" ? "border-dens-crit" : "border-dens-high")}>
                   <TriangleAlert className={cn("mt-0.5 h-4 w-4 shrink-0", a.level === "muy-alta" ? "text-dens-crit" : "text-dens-high")} />
-                  <span><span className="font-semibold">{a.time} · {a.node}</span> · {densityLabel[a.level]}. Sugerencia: {a.suggestion}</span>
+                  <span><span className="font-semibold">{a.time} · {a.node}</span> · {densityLabel[a.level]}. {t.common.suggestion}: {a.suggestion}</span>
                 </button>
               ))}
             </div>
@@ -304,10 +299,10 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
               <NodeBubble minute={minute} node={selected} onClose={() => setSelectedId(null)} detailed />
             </div>
           ) : (
-            <p className="rounded-2xl bg-card p-4 text-sm text-muted-foreground shadow-card">Toca un nodo del mapa para ver su zona.</p>
+            <p className="rounded-2xl bg-card p-4 text-sm text-muted-foreground shadow-card">{t.map.tapNode}</p>
           )}
           <div>
-            <h2 className="mb-2 font-display text-sm font-bold text-brand-ink">Nodos</h2>
+            <h2 className="mb-2 font-display text-sm font-bold text-brand-ink">{t.map.nodesHeading}</h2>
             <NodeList scenario={scenario} selectedId={selectedId} onSelect={setSelectedId} />
           </div>
         </aside>
@@ -317,6 +312,8 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
 }
 
 function NodeBubble({ node, onClose, detailed, minute }: { node: Scenario["nodes"][number]; onClose: () => void; detailed?: boolean; minute: number }) {
+  const t = useT();
+  const fmt = useFmt();
   const lvl = densityLevel(node.snapshot.density);
   return (
     <div>
@@ -328,28 +325,28 @@ function NodeBubble({ node, onClose, detailed, minute }: { node: Scenario["nodes
           <p className="text-[11px] font-semibold text-muted-foreground">{node.short}</p>
           <p className="truncate font-display font-semibold text-brand-ink">{node.name}</p>
         </div>
-        <button onClick={onClose} aria-label="Cerrar" className="shrink-0 rounded-full p-1 text-muted-foreground hover:bg-muted">
+        <button onClick={onClose} aria-label={t.common.close} className="shrink-0 rounded-full p-1 text-muted-foreground hover:bg-muted">
           <X className="h-4 w-4" />
         </button>
       </div>
       {detailed && node.description && <p className="mt-1 text-xs text-muted-foreground">{node.description}</p>}
-      <p className="mt-1 text-sm">{fmt(node.snapshot.people)} personas medidas</p>
-      <p className="text-sm">≈ {fmt(node.snapshot.estimated)} estimadas en su zona <EstimateTag /></p>
-      {node.runnerShare && <p className="text-xs text-muted-foreground">{fmt(node.snapshot.runners)} corredores · {fmt(node.snapshot.spectators)} público</p>}
+      <p className="mt-1 text-sm">{t.map.measured(fmt(node.snapshot.people))}</p>
+      <p className="text-sm">{t.map.estimatedInZone(fmt(node.snapshot.estimated))} <EstimateTag /></p>
+      {node.runnerShare && <p className="text-xs text-muted-foreground">{t.common.runnersPublic(fmt(node.snapshot.runners), fmt(node.snapshot.spectators))}</p>}
       <p className="mt-0.5 flex items-center gap-1.5 text-sm text-muted-foreground">
         <span className={cn("h-2.5 w-2.5 rounded-full", levelDot[lvl])} />
-        {densityLabel[lvl]} · {node.snapshot.density.toLocaleString("es-ES")} pers/m²
+        {densityLabel[lvl]} · {fmt(node.snapshot.density)} {t.common.perM2}
       </p>
-      {(lvl === "alta" || lvl === "muy-alta") && node.suggestions?.[lvl] && <p className="mt-1 text-xs font-semibold text-dens-crit">Sugerencia: {node.suggestions[lvl]}</p>}
+      {(lvl === "alta" || lvl === "muy-alta") && node.suggestions?.[lvl] && <p className="mt-1 text-xs font-semibold text-dens-crit">{t.common.suggestion}: {node.suggestions[lvl]}</p>}
       {detailed && node.snapshot.roadway !== undefined && (
         <div className="mt-3 grid grid-cols-2 gap-2">
-          <Stat label="En calzada" value={fmt(node.snapshot.roadway)} />
-          <Stat label="En aceras" value={fmt(node.snapshot.sidewalk ?? 0)} />
-          <Stat label="Entrada" value={`${node.snapshot.flowIn} pers/min`} />
-          <Stat label="Salida" value={`${node.snapshot.flowOut} pers/min`} />
-          <Stat label="Variación 10 min" value={`${node.snapshot.variation10 >= 0 ? "+" : ""}${Math.round(node.snapshot.variation10 * 100)} %`} />
-          <Stat label="Velocidad media" value={`${node.snapshot.speed.toLocaleString("es-ES")} m/s`} />
-          <p className="col-span-2 text-[11px] text-muted-foreground">Calzada / aceras: estimado por zona</p>
+          <Stat label={t.common.roadway} value={fmt(node.snapshot.roadway)} />
+          <Stat label={t.common.sidewalk} value={fmt(node.snapshot.sidewalk ?? 0)} />
+          <Stat label={t.common.flowIn} value={`${node.snapshot.flowIn} ${t.common.perMin}`} />
+          <Stat label={t.common.flowOut} value={`${node.snapshot.flowOut} ${t.common.perMin}`} />
+          <Stat label={t.common.variation10} value={t.common.percent(`${node.snapshot.variation10 >= 0 ? "+" : ""}${Math.round(node.snapshot.variation10 * 100)}`)} />
+          <Stat label={t.common.avgSpeed} value={`${fmt(node.snapshot.speed)} m/s`} />
+          <p className="col-span-2 text-[11px] text-muted-foreground">{t.map.roadwayNote}</p>
         </div>
       )}
       <Link
@@ -358,7 +355,7 @@ function NodeBubble({ node, onClose, detailed, minute }: { node: Scenario["nodes
         search={{ t: Math.round(minute) }}
         className="mt-3 flex items-center justify-center gap-1 rounded-full bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground"
       >
-        Ver detalle del nodo <ChevronRight className="h-3.5 w-3.5" />
+        {t.map.nodeDetail} <ChevronRight className="h-3.5 w-3.5" />
       </Link>
     </div>
   );
@@ -366,10 +363,12 @@ function NodeBubble({ node, onClose, detailed, minute }: { node: Scenario["nodes
 
 /** Medido y estimado del escenario; la estimación siempre lleva su etiqueta. */
 function PeopleSummary({ measured, estimated }: { measured: number; estimated: number }) {
+  const t = useT();
+  const fmt = useFmt();
   return (
     <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-0.5 pb-1 text-xs">
-      <span><span className="font-semibold tabular-nums text-foreground">{fmt(measured)}</span> <span className="text-muted-foreground">personas medidas en zonas cubiertas</span></span>
-      <span><span className="font-semibold tabular-nums text-foreground">≈ {fmt(estimated)}</span> <span className="text-muted-foreground">estimadas en el área del evento</span> <EstimateTag /></span>
+      <span><span className="font-semibold tabular-nums text-foreground">{fmt(measured)}</span> <span className="text-muted-foreground">{t.map.measuredCovered}</span></span>
+      <span><span className="font-semibold tabular-nums text-foreground">≈ {fmt(estimated)}</span> <span className="text-muted-foreground">{t.map.estimatedArea}</span> <EstimateTag /></span>
     </div>
   );
 }
@@ -388,9 +387,11 @@ function Stat({ label, value }: { label: string; value: string }) {
 }
 
 function NodeList({ scenario, onSelect, selectedId }: { scenario: Scenario; onSelect: (id: string) => void; selectedId?: string | null }) {
+  const t = useT();
+  const fmt = useFmt();
   return (
     <ul className="flex flex-col gap-2">
-      <li className="text-[11px] text-muted-foreground">≈ estimadas: <EstimateTag /></li>
+      <li className="text-[11px] text-muted-foreground">{t.map.estimatedKey} <EstimateTag /></li>
       {scenario.nodes.map((n) => {
         const lvl = densityLevel(n.snapshot.density);
         return (
@@ -407,7 +408,7 @@ function NodeList({ scenario, onSelect, selectedId }: { scenario: Scenario; onSe
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-semibold">{n.name}</span>
-                <span className="block text-xs text-muted-foreground">{fmt(n.snapshot.people)} medidas · ≈ {fmt(n.snapshot.estimated)} estimadas · {n.snapshot.density.toLocaleString("es-ES")} pers/m²</span>
+                <span className="block text-xs text-muted-foreground">{t.map.listLine(fmt(n.snapshot.people), fmt(n.snapshot.estimated), fmt(n.snapshot.density))}</span>
               </span>
               <span className={cn("h-3 w-3 shrink-0 rounded-full", levelDot[lvl])} />
             </button>
@@ -422,15 +423,16 @@ function Player(p: {
   start: number; end: number; minute: number; clock: string; playing: boolean; speed: number;
   onToggle: () => void; onSeek: (m: number) => void; onSpeed: (s: number) => void;
 }) {
+  const t = useT();
   return (
     <div className="flex flex-wrap items-center gap-2 rounded-2xl bg-card px-3 py-2.5 shadow-float sm:flex-nowrap sm:gap-3">
-      <button onClick={p.onToggle} aria-label={p.playing ? "Pausar" : "Reproducir"} className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
+      <button onClick={p.onToggle} aria-label={p.playing ? t.map.pause : t.map.play} className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
         {p.playing ? <Pause className="h-4 w-4 fill-current" /> : <Play className="h-4 w-4 fill-current" />}
       </button>
       <span className="hidden text-xs text-muted-foreground sm:inline">{fmtClock(p.start)}</span>
       <input
         type="range"
-        aria-label="Hora del evento"
+        aria-label={t.map.eventTime}
         min={p.start}
         max={p.end}
         step={1}
@@ -451,16 +453,17 @@ function Player(p: {
 
 
 function Legend() {
+  const t = useT();
   return (
     <div className="rounded-2xl bg-card/95 px-3 py-2 shadow-card backdrop-blur">
       <div className="flex items-center gap-3 text-xs font-semibold">
-        <span>Baja</span>
+        <span>{t.map.low}</span>
         <span className="h-2 flex-1 rounded-full bg-density" />
-        <span>Alta</span>
+        <span>{t.map.high}</span>
       </div>
       <p className="mt-1 flex items-start gap-1 text-[10px] leading-tight text-muted-foreground">
         <Info className="mt-px h-3 w-3 shrink-0" />
-        Umbrales propuestos (supuesto). Densidad crítica de referencia: 8–10 pers/m². Anillos: 20 m zona objetivo V1 · 40 m alcance nominal.
+        {t.map.thresholds}
       </p>
     </div>
   );

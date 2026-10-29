@@ -7,8 +7,7 @@ import { findNode } from "@/scenarios";
 import { ESTIMATE_LABEL, densityLabel, densityLevel, type DensityLevel } from "@/scenarios/types";
 import { scenarioAlerts, scenarioNodeState, toMin, fmtClock } from "@/sim/engine";
 import { cn } from "@/lib/utils";
-
-const fmt = (n: number) => n.toLocaleString("es-ES");
+import { tFor, useFmt, useT } from "@/i18n/useT";
 
 export const Route = createFileRoute("/node/$id")({
   validateSearch: (s: Record<string, unknown>): { t?: number | undefined; alert?: string | undefined } => ({
@@ -20,23 +19,33 @@ export const Route = createFileRoute("/node/$id")({
     if (!found) throw notFound();
     return { name: found.node.name, scenario: found.scenario.shortName };
   },
-  head: ({ loaderData }) => ({
+  head: ({ loaderData, match }) => {
+    const t = tFor(match.search.lang).node;
+    return {
     meta: [
-      { title: `${loaderData?.name ?? "Nodo"} · ${loaderData?.scenario ?? "Simulación"} — NODES` },
-      { name: "description", content: `Afluencia y densidad simuladas en ${loaderData?.name ?? "el nodo"} (${loaderData?.scenario ?? "simulación"}).` },
-      { property: "og:title", content: `${loaderData?.name ?? "Nodo"} · NODES` },
-      { property: "og:description", content: "Evolución de la afluencia y distribución de la densidad por nodo." },
+      { title: t.title(loaderData?.name, loaderData?.scenario) },
+      { name: "description", content: t.description(loaderData?.name, loaderData?.scenario) },
+      { property: "og:title", content: t.ogTitle(loaderData?.name) },
+      { property: "og:description", content: t.ogDescription },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
-  }),
-  notFoundComponent: () => <div className="p-8">Nodo no encontrado. <Link to="/map" className="text-primary underline">Volver al mapa</Link></div>,
+    };
+  },
+  notFoundComponent: NodeNotFound,
   component: NodePage,
 });
+
+function NodeNotFound() {
+  const t = useT();
+  return <div className="p-8">{t.node.notFound} <Link to="/map" className="text-primary underline">{t.common.backToMap}</Link></div>;
+}
 
 const LEVELS: DensityLevel[] = ["baja", "media", "alta", "muy-alta"];
 
 function NodePage() {
+  const tr = useT();
+  const fmt = useFmt();
   const { id } = Route.useParams();
   const { t, alert: alertId } = Route.useSearch();
   const { scenario, node } = findNode(id)!;
@@ -71,14 +80,14 @@ function NodePage() {
           )}
           <div className="absolute inset-x-0 top-0 flex items-center justify-between p-3 sm:p-4">
             <Link to="/map" search={scenario.id === "maraton" ? {} : { scenario: scenario.id }} className="flex items-center gap-1.5 rounded-full bg-card/95 px-3 py-2 text-sm font-semibold shadow-float backdrop-blur hover:bg-card">
-              <ArrowLeft className="h-4 w-4" /> Volver al mapa
+              <ArrowLeft className="h-4 w-4" /> {tr.common.backToMap}
             </Link>
           </div>
         </div>
 
         <div className="mx-auto max-w-5xl space-y-5 p-4 sm:p-6">
           <div>
-            <p className="text-xs font-semibold text-muted-foreground">{node.short} · {node.kind === "cruce" ? "Punto de cruce" : "Zona de control"}</p>
+            <p className="text-xs font-semibold text-muted-foreground">{node.short} · {node.kind === "cruce" ? tr.node.kindCrossing : tr.node.kindControl}</p>
             <h1 className="font-display text-2xl font-bold text-brand-ink sm:text-3xl">{node.name}</h1>
             {node.address && <p className="mt-1 flex items-start gap-1.5 text-sm text-muted-foreground"><MapPin className="mt-0.5 h-4 w-4 shrink-0" />{node.address}</p>}
             {node.description && node.description !== node.address && <p className="mt-1 text-sm text-muted-foreground">{node.description}</p>}
@@ -88,12 +97,12 @@ function NodePage() {
             <div className={cn("rounded-2xl border bg-card px-4 py-3 shadow-card", fromAlert.level === "muy-alta" ? "border-dens-crit" : "border-dens-high")}>
               <p className="flex items-center gap-2 text-sm font-semibold">
                 <TriangleAlert className={cn("h-4 w-4 shrink-0", fromAlert.level === "muy-alta" ? "text-dens-crit" : "text-dens-high")} />
-                {densityLabel[fromAlert.level]} · {fromAlert.time} · {fromAlert.density.toLocaleString("es-ES", { minimumFractionDigits: 1 })} pers/m²
+                {densityLabel[fromAlert.level]} · {fromAlert.time} · {fmt(fromAlert.density, { minimumFractionDigits: 1 })} {tr.common.perM2}
               </p>
               {fromAlert.suggestion && (
                 <>
-                  <p className="mt-1 text-sm">Sugerencia: {fromAlert.suggestion}</p>
-                  <p className="mt-1 text-[11px] text-muted-foreground">Basada en umbrales propuestos. La decisión es del responsable del dispositivo.</p>
+                  <p className="mt-1 text-sm">{tr.common.suggestion}: {fromAlert.suggestion}</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">{tr.node.alertNote}</p>
                 </>
               )}
             </div>
@@ -101,35 +110,35 @@ function NodePage() {
 
           <div className="flex items-center gap-3 rounded-2xl bg-card px-4 py-3 shadow-card">
             <span className="font-display text-lg font-bold tabular-nums">{fmtClock(minute)}</span>
-            <input type="range" aria-label="Hora" min={start} max={end} step={1} value={minute} onChange={(e) => setMinute(Number(e.target.value))} className="h-1.5 flex-1 accent-primary" />
+            <input type="range" aria-label={tr.node.timeAria} min={start} max={end} step={1} value={minute} onChange={(e) => setMinute(Number(e.target.value))} className="h-1.5 flex-1 accent-primary" />
           </div>
 
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
-            <Kpi icon={Users} tone={TONE.green} label="Personas medidas" value={fmt(st.people)} sub={node.runnerShare ? `${fmt(st.runners)} corredores · ${fmt(st.spectators)} público` : "Densidad × área del círculo del nodo"} />
-            <Kpi icon={Users} tone={TONE.slate} label="Estimadas en su zona" value={`≈ ${fmt(st.estimated)}`} sub={ESTIMATE_LABEL} />
-            <Kpi icon={UsersRound} tone={TONE[lvl]} label="Densidad" value={`${st.density.toLocaleString("es-ES", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} pers/m²`} sub={densityLabel[lvl]} />
-            <Kpi icon={st.variation10 > 0 ? TrendingUp : TrendingDown} tone={st.variation10 > 0 ? TONE.red : TONE.green} label="Variación 10 min" value={`${st.variation10 >= 0 ? "+" : ""}${Math.round(st.variation10 * 100)} %`} />
-            <Kpi icon={LogIn} tone={TONE.green} label="Entrada" value={`${fmt(st.flowIn)} pers/min`} />
-            <Kpi icon={LogOut} tone={TONE.softRed} label="Salida" value={`${fmt(st.flowOut)} pers/min`} />
-            <Kpi icon={Gauge} tone={TONE.blue} label="Velocidad media" value={`${st.speed.toLocaleString("es-ES")} m/s`} />
-            {st.roadway !== undefined && <Kpi icon={RouteIcon} tone={TONE.slate} label="En calzada" value={fmt(st.roadway)} sub="Estimado por zona" />}
-            {st.sidewalk !== undefined && <Kpi icon={Footprints} tone={TONE.slate} label="En aceras" value={fmt(st.sidewalk)} sub="Estimado por zona" />}
+            <Kpi icon={Users} tone={TONE.green} label={tr.node.measured} value={fmt(st.people)} sub={node.runnerShare ? tr.common.runnersPublic(fmt(st.runners), fmt(st.spectators)) : tr.node.circleNote} />
+            <Kpi icon={Users} tone={TONE.slate} label={tr.node.estimatedZone} value={`≈ ${fmt(st.estimated)}`} sub={ESTIMATE_LABEL} />
+            <Kpi icon={UsersRound} tone={TONE[lvl]} label={tr.node.density} value={`${fmt(st.density, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} ${tr.common.perM2}`} sub={densityLabel[lvl]} />
+            <Kpi icon={st.variation10 > 0 ? TrendingUp : TrendingDown} tone={st.variation10 > 0 ? TONE.red : TONE.green} label={tr.common.variation10} value={tr.common.percent(`${st.variation10 >= 0 ? "+" : ""}${Math.round(st.variation10 * 100)}`)} />
+            <Kpi icon={LogIn} tone={TONE.green} label={tr.common.flowIn} value={`${fmt(st.flowIn)} ${tr.common.perMin}`} />
+            <Kpi icon={LogOut} tone={TONE.softRed} label={tr.common.flowOut} value={`${fmt(st.flowOut)} ${tr.common.perMin}`} />
+            <Kpi icon={Gauge} tone={TONE.blue} label={tr.common.avgSpeed} value={`${fmt(st.speed)} m/s`} />
+            {st.roadway !== undefined && <Kpi icon={RouteIcon} tone={TONE.slate} label={tr.common.roadway} value={fmt(st.roadway)} sub={tr.node.estimatedByZone} />}
+            {st.sidewalk !== undefined && <Kpi icon={Footprints} tone={TONE.slate} label={tr.common.sidewalk} value={fmt(st.sidewalk)} sub={tr.node.estimatedByZone} />}
           </div>
 
           <div className="grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
             <section className="rounded-2xl bg-card p-4 shadow-card">
-              <h2 className="font-display font-bold text-brand-ink">Evolución de la afluencia</h2>
-              <p className="text-xs text-muted-foreground">Pico: {fmt(peak.people)} personas medidas (≈ {fmt(peak.estimated)} estimadas) a las {fmtClock(peak.m)}</p>
+              <h2 className="font-display font-bold text-brand-ink">{tr.node.evolution}</h2>
+              <p className="text-xs text-muted-foreground">{tr.node.peakLine(fmt(peak.people), fmt(peak.estimated), fmtClock(peak.m))}</p>
               <FlowChart series={series} minute={minute} start={start} end={end} runners={Boolean(node.runnerShare)} />
               <div className="mt-2 flex gap-4 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1.5"><span className="h-2 w-4 rounded-full bg-primary" />Medidas</span>
-                <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 border-t-2 border-dashed border-brand-ink" />Estimadas <EstimateTag /></span>
-                {node.runnerShare && <span className="flex items-center gap-1.5"><span className="h-2 w-4 rounded-full bg-dens-mid" />Corredores</span>}
+                <span className="flex items-center gap-1.5"><span className="h-2 w-4 rounded-full bg-primary" />{tr.node.legendMeasured}</span>
+                <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 border-t-2 border-dashed border-brand-ink" />{tr.node.legendEstimated} <EstimateTag /></span>
+                {node.runnerShare && <span className="flex items-center gap-1.5"><span className="h-2 w-4 rounded-full bg-dens-mid" />{tr.node.legendRunners}</span>}
               </div>
             </section>
             <section className="rounded-2xl bg-card p-4 shadow-card">
-              <h2 className="font-display font-bold text-brand-ink">Distribución de la densidad</h2>
-              <p className="text-xs text-muted-foreground">Tiempo en cada nivel ({scenario.schedule.start}–{scenario.schedule.end})</p>
+              <h2 className="font-display font-bold text-brand-ink">{tr.node.distribution}</h2>
+              <p className="text-xs text-muted-foreground">{tr.node.distributionSub(scenario.schedule.start, scenario.schedule.end)}</p>
               <ul className="mt-4 space-y-3">
                 {dist.map((d) => (
                   <li key={d.l}>
@@ -173,6 +182,7 @@ function Kpi({ label, value, sub, icon: Icon, tone }: { label: string; value: st
 }
 
 function FlowChart({ series, minute, start, end, runners }: { series: { m: number; people: number; estimated: number; runners: number }[]; minute: number; start: number; end: number; runners: boolean }) {
+  const t = useT();
   const W = 600, H = 200;
   const max = Math.max(1, ...series.map((p) => p.estimated)) * 1.1;
   const x = (m: number) => ((m - start) / (end - start)) * W;
@@ -182,7 +192,7 @@ function FlowChart({ series, minute, start, end, runners }: { series: { m: numbe
   const ticks = [];
   for (let m = Math.ceil(start / 30) * 30; m <= end; m += 30) ticks.push(m);
   return (
-    <svg viewBox={`0 0 ${W} ${H + 20}`} className="mt-3 w-full" role="img" aria-label="Evolución de la afluencia">
+    <svg viewBox={`0 0 ${W} ${H + 20}`} className="mt-3 w-full" role="img" aria-label={t.node.evolution}>
       <path d={area} className="fill-primary/15" />
       <path d={line("people")} className="fill-none stroke-primary" strokeWidth={2.5} />
       {runners && <path d={line("runners")} className="fill-none stroke-dens-mid" strokeWidth={2} strokeDasharray="5 4" />}

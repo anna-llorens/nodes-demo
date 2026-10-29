@@ -7,28 +7,34 @@ import { densityLabel } from "@/scenarios/types";
 import { fmtClock, visibleAlerts, type DensityAlert } from "@/sim/engine";
 import { selectSimScenario, useSimClock } from "@/lib/sim-clock";
 import { cn } from "@/lib/utils";
+import { tFor, useFmt, useT } from "@/i18n/useT";
 
 const AlertsMap = lazy(() => import("@/components/nodes/AlertsMap"));
 
 export const Route = createFileRoute("/alerts")({
-  head: () => ({
+  head: ({ match }) => {
+    const t = tFor(match.search.lang).alerts;
+    return {
     meta: [
-      { title: "Alertas de densidad · NODES" },
-      { name: "description", content: "Alertas de densidad alta y muy alta por nodo, según la hora del reproductor de la simulación." },
-      { property: "og:title", content: "Alertas de densidad · NODES" },
+      { title: t.title },
+      { name: "description", content: t.description },
+      { property: "og:title", content: t.title },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
-  }),
+    };
+  },
   component: AlertsPage,
 });
 
 type Filter = "todas" | "muy-alta" | "alta";
-const pct = (v: number) => `${v >= 0 ? "+" : ""}${Math.round(v * 100)} %`;
-const dens = (d: number) => d.toLocaleString("es-ES", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const tone = (a: DensityAlert) => (a.level === "muy-alta" ? "bg-dens-crit" : "bg-dens-high");
 
 function AlertsPage() {
+  const t = useT();
+  const fmt = useFmt();
+  const pct = (v: number) => t.common.percent(`${v >= 0 ? "+" : ""}${Math.round(v * 100)}`);
+  const dens = (d: number) => fmt(d, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   const clock = useSimClock();
   const scenario = getScenario(clock.scenarioId);
   const alerts = useMemo(() => visibleAlerts(scenario, clock.minute), [scenario, clock.minute]);
@@ -44,11 +50,11 @@ function AlertsPage() {
       <div className="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-5 sm:px-6">
         <header className="flex flex-wrap items-end justify-between gap-3">
           <div className="min-w-0">
-            <h1 className="font-display text-2xl font-bold text-brand-ink">Alertas</h1>
-            <p className="text-sm text-muted-foreground">Hasta las {fmtClock(clock.minute)} · hora del reproductor del mapa</p>
+            <h1 className="font-display text-2xl font-bold text-brand-ink">{t.alerts.heading}</h1>
+            <p className="text-sm text-muted-foreground">{t.alerts.until(fmtClock(clock.minute))}</p>
           </div>
           <select
-            aria-label="Escenario de las alertas"
+            aria-label={t.alerts.scenarioAria}
             value={scenario.id}
             onChange={(e) => { setSelectedId(null); selectSimScenario(e.target.value); }}
             className="h-10 max-w-full rounded-lg border border-input bg-card px-3 text-sm font-semibold"
@@ -71,17 +77,17 @@ function AlertsPage() {
                     <p className="font-display font-semibold text-brand-ink">{densityLabel[selected.level]}</p>
                     <p className="truncate text-xs text-muted-foreground">{selected.node} · {selected.time}</p>
                   </div>
-                  <button onClick={() => setSelectedId(null)} aria-label="Cerrar" className="rounded-full p-1 text-muted-foreground hover:bg-muted"><X className="h-4 w-4" /></button>
+                  <button onClick={() => setSelectedId(null)} aria-label={t.common.close} className="rounded-full p-1 text-muted-foreground hover:bg-muted"><X className="h-4 w-4" /></button>
                 </div>
                 <Link to="/node/$id" params={{ id: selected.nodeId }} search={{ t: selected.minute, alert: selected.id }} className="mt-2 flex items-center justify-between rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground">
-                  Abrir el nodo <ChevronRight className="h-4 w-4" />
+                  {t.alerts.openNode} <ChevronRight className="h-4 w-4" />
                 </Link>
               </div>
             )}
           </section>
         )}
 
-        <div role="tablist" aria-label="Filtrar alertas" className="flex flex-wrap gap-2">
+        <div role="tablist" aria-label={t.alerts.filterAria} className="flex flex-wrap gap-2">
           {(["todas", "muy-alta", "alta"] as const).map((f) => (
             <button
               key={f}
@@ -90,13 +96,13 @@ function AlertsPage() {
               onClick={() => setFilter(f)}
               className={cn("rounded-full border px-3 py-1.5 text-sm font-semibold", filter === f ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-muted-foreground")}
             >
-              {f === "todas" ? "Todas" : f === "muy-alta" ? "Muy alta" : "Alta"} ({count(f)})
+              {t.alerts.filters[f]} ({count(f)})
             </button>
           ))}
         </div>
 
         {shown.length === 0 ? (
-          <p className="rounded-2xl bg-card p-5 text-sm text-muted-foreground shadow-card">Sin alertas hasta las {fmtClock(clock.minute)}. Avanza el reproductor en el mapa para ver las siguientes.</p>
+          <p className="rounded-2xl bg-card p-5 text-sm text-muted-foreground shadow-card">{t.alerts.empty(fmtClock(clock.minute))}</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {shown.map((a) => (
@@ -113,7 +119,7 @@ function AlertsPage() {
                   <span className="min-w-0 flex-1">
                     <span className="block font-semibold">{densityLabel[a.level]}</span>
                     <span className="block truncate text-sm text-muted-foreground">{a.node}</span>
-                    <span className="block text-xs text-muted-foreground">Densidad: {dens(a.density)} pers/m² ({pct(a.variation10)})</span>
+                    <span className="block text-xs text-muted-foreground">{t.alerts.density(dens(a.density), pct(a.variation10))}</span>
                   </span>
                   <span className="shrink-0 font-display text-sm font-bold tabular-nums">{a.time}</span>
                 </Link>

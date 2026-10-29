@@ -5,6 +5,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import type { Scenario } from "@/scenarios/types";
 import type { DensityAlert } from "@/sim/engine";
 import { scenarioBounds } from "./geo";
+import { useT } from "@/i18n/useT";
 
 maplibregl.setWorkerUrl(workerUrl);
 
@@ -16,6 +17,7 @@ export default function AlertsMap({ scenario, alerts, selectedId, onSelect, onEr
   onSelect: (id: string | null) => void;
   onError: () => void;
 }) {
+  const t = useT();
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markersRef = useRef<maplibregl.Marker[]>([]);
@@ -52,14 +54,14 @@ export default function AlertsMap({ scenario, alerts, selectedId, onSelect, onEr
       perNode.set(a.nodeId, i + 1);
       const el = document.createElement("button");
       el.type = "button";
-      el.setAttribute("aria-label", `${a.level === "muy-alta" ? "Densidad muy alta" : "Densidad alta"} · ${a.node}`);
+      el.setAttribute("aria-label", `${a.level === "muy-alta" ? t.alerts.markerVeryHigh : t.alerts.markerHigh} · ${a.node}`);
       el.className = `grid h-7 w-7 place-items-center rounded-full border-2 border-card text-sm font-bold text-white shadow-float ${a.level === "muy-alta" ? "bg-dens-crit" : "bg-dens-high"}`;
       el.textContent = "!";
       el.addEventListener("click", (ev) => { ev.stopPropagation(); onSelectRef.current(a.id); });
       return new maplibregl.Marker({ element: el, offset: [i * 18, -i * 6] }).setLngLat(node.lngLat).addTo(map);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, scenario.id]);
+  }, [key, scenario.id, t]);
 
   useEffect(() => {
     const a = alerts.find((x) => x.id === selectedId);

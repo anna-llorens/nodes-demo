@@ -8,6 +8,7 @@ import type { LiveScenario as Scenario } from "@/scenarios/types";
 import { heatPoints, ringsGeo, runnerHeatPoints, trafficGeo, zonesGeo } from "./geo";
 import type { TrafficLevel } from "@/sim/engine";
 import type { MapCamera, MapLayers, RunnerPalette } from "@/lib/map-share";
+import { useT } from "@/i18n/useT";
 
 // maplibre necesita colores literales en su paint (no lee variables CSS)
 const C = {
@@ -75,6 +76,7 @@ export default function MapView({
   fitBounds?: [[number, number], [number, number]];
   onCameraChange?: (camera: MapCamera) => void;
 }) {
+  const t = useT();
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [ready, setReady] = useState(false);
@@ -222,7 +224,7 @@ export default function MapView({
           <>
             {c.underpass && (
               <span className="mb-1 rounded-full border-2 border-dens-crit bg-card px-2 py-0.5 text-center text-[10px] font-bold leading-tight text-foreground shadow-card">
-                Paso inferior<br />cerrado
+                {t.map.underpassClosed[0]}<br />{t.map.underpassClosed[1]}
               </span>
             )}
             <span className="h-4 w-4 rounded-full border-[3px] border-dens-crit bg-muted shadow-card" />
