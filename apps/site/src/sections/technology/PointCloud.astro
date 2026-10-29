@@ -1,0 +1,114 @@
+---
+import Svg from "@nodes/ui/Svg.astro";
+import { ArrowRight } from "@lucide/astro";
+import { t, type Locale } from "../../i18n";
+import { pagePath } from "../../lib/routes";
+
+/**
+ * Dark panel: topic chips (static; only the first has content), the point-cloud icon in place of
+ * the mockup render, and the point-cloud text with a link to Research.
+ */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const topics = (["pointCloud", "detection", "tracking", "flows"] as const).map((key) => t(locale, `tech.tabs.${key}`));
+---
+
+<section class="point-cloud" aria-labelledby="point-cloud-title">
+  <div class="container">
+    <ul class="chips">
+      {topics.map((topic, index) => <li class:list={{ active: index === 0 }}>{topic}</li>)}
+    </ul>
+    <div class="layout">
+      <span class="panel"><Svg name="icons/point-cloud" /></span>
+      <div class="text">
+        <h2 id="point-cloud-title">{t(locale, "tech.pointCloud.title")}</h2>
+        <p>{t(locale, "tech.pointCloud.text")}</p>
+        <a class="more" href={pagePath(locale, "research")}>
+          {t(locale, "tech.pointCloud.cta")}
+          <ArrowRight aria-hidden="true" size={18} />
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .point-cloud {
+    padding-block: var(--section-padding);
+    background: var(--color-text);
+    color: var(--color-text-inverse);
+  }
+  .chips {
+    list-style: none;
+    margin: 0 0 var(--space-8);
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+    border-bottom: 1px solid var(--color-text-muted);
+    font-size: var(--text-small);
+  }
+  .chips li {
+    padding-bottom: var(--space-3);
+    color: var(--color-border-strong);
+  }
+  .chips .active {
+    color: var(--color-text-inverse);
+    box-shadow: inset 0 -2px 0 var(--color-text-inverse);
+  }
+  .layout {
+    display: grid;
+    gap: var(--space-8);
+  }
+  .panel {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-card);
+    background: var(--color-primary);
+    color: var(--color-primary-soft);
+  }
+  .panel :global(svg) {
+    width: 96px;
+    height: 96px;
+  }
+  .text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+  h2 {
+    margin: 0;
+    color: inherit;
+  }
+  p {
+    margin: 0;
+    max-width: 48ch;
+  }
+  .more {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-5);
+    border: 1px solid var(--color-text-inverse);
+    border-radius: var(--radius-button);
+    color: inherit;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .more:hover {
+    background: var(--color-text-inverse);
+    color: var(--color-text);
+  }
+
+  @media (min-width: 1024px) {
+    .layout {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: center;
+      gap: var(--space-12);
+    }
+  }
+</style>

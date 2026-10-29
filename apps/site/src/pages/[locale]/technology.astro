@@ -2,7 +2,10 @@
 import { isLocale } from "../../i18n";
 import Base from "../../layouts/Base.astro";
 import { localePaths } from "../../lib/static-paths";
+import Benefits from "../../sections/technology/Benefits.astro";
 import Hero from "../../sections/technology/Hero.astro";
+import PointCloud from "../../sections/technology/PointCloud.astro";
+import Workflow from "../../sections/technology/Workflow.astro";
 
 export const getStaticPaths = localePaths;
 
@@ -12,4 +15,7 @@ if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
 
 <Base locale={locale} page="technology">
   <Hero locale={locale} />
+  <Workflow locale={locale} />
+  <PointCloud locale={locale} />
+  <Benefits locale={locale} />
 </Base>

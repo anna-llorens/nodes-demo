@@ -1,0 +1,75 @@
+---
+import Svg from "@nodes/ui/Svg.astro";
+import { t, type Locale } from "../../i18n";
+
+/** Four short benefit tiles: icon and label. */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const benefits = (
+  [
+    ["privacy", "icons/shield"],
+    ["edge", "icons/lidar-sensor"],
+    ["aggregate", "icons/people-count"],
+    ["scalable", "icons/chart"],
+  ] as const
+).map(([key, icon]) => ({ icon, label: t(locale, `tech.benefits.${key}`) }));
+---
+
+<section class="section" aria-label={t(locale, "nav.technology")}>
+  <ul class="container tiles">
+    {
+      benefits.map((benefit) => (
+        <li>
+          <span class="icon"><Svg name={benefit.icon} /></span>
+          <span>{benefit.label}</span>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .tiles {
+    list-style: none;
+    margin-block: 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-card);
+    background: var(--color-primary-soft);
+    color: var(--color-text);
+    font-weight: 500;
+  }
+  .icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--color-surface);
+    color: var(--color-primary);
+  }
+  .icon :global(svg) {
+    width: 55%;
+    height: 55%;
+  }
+
+  @media (min-width: 640px) {
+    .tiles {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (min-width: 1024px) {
+    .tiles {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>

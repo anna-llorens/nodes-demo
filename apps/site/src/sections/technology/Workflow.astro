@@ -1,0 +1,88 @@
+---
+import { t, type Locale } from "../../i18n";
+
+/** Four numbered steps from capture to decision; a row joined by a line on desktop. */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const steps = (["step1", "step2", "step3", "step4"] as const).map((key) => ({
+  title: t(locale, `tech.workflow.${key}.title`),
+  text: t(locale, `tech.workflow.${key}.text`),
+}));
+---
+
+<section class="workflow" aria-label={t(locale, "nav.technology")}>
+  <ol class="container steps">
+    {
+      steps.map((step, index) => (
+        <li>
+          <span class="number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+          <span class="label">
+            <strong>{step.title}</strong>
+            <span>{step.text}</span>
+          </span>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .workflow {
+    padding-block: var(--space-12);
+  }
+  .steps {
+    list-style: none;
+    margin-block: 0;
+    display: grid;
+    gap: var(--space-5);
+  }
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  .number {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+    font-size: var(--text-small);
+    font-weight: 600;
+  }
+  .label {
+    display: flex;
+    flex-direction: column;
+  }
+  strong {
+    color: var(--color-text);
+    font-weight: 500;
+  }
+
+  @media (min-width: 1024px) {
+    .steps {
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-6);
+    }
+    li {
+      position: relative;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    /* Line from each number to the next one, across the column gap. */
+    li:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 21px;
+      left: calc(44px + var(--space-3));
+      right: calc(var(--space-3) - var(--space-6));
+      height: 2px;
+      background: var(--color-primary-line);
+    }
+  }
+</style>

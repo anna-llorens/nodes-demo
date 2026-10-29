@@ -52,7 +52,20 @@ Validation: site typecheck and build pass.
 
 Validation: site typecheck and build pass.
 
+## S4 · Technology
+
+- Hero unchanged (`hero-lidar-valencia.svg`).
+- [Workflow](../../apps/site/src/sections/technology/Workflow.astro): four numbered steps, a joined
+  row on desktop and a list on mobile.
+- [PointCloud](../../apps/site/src/sections/technology/PointCloud.astro): dark panel with the four
+  `tech.tabs.*` as static chips (first marked active), the point-cloud icon instead of the mockup
+  render, and `tech.pointCloud.*`; its link goes to Research (the plan gives no target).
+- [Benefits](../../apps/site/src/sections/technology/Benefits.astro): four tiles (shield,
+  lidar-sensor, people-count, chart).
+
+Validation: site typecheck and build pass.
+
 ## Remaining
 
-- Technology, Demo, Research and Contact content: steps S4–S6.
+- Demo, Research and Contact content: steps S5–S6.
 - `nodes-site-v2-pack/` is still untracked; its contents are copied into place.
