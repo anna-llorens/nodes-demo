@@ -3,6 +3,8 @@ import PageHero from "../../components/PageHero.astro";
 import { isLocale, t } from "../../i18n";
 import Base from "../../layouts/Base.astro";
 import { localePaths } from "../../lib/static-paths";
+import Cards from "../../sections/applications/Cards.astro";
+import PilotCta from "../../sections/applications/PilotCta.astro";
 
 export const getStaticPaths = localePaths;
 
@@ -17,4 +19,6 @@ if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
     title={t(locale, "applications.hero.title")}
     lead={t(locale, "applications.hero.lead")}
   />
+  <Cards locale={locale} />
+  <PilotCta locale={locale} />
 </Base>

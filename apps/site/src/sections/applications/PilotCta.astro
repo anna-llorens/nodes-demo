@@ -1,0 +1,71 @@
+---
+import Svg from "@nodes/ui/Svg.astro";
+import Button from "../../components/Button.astro";
+import { t, type Locale } from "../../i18n";
+import { pagePath } from "../../lib/routes";
+
+/** Band inviting a pilot proposal; opens Contact with the pilot interest preselected. */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+---
+
+<section class="section pilot" aria-labelledby="pilot-title">
+  <div class="container band">
+    <span class="icon"><Svg name="icons/lightbulb" /></span>
+    <div class="text">
+      <h2 id="pilot-title">{t(locale, "applications.cta.title")}</h2>
+      <p>{t(locale, "applications.cta.text")}</p>
+    </div>
+    <Button href={`${pagePath(locale, "contact")}?interest=pilot`} arrow>{t(locale, "applications.cta.button")}</Button>
+  </div>
+</section>
+
+<style>
+  .pilot {
+    padding-top: 0;
+  }
+  .band {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-5);
+    padding-block: var(--space-8);
+    border-radius: var(--radius-card);
+    background: var(--color-primary-soft);
+  }
+  .icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--color-surface);
+    color: var(--color-primary);
+  }
+  .icon :global(svg) {
+    width: 55%;
+    height: 55%;
+  }
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+  p {
+    margin: var(--space-2) 0 0;
+    max-width: 60ch;
+  }
+
+  @media (min-width: 1024px) {
+    .band {
+      flex-direction: row;
+      align-items: center;
+      padding-inline: var(--space-8);
+    }
+    .text {
+      flex: 1;
+    }
+  }
+</style>

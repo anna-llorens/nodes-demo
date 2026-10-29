@@ -39,7 +39,20 @@ Validation: site typecheck, tests (36) and build pass.
 
 Validation: site typecheck and build pass.
 
+## S3 · Applications
+
+- [config/sectors.ts](../../apps/site/src/config/sectors.ts): the three sectors (id = anchor, icon,
+  illustration), shared by the home tiles and the Applications cards.
+- [Cards](../../apps/site/src/sections/applications/Cards.astro): one card per sector with an
+  illustration on a soft-green panel instead of the mockup photo (`use-case-runner`,
+  `use-case-town-hall`; transport has none, so its train icon), icon, title, text and three
+  examples. "Ver detalles" is left out: there are no detail pages yet.
+- [PilotCta](../../apps/site/src/sections/applications/PilotCta.astro): band linking to
+  `contact?interest=pilot` (preselection arrives in S6).
+
+Validation: site typecheck and build pass.
+
 ## Remaining
 
-- Technology, Applications, Demo, Research and Contact content: steps S2–S6.
+- Technology, Demo, Research and Contact content: steps S4–S6.
 - `nodes-site-v2-pack/` is still untracked; its contents are copied into place.

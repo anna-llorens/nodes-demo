@@ -1,6 +1,6 @@
 ---
 import Svg from "@nodes/ui/Svg.astro";
-import { Building2, TrainFront } from "@lucide/astro";
+import { sectors } from "../../config/sectors";
 import { t, type Locale } from "../../i18n";
 import { pagePath } from "../../lib/routes";
 
@@ -10,12 +10,6 @@ interface Props {
 }
 const { locale } = Astro.props;
 const applications = pagePath(locale, "applications");
-// Lucide only where packages/ui has no asset (train, building).
-const sectors = [
-  { id: "events", icon: "icons/people-group" },
-  { id: "transport", lucide: TrainFront },
-  { id: "spaces", lucide: Building2 },
-] as const;
 ---
 
 <section id="home-sectors" class="sectors" aria-label={t(locale, "nav.applications")}>

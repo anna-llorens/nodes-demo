@@ -1,0 +1,120 @@
+---
+import Svg from "@nodes/ui/Svg.astro";
+import { sectors } from "../../config/sectors";
+import { t, type Locale } from "../../i18n";
+
+/**
+ * One card per sector: illustration panel (the sector icon when there is no illustration), icon,
+ * title, text and three examples. Each card's id is the anchor the home tiles link to.
+ */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const items = ["item1", "item2", "item3"] as const;
+---
+
+<section class="section" aria-label={t(locale, "nav.applications")}>
+  <ul class="container cards">
+    {
+      sectors.map((sector) => (
+        <li id={sector.id} class="card">
+          <article aria-labelledby={`${sector.id}-title`}>
+            <span class:list={["panel", { "panel-icon": !("illustration" in sector) }]}>
+              {"illustration" in sector ? (
+                <Svg name={sector.illustration} />
+              ) : (
+                <sector.lucide aria-hidden="true" stroke-width={1.5} />
+              )}
+            </span>
+            <div class="body">
+              <span class="icon">
+                {"icon" in sector ? <Svg name={sector.icon} /> : <sector.lucide aria-hidden="true" />}
+              </span>
+              <h2 id={`${sector.id}-title`}>{t(locale, `applications.${sector.id}.title`)}</h2>
+              <p>{t(locale, `applications.${sector.id}.text`)}</p>
+              <ul class="examples">
+                {items.map((item) => (
+                  <li>{t(locale, `applications.${sector.id}.${item}`)}</li>
+                ))}
+              </ul>
+            </div>
+          </article>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .cards {
+    list-style: none;
+    margin-block: 0;
+    display: grid;
+    gap: var(--space-6);
+  }
+  .card {
+    /* Clear the sticky header when reached through a home tile anchor. */
+    scroll-margin-top: calc(72px + var(--space-6));
+  }
+  article {
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+  }
+  .panel {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 9;
+    padding: var(--space-6);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
+  .panel :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+  .panel-icon :global(svg) {
+    width: 72px;
+    height: 72px;
+  }
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+  }
+  .icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
+  .icon :global(svg) {
+    width: 55%;
+    height: 55%;
+  }
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+  p {
+    margin: 0;
+  }
+  .examples {
+    margin: 0;
+    padding-left: var(--space-5);
+    color: var(--color-text-body);
+  }
+
+  @media (min-width: 1024px) {
+    .cards {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>
