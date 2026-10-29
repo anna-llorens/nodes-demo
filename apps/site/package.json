@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
-    "typecheck": "astro check",
+    "preview": "astro build && wrangler dev",
+    "deploy": "astro build && wrangler deploy",
+    "typecheck": "astro check && wrangler types worker/worker-configuration.d.ts > /dev/null && tsc -p worker",
     "test": "vitest run"
   },
   "dependencies": {
@@ -19,6 +20,7 @@
     "@astrojs/check": "0.9.12",
     "@emnapi/runtime": "1.11.3",
     "typescript": "^5.8.3",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.10",
+    "wrangler": "^4.155.0"
   }
 }

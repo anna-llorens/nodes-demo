@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.json",
+  "include": ["./**/*.ts", "../src/i18n/pick-locale.ts"],
+  "compilerOptions": {
+    "noEmit": true,
+    "lib": ["ES2024"],
+    "types": ["./worker-configuration.d.ts"]
+  }
+}

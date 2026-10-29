@@ -1,6 +1,6 @@
 /**
- * Contact form logic, shared by the Contact page script and the tests. Browser-safe: no
- * Astro or DOM APIs. Returns codes, never user-facing text.
+ * Contact form logic, shared by the Contact page script, the site Worker (POST /api/contact) and
+ * the tests. Browser- and Worker-safe: no Astro or DOM APIs. Returns codes, never user-facing text.
  */
 import type { Locale } from "../i18n";
 
@@ -66,7 +66,37 @@ export function toPayload(fields: ContactFields, locale: Locale): ContactPayload
   };
 }
 
-/** Posts the payload as JSON to the configured endpoint (PUBLIC_CONTACT_ENDPOINT). */
+/** Longest accepted value of any text field, checked on the server. */
+export const CONTACT_MAX_LENGTH = 2000;
+
+/**
+ * Server check of a posted body (ADR 0010). `spam` when the honeypot `website` is filled (answer
+ * OK, save nothing); `invalid` for a missing required field, a bad email, an unknown interest or
+ * locale, or a value over CONTACT_MAX_LENGTH. Otherwise the trimmed payload.
+ */
+export function parseContactRequest(
+  body: unknown,
+): { ok: true; payload: ContactPayload } | { ok: false; reason: "invalid" | "spam" } {
+  if (typeof body !== "object" || body === null) return { ok: false, reason: "invalid" };
+  const value = (key: string) => {
+    const field = (body as Record<string, unknown>)[key];
+    return typeof field === "string" ? field : undefined;
+  };
+  if (value("website")) return { ok: false, reason: "spam" };
+  const fields = ["name", "email", "organization", "interest", "message", "locale"] as const;
+  const raw = Object.fromEntries(fields.map((key) => [key, value(key) ?? ""])) as Record<(typeof fields)[number], string>;
+  const locale = raw.locale;
+  if (
+    fields.some((key) => raw[key].length > CONTACT_MAX_LENGTH) ||
+    !isContactInterest(raw.interest) ||
+    (locale !== "es" && locale !== "en") ||
+    validateContact({ ...raw, consent: true }).length > 0
+  )
+    return { ok: false, reason: "invalid" };
+  return { ok: true, payload: toPayload({ ...raw, consent: true }, locale) };
+}
+
+/** Posts the payload as JSON to the configured endpoint (PUBLIC_CONTACT_ENDPOINT, `/api/contact`). */
 export async function submitContact(
   payload: ContactPayload,
   { endpoint, fetch: fetchFn = fetch }: { endpoint: string | undefined; fetch?: typeof fetch },
@@ -75,7 +105,7 @@ export async function submitContact(
   try {
     const response = await fetchFn(endpoint, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
       body: JSON.stringify(payload),
     });
     return response.ok ? { ok: true } : { ok: false, reason: "http" };

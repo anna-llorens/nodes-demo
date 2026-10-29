@@ -1,5 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
-import { interestFromQuery, submitContact, toPayload, validateContact, type ContactFields } from "./contact";
+import {
+  interestFromQuery,
+  parseContactRequest,
+  submitContact,
+  toPayload,
+  validateContact,
+  type ContactFields,
+} from "./contact";
 
 const valid: ContactFields = {
   name: " Ana ",
@@ -56,6 +63,27 @@ describe("interestFromQuery", () => {
   });
 });
 
+describe("parseContactRequest", () => {
+  const body = { name: " Ana ", email: "ana@example.org", organization: "", interest: "pilot", message: "Hola", locale: "es" };
+  it("returns the trimmed payload for a valid body", () => {
+    expect(parseContactRequest(body)).toEqual({ ok: true, payload: { ...body, name: "Ana" } });
+  });
+  it("rejects missing fields, bad emails, unknown codes and long values", () => {
+    for (const bad of [
+      null,
+      { ...body, name: "" },
+      { ...body, email: "ana@" },
+      { ...body, interest: "funding" },
+      { ...body, locale: "fr" },
+      { ...body, message: "x".repeat(2001) },
+    ])
+      expect(parseContactRequest(bad)).toEqual({ ok: false, reason: "invalid" });
+  });
+  it("flags a filled honeypot as spam", () => {
+    expect(parseContactRequest({ ...body, website: "https://spam.example" })).toEqual({ ok: false, reason: "spam" });
+  });
+});
+
 describe("submitContact", () => {
   it("fails without calling fetch when no endpoint is configured", async () => {
     const fetch = vi.fn();
@@ -67,7 +95,7 @@ describe("submitContact", () => {
     expect(await submitContact(payload, { endpoint: "https://api.example/contact", fetch })).toEqual({ ok: true });
     expect(fetch).toHaveBeenCalledWith("https://api.example/contact", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
       body: JSON.stringify(payload),
     });
   });

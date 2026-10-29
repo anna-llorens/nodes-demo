@@ -1,0 +1,24 @@
+// Cloudflare Worker for the public site: static assets from ./dist plus a small script for the
+// root language redirect (and, later, the contact endpoint). Astro stays fully static.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "nodes-site",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    // Only these paths reach the script first; everything else is served as a static file.
+    "run_worker_first": ["/", "/api/*"]
+  },
+  // Contact form messages. Schema in worker/migrations (wrangler d1 migrations apply).
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "nodes-contact",
+      "database_id": "d327db8d-30da-4c2d-8796-fd2a0cad79cf",
+      "migrations_dir": "worker/migrations"
+    }
+  ]
+}

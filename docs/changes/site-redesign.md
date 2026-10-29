@@ -102,6 +102,19 @@ Validation: site typecheck and build pass (no article page is built while the on
 
 Validation: site typecheck, tests (37) and build pass.
 
+## Contact email delivery
+
+> Superseded: messages are now saved in D1 by the site Worker (ADR 0010, see
+> [site-deploy.md](site-deploy.md)).
+
+- `PUBLIC_CONTACT_ENDPOINT` is a Formspree form that emails each message to the project inbox
+  (ADR [0009](../decisions/0009-contact-form-email-service.md)). `submitContact` now sends
+  `Accept: application/json`; [.env.example](../../apps/site/.env.example) documents the URL.
+- Needs the Formspree form to be created and its URL set in `apps/site/.env.local` (and the host's
+  build settings). The privacy text must name Formspree before going public.
+
+Validation: site typecheck, tests and build pass; a real submission is not yet verified.
+
 ## Remaining
 
 - Old `collab.form.*` keys no longer used (title, lead, type, typePlaceholder, errorText) can be

@@ -15,6 +15,8 @@ minimumReleaseAgeExclude:
 overrides:
   rolldown: 1.2.1
 
-# Packages allowed to run install scripts (esbuild downloads its platform binary).
+# Packages allowed to run install scripts (esbuild and workerd check their platform binary;
+# workerd is the local Workers runtime used by `wrangler dev`).
 onlyBuiltDependencies:
   - esbuild
+  - workerd
