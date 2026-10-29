@@ -33,7 +33,7 @@ Collected while doing Step 1 (monorepo and domain extraction). Not in scope ther
       uses no Astro image optimisation, revisit if it does.
 - [ ] **Final legal texts are required before publishing the site** (blocking). The legal pages
       (aviso legal, privacidad, cookies) were removed until the team writes and reviews them.
-      To restore: add `apps/site/src/content/legal/{es,en}/{aviso-legal,privacidad,cookies}.md`
+      To restore: add `apps/site/src/content/legal/{es,en}/{legal-notice,privacy,cookies}.md`
       (with `draft:`), recreate the three routes under `src/pages/[locale]/legal/` with
       `LegalPage.astro` (kept), and uncomment the links left in `Footer.astro` and in the
       Colabora form (`sections/collaborate/Contact.astro`: consent checkbox and first-layer

@@ -4,6 +4,7 @@ This directory is organized by the kind of reference:
 
 | Directory or file | Purpose |
 |---|---|
+| [`TODO.md`](./TODO.md) | Prioritized follow-up checklist with references to plans, decisions and change records. |
 | [`design/`](./design/README.md) | Approved mockups and rules for using design assets. |
 | [`decisions/`](./decisions/) | Accepted architecture and product decisions (ADRs). |
 | [`plans/`](./plans/) | Implementation plans; follow the active plan for scope. |

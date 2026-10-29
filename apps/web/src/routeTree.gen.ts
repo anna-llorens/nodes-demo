@@ -14,17 +14,11 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as HomeRouteImport } from './routes/home'
-import { Route as InformesRouteImport } from './routes/informes'
-import { Route as InicioRouteImport } from './routes/inicio'
 import { Route as MapRouteImport } from './routes/map'
-import { Route as MapaRouteImport } from './routes/mapa'
-import { Route as MasRouteImport } from './routes/mas'
 import { Route as ReportsRouteImport } from './routes/reports'
-import { Route as ZonasRouteImport } from './routes/zonas'
 import { Route as ZonesRouteImport } from './routes/zones'
 import { Route as DemoMapRouteImport } from './routes/demo.map'
 import { Route as NodeIdRouteImport } from './routes/node.$id'
-import { Route as NodoIdRouteImport } from './routes/nodo.$id'
 import { Route as LocaleDemoMapRouteImport } from './routes/$locale.demo.map'
 
 const IndexRoute = IndexRouteImport.update({
@@ -52,39 +46,14 @@ const HomeRoute = HomeRouteImport.update({
   path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InformesRoute = InformesRouteImport.update({
-  id: '/informes',
-  path: '/informes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InicioRoute = InicioRouteImport.update({
-  id: '/inicio',
-  path: '/inicio',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const MapRoute = MapRouteImport.update({
   id: '/map',
   path: '/map',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MapaRoute = MapaRouteImport.update({
-  id: '/mapa',
-  path: '/mapa',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MasRoute = MasRouteImport.update({
-  id: '/mas',
-  path: '/mas',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ReportsRoute = ReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ZonasRoute = ZonasRouteImport.update({
-  id: '/zonas',
-  path: '/zonas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ZonesRoute = ZonesRouteImport.update({
@@ -102,11 +71,6 @@ const NodeIdRoute = NodeIdRouteImport.update({
   path: '/node/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NodoIdRoute = NodoIdRouteImport.update({
-  id: '/nodo/$id',
-  path: '/nodo/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LocaleDemoMapRoute = LocaleDemoMapRouteImport.update({
   id: '/$locale/demo/map',
   path: '/$locale/demo/map',
@@ -119,17 +83,11 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/alerts': typeof AlertsRoute
   '/home': typeof HomeRoute
-  '/informes': typeof InformesRoute
-  '/inicio': typeof InicioRoute
   '/map': typeof MapRoute
-  '/mapa': typeof MapaRoute
-  '/mas': typeof MasRoute
   '/reports': typeof ReportsRoute
-  '/zonas': typeof ZonasRoute
   '/zones': typeof ZonesRoute
   '/demo/map': typeof DemoMapRoute
   '/node/$id': typeof NodeIdRoute
-  '/nodo/$id': typeof NodoIdRoute
   '/$locale/demo/map': typeof LocaleDemoMapRoute
 }
 export interface FileRoutesByTo {
@@ -138,17 +96,11 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/alerts': typeof AlertsRoute
   '/home': typeof HomeRoute
-  '/informes': typeof InformesRoute
-  '/inicio': typeof InicioRoute
   '/map': typeof MapRoute
-  '/mapa': typeof MapaRoute
-  '/mas': typeof MasRoute
   '/reports': typeof ReportsRoute
-  '/zonas': typeof ZonasRoute
   '/zones': typeof ZonesRoute
   '/demo/map': typeof DemoMapRoute
   '/node/$id': typeof NodeIdRoute
-  '/nodo/$id': typeof NodoIdRoute
   '/$locale/demo/map': typeof LocaleDemoMapRoute
 }
 export interface FileRoutesById {
@@ -158,17 +110,11 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/alerts': typeof AlertsRoute
   '/home': typeof HomeRoute
-  '/informes': typeof InformesRoute
-  '/inicio': typeof InicioRoute
   '/map': typeof MapRoute
-  '/mapa': typeof MapaRoute
-  '/mas': typeof MasRoute
   '/reports': typeof ReportsRoute
-  '/zonas': typeof ZonasRoute
   '/zones': typeof ZonesRoute
   '/demo/map': typeof DemoMapRoute
   '/node/$id': typeof NodeIdRoute
-  '/nodo/$id': typeof NodoIdRoute
   '/$locale/demo/map': typeof LocaleDemoMapRoute
 }
 export interface FileRouteTypes {
@@ -179,17 +125,11 @@ export interface FileRouteTypes {
     | '/admin'
     | '/alerts'
     | '/home'
-    | '/informes'
-    | '/inicio'
     | '/map'
-    | '/mapa'
-    | '/mas'
     | '/reports'
-    | '/zonas'
     | '/zones'
     | '/demo/map'
     | '/node/$id'
-    | '/nodo/$id'
     | '/$locale/demo/map'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -198,17 +138,11 @@ export interface FileRouteTypes {
     | '/admin'
     | '/alerts'
     | '/home'
-    | '/informes'
-    | '/inicio'
     | '/map'
-    | '/mapa'
-    | '/mas'
     | '/reports'
-    | '/zonas'
     | '/zones'
     | '/demo/map'
     | '/node/$id'
-    | '/nodo/$id'
     | '/$locale/demo/map'
   id:
     | '__root__'
@@ -217,17 +151,11 @@ export interface FileRouteTypes {
     | '/admin'
     | '/alerts'
     | '/home'
-    | '/informes'
-    | '/inicio'
     | '/map'
-    | '/mapa'
-    | '/mas'
     | '/reports'
-    | '/zonas'
     | '/zones'
     | '/demo/map'
     | '/node/$id'
-    | '/nodo/$id'
     | '/$locale/demo/map'
   fileRoutesById: FileRoutesById
 }
@@ -237,17 +165,11 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AlertsRoute: typeof AlertsRoute
   HomeRoute: typeof HomeRoute
-  InformesRoute: typeof InformesRoute
-  InicioRoute: typeof InicioRoute
   MapRoute: typeof MapRoute
-  MapaRoute: typeof MapaRoute
-  MasRoute: typeof MasRoute
   ReportsRoute: typeof ReportsRoute
-  ZonasRoute: typeof ZonasRoute
   ZonesRoute: typeof ZonesRoute
   DemoMapRoute: typeof DemoMapRoute
   NodeIdRoute: typeof NodeIdRoute
-  NodoIdRoute: typeof NodoIdRoute
   LocaleDemoMapRoute: typeof LocaleDemoMapRoute
 }
 
@@ -288,20 +210,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/informes': {
-      id: '/informes'
-      path: '/informes'
-      fullPath: '/informes'
-      preLoaderRoute: typeof InformesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/inicio': {
-      id: '/inicio'
-      path: '/inicio'
-      fullPath: '/inicio'
-      preLoaderRoute: typeof InicioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/map': {
       id: '/map'
       path: '/map'
@@ -309,32 +217,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MapRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/mapa': {
-      id: '/mapa'
-      path: '/mapa'
-      fullPath: '/mapa'
-      preLoaderRoute: typeof MapaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mas': {
-      id: '/mas'
-      path: '/mas'
-      fullPath: '/mas'
-      preLoaderRoute: typeof MasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/reports': {
       id: '/reports'
       path: '/reports'
       fullPath: '/reports'
       preLoaderRoute: typeof ReportsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/zonas': {
-      id: '/zonas'
-      path: '/zonas'
-      fullPath: '/zonas'
-      preLoaderRoute: typeof ZonasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/zones': {
@@ -358,13 +245,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NodeIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/nodo/$id': {
-      id: '/nodo/$id'
-      path: '/nodo/$id'
-      fullPath: '/nodo/$id'
-      preLoaderRoute: typeof NodoIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/$locale/demo/map': {
       id: '/$locale/demo/map'
       path: '/$locale/demo/map'
@@ -381,17 +261,11 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AlertsRoute: AlertsRoute,
   HomeRoute: HomeRoute,
-  InformesRoute: InformesRoute,
-  InicioRoute: InicioRoute,
   MapRoute: MapRoute,
-  MapaRoute: MapaRoute,
-  MasRoute: MasRoute,
   ReportsRoute: ReportsRoute,
-  ZonasRoute: ZonasRoute,
   ZonesRoute: ZonesRoute,
   DemoMapRoute: DemoMapRoute,
   NodeIdRoute: NodeIdRoute,
-  NodoIdRoute: NodoIdRoute,
   LocaleDemoMapRoute: LocaleDemoMapRoute,
 }
 export const routeTree = rootRouteImport

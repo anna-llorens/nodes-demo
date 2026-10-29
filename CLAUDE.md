@@ -14,7 +14,8 @@ state: prototype with simulated data only. No real sensor is connected yet.
 - Never mix: no Spanish comments, no English text hardcoded in the UI.
 - Site languages (ADR 0004): every page exists at `/es/...` and `/en/...` (Valencian `/va/`
   later, only when translations exist), with `hreflang` for both and `x-default` → `/en/`.
-  Page slugs stay in Spanish in both locales. Only the root `/` chooses the language: a saved
+  Page slugs are English in both locales (ADR 0006); Spanish path aliases are not supported.
+  Only the root `/` chooses the language: a saved
   choice (cookie `nodes_lang`) first; then Spanish if the browser language is `es`, `ca`, `gl`
   or `eu`; then Spanish if the visit comes from Spain or a Spanish-speaking country (edge only,
   arrives with the deployment); English otherwise. Never redirect other pages.
@@ -105,7 +106,7 @@ Before finishing any task: `pnpm typecheck && pnpm lint && pnpm test && pnpm bui
   excludes the end point so durations do not overcount.
 - Runner heat samples and their density-linked weights come from `simulateRunnerHeat` in core;
   `apps/web/src/components/nodes/geo.ts` only projects them onto the route.
-- English routes are canonical; Spanish legacy URLs redirect to them, and `/` and `/home` share
+- Only English route names are supported; Spanish aliases and their redirects are removed (ADR 0006). `/` and `/home` share
   the demo entry screen (`DemoEntry`).
 - Map layer visibility is one shared state in the map route, exposed through Capas.
 - `DemoHeader` (logo to `PUBLIC_SITE_URL`, simulation badge, "Volver a la web", alerts bell inside

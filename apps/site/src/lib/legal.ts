@@ -5,8 +5,8 @@ import { pages } from "./routes";
 export const legalPages = ["legalNotice", "privacy", "cookies"] as const;
 export type LegalPage = (typeof legalPages)[number];
 
-/** File slug of a legal page: the last part of its path, e.g. "privacidad". */
+/** File slug of a legal page: the last part of its path, e.g. "privacy". */
 export const legalSlug = (page: LegalPage) => pages[page].path.replace("legal/", "");
 
-/** Content collection id of a legal page in a locale, e.g. "es/privacidad". */
+/** Content collection id of a legal page in a locale, e.g. "es/privacy". */
 export const legalEntryId = (locale: Locale, page: LegalPage) => `${locale}/${legalSlug(page)}`;

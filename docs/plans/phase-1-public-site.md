@@ -1,5 +1,10 @@
 # Phase 1 · Public website and demo entry
 
+**Routing update (2026-10-29):** [ADR 0006](../decisions/0006-english-route-names.md) supersedes
+the Spanish page slugs in this original specification. Use `technology`, `about`, `collaborate`,
+`contact`, `legal/legal-notice` and `legal/privacy` in both locales; legal content filenames use
+the same English slugs. Spanish route aliases and redirects are removed.
+
 **Status:** proposed
 **Owner:** Anna Llorens Roig
 **Executor:** Claude Code. Plan mode first; one milestone at a time; stop and report after each.

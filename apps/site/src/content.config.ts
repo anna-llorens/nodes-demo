@@ -4,7 +4,7 @@ import { z } from "astro/zod";
 
 /**
  * Legal texts, one Markdown file per page and locale: `content/legal/{locale}/{slug}.md`, with
- * the slug of the page path (aviso-legal, privacidad, cookies). Written by the team, not by code.
+ * the slug of the page path (legal-notice, privacy, cookies). Written by the team, not by code.
  */
 const legal = defineCollection({
   loader: glob({ pattern: "*/*.md", base: "./src/content/legal" }),

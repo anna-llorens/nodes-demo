@@ -2,6 +2,9 @@
 
 **Status:** accepted · 2026-10-28
 
+**Routing update:** [ADR 0006](0006-english-route-names.md) supersedes the Spanish-slug decision
+below. Current page slugs are English in both locales.
+
 ## Context
 
 NODES needs a public website (company, technology, team, collaboration) and keeps the existing
