@@ -29,6 +29,13 @@
       "when": 1792926628489,
       "tag": "0003_add_visitor_session_ids",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793265466100,
+      "tag": "0004_create_contact_messages",
+      "breakpoints": true
     }
   ]
 }
