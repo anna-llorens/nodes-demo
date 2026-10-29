@@ -2,7 +2,10 @@
 import Svg from "@nodes/ui/Svg.astro";
 import Eyebrow from "./Eyebrow.astro";
 
-/** Page hero: eyebrow pill, the page's h1 and lead; skyline on the right (below on mobile). */
+/**
+ * Page hero: eyebrow pill, the page's h1 and lead; skyline on the right (below on mobile).
+ * The `aside` slot replaces the skyline (e.g. the demo's simulation notice).
+ */
 interface Props {
   id: string;
   eyebrow: string;
@@ -19,7 +22,13 @@ const { id, eyebrow, title, lead } = Astro.props;
       <h1 id={id}>{title}</h1>
       <p class="lead">{lead}</p>
     </div>
-    <span class="art"><Svg name="illustrations/skyline-header" /></span>
+    {
+      Astro.slots.has("aside") ? (
+        <div class="aside"><slot name="aside" /></div>
+      ) : (
+        <span class="art"><Svg name="illustrations/skyline-header" /></span>
+      )
+    }
   </div>
 </section>
 
@@ -38,6 +47,9 @@ const { id, eyebrow, title, lead } = Astro.props;
     margin: 0;
     max-width: 48ch;
     font-size: 1.125rem;
+  }
+  .aside {
+    margin-top: var(--space-8);
   }
   .art {
     display: block;
@@ -62,8 +74,12 @@ const { id, eyebrow, title, lead } = Astro.props;
     .text {
       padding-bottom: var(--space-12);
     }
-    .art {
+    .art,
+    .aside {
       margin: 0;
+    }
+    .aside {
+      align-self: center;
     }
   }
 </style>

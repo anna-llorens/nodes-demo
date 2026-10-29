@@ -17,10 +17,16 @@ interface Props {
   page?: PageId | undefined;
   /** Keep the page out of search results (404, legal drafts). */
   noindex?: boolean;
+  /** Document title for pages outside the catalog (articles); "· NODES" is appended. */
+  title?: string | undefined;
 }
-const { locale, page, noindex = false } = Astro.props;
+const { locale, page, noindex = false, title: pageTitle } = Astro.props;
 
-const title = !page || page === "home" ? t(locale, "meta.title") : `${t(locale, pages[page].titleKey)} · NODES`;
+const title = pageTitle
+  ? `${pageTitle} · NODES`
+  : !page || page === "home"
+    ? t(locale, "meta.title")
+    : `${t(locale, pages[page].titleKey)} · NODES`;
 const description = t(locale, "meta.description");
 const alternates = page ? locales.map((item) => ({ locale: item, href: absoluteUrl(pagePath(item, page)) })) : [];
 const canonical = page ? absoluteUrl(pagePath(locale, page)) : undefined;

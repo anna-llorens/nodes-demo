@@ -1,28 +1,33 @@
 /**
- * Contact form logic, shared by the Colabora page script and the tests. Browser-safe: no
+ * Contact form logic, shared by the Contact page script and the tests. Browser-safe: no
  * Astro or DOM APIs. Returns codes, never user-facing text.
  */
 import type { Locale } from "../i18n";
 
-/** Contact form options; keys of `collab.types.*` in i18n. */
-export const contactTypes = ["events", "ideas", "research", "funding", "other"] as const;
-export type ContactType = (typeof contactTypes)[number];
+/** What the visitor is interested in; keys of `contact.interests.*` in i18n. */
+export const contactInterests = ["pilot", "research", "general"] as const;
+export type ContactInterest = (typeof contactInterests)[number];
+
+/** Chosen when the URL names no interest (or an unknown one), so one is always selected. */
+export const defaultInterest: ContactInterest = "general";
 
 export interface ContactFields {
   name: string;
   email: string;
-  type: string;
+  organization: string;
+  interest: string;
   message: string;
   consent: boolean;
 }
 
 export type ContactField = "name" | "email" | "message" | "consent";
 
-/** What `submitContact` sends, as JSON. `type` is empty when none was chosen. */
+/** What `submitContact` sends, as JSON. `organization` is empty when not given. */
 export interface ContactPayload {
   name: string;
   email: string;
-  type: ContactType | "";
+  organization: string;
+  interest: ContactInterest;
   message: string;
   locale: Locale;
 }
@@ -32,7 +37,12 @@ export type SubmitResult = { ok: true } | { ok: false; reason: "no_endpoint" | "
 // Deliberately loose: something@something.tld, no spaces. The server must validate again.
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export const isContactType = (value: string): value is ContactType => contactTypes.includes(value as ContactType);
+export const isContactInterest = (value: string | null): value is ContactInterest =>
+  contactInterests.includes(value as ContactInterest);
+
+/** Interest preselected from `?interest=`; the default when missing or unknown. */
+export const interestFromQuery = (value: string | null): ContactInterest =>
+  isContactInterest(value) ? value : defaultInterest;
 
 /** Fields that fail validation, in form order (the first one gets focus). */
 export function validateContact(fields: ContactFields): ContactField[] {
@@ -44,12 +54,13 @@ export function validateContact(fields: ContactFields): ContactField[] {
   return invalid;
 }
 
-/** Trimmed payload for valid fields; an unknown type is sent as "". */
+/** Trimmed payload for valid fields; an unknown interest is sent as the default. */
 export function toPayload(fields: ContactFields, locale: Locale): ContactPayload {
   return {
     name: fields.name.trim(),
     email: fields.email.trim(),
-    type: isContactType(fields.type) ? fields.type : "",
+    organization: fields.organization.trim(),
+    interest: interestFromQuery(fields.interest),
     message: fields.message.trim(),
     locale,
   };

@@ -1,0 +1,214 @@
+---
+import { getCollection, render } from "astro:content";
+import { ArrowLeft } from "@lucide/astro";
+import { isLocale, t } from "../../../i18n";
+import Base from "../../../layouts/Base.astro";
+import { pagePath } from "../../../lib/routes";
+
+/**
+ * Research article. The build only includes published articles; `pnpm dev` also serves drafts,
+ * with the draft note and noindex, so they can be reviewed.
+ */
+export async function getStaticPaths() {
+  const entries = await getCollection("research", (entry) => import.meta.env.DEV || !entry.data.draft);
+  return entries.map((entry) => ({
+    params: { locale: entry.id.split("/")[0], slug: entry.data.slug },
+    props: { entry },
+  }));
+}
+
+const { locale } = Astro.params;
+if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+const { title, subtitle, date, type, tags, draft } = entry.data;
+const toc = headings.filter((heading) => heading.depth === 2);
+const published = date ? new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(new Date(date)) : undefined;
+---
+
+<Base locale={locale} title={title} noindex={draft}>
+  <section class="section article-page">
+    <!-- Page header: back link, title and subtitle; the future cover image goes here. -->
+    <header class="container header">
+      <a class="back" href={pagePath(locale, "research")}>
+        <ArrowLeft aria-hidden="true" size={18} />
+        {t(locale, "article.back")}
+      </a>
+      {draft && <p class="draft" role="note">{t(locale, "article.draftNote")}</p>}
+      <h1>{title}</h1>
+      <p class="subtitle">{subtitle}</p>
+    </header>
+
+    <!-- Body and side column start at the same height. -->
+    <div class="container layout">
+      <article class="prose"><Content /></article>
+
+      <aside>
+        {
+          toc.length > 0 && (
+            <nav aria-labelledby="article-toc-title">
+              <h2 id="article-toc-title">{t(locale, "article.toc.title")}</h2>
+              <ol>
+                {toc.map((heading) => (
+                  <li>
+                    <a href={`#${heading.slug}`}>{heading.text}</a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          )
+        }
+        <dl>
+          {
+            published && (
+              <div>
+                <dt>{t(locale, "article.details.publicationDate")}</dt>
+                <dd>{published}</dd>
+              </div>
+            )
+          }
+          <div>
+            <dt>{t(locale, "article.details.contentType")}</dt>
+            <dd>{type}</dd>
+          </div>
+          {
+            tags.length > 0 && (
+              <div>
+                <dt>{t(locale, "article.details.topics")}</dt>
+                <dd>
+                  <ul class="tags">
+                    {tags.map((tag) => (
+                      <li>{tag}</li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            )
+          }
+        </dl>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .article-page {
+    padding-block: var(--space-8) var(--space-12);
+  }
+  .header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    margin-bottom: var(--space-12);
+    padding-bottom: var(--space-8);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .layout {
+    display: grid;
+    gap: var(--space-12);
+  }
+  article {
+    max-width: 70ch;
+  }
+  .back {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: var(--space-2);
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .draft {
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-error);
+    border-radius: var(--radius-button);
+    background: var(--color-surface);
+    color: var(--color-error);
+    font-weight: 600;
+  }
+  h1,
+  .subtitle {
+    margin: 0;
+  }
+  .subtitle {
+    max-width: 60ch;
+    font-size: 1.125rem;
+  }
+  .prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+  .prose :global(h2) {
+    margin: var(--space-8) 0 var(--space-3);
+    font-size: 1.375rem;
+    font-weight: 700;
+    scroll-margin-top: calc(72px + var(--space-6));
+  }
+  .prose :global(p),
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin: 0 0 var(--space-4);
+  }
+  aside {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    font-size: var(--text-small);
+  }
+  aside h2 {
+    margin: 0 0 var(--space-3);
+    font-size: 1rem;
+  }
+  ol,
+  .tags {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  ol li + li {
+    margin-top: var(--space-2);
+  }
+  aside a {
+    color: var(--color-text-body);
+  }
+  dl {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin: 0;
+    padding: var(--space-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+  }
+  dt {
+    color: var(--color-text-muted);
+  }
+  dd {
+    margin: 0;
+    color: var(--color-text);
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+  }
+  .tags li {
+    padding-inline: var(--space-2);
+    border-radius: var(--radius-pill);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
+
+  @media (min-width: 1024px) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr) 280px;
+    }
+    aside {
+      position: sticky;
+      top: calc(72px + var(--space-6));
+      align-self: start;
+    }
+  }
+</style>

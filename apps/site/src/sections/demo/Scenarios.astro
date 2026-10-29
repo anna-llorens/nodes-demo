@@ -1,0 +1,92 @@
+---
+import Svg from "@nodes/ui/Svg.astro";
+import Button from "../../components/Button.astro";
+import { t, type Locale } from "../../i18n";
+import { demoScenarioUrl, type DemoScenario } from "../../lib/demo";
+import { env } from "../../lib/env";
+
+/** One card per demo scenario; the button opens it in the demo app when PUBLIC_DEMO_URL is set. */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const scenarios = (
+  [
+    ["maraton", "events", "illustrations/scene-half-marathon"],
+    ["mascleta", "mascleta", "illustrations/scene-mascleta"],
+  ] as const satisfies readonly (readonly [DemoScenario, string, string])[]
+).map(([scenario, key, illustration]) => ({
+  id: scenario,
+  illustration,
+  title: t(locale, `demo.${key}.title`),
+  text: t(locale, `demo.${key}.text`),
+  href: demoScenarioUrl(env.demoUrl, scenario, locale),
+}));
+---
+
+<section class="section" aria-label={t(locale, "nav.demo")}>
+  <ul class="container cards">
+    {
+      scenarios.map((scenario) => (
+        <li>
+          <article aria-labelledby={`scenario-${scenario.id}`}>
+            <span class="panel"><Svg name={scenario.illustration} /></span>
+            <div class="body">
+              <h2 id={`scenario-${scenario.id}`}>{scenario.title}</h2>
+              <p>{scenario.text}</p>
+              {scenario.href && <Button href={scenario.href} arrow>{t(locale, "demo.scenario.cta")}</Button>}
+            </div>
+          </article>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .cards {
+    list-style: none;
+    margin-block: 0;
+    display: grid;
+    gap: var(--space-6);
+  }
+  article {
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+  }
+  .panel {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 8;
+    padding: var(--space-6);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
+  .panel :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+  .body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-5);
+  }
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+  p {
+    margin: 0 0 var(--space-2);
+  }
+
+  @media (min-width: 768px) {
+    .cards {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

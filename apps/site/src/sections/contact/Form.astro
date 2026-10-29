@@ -1,43 +1,66 @@
 ---
 import Svg from "@nodes/ui/Svg.astro";
 import { ArrowRight } from "@lucide/astro";
-import SectionHeading from "../../components/SectionHeading.astro";
 import Checkbox from "../../components/form/Checkbox.astro";
 import Field from "../../components/form/Field.astro";
 import { t, type Locale } from "../../i18n";
 import { withLink } from "../../i18n/with-link";
+import { contactInterests, defaultInterest } from "../../lib/contact";
 import { contactEndpoint, env } from "../../lib/env";
 import { pagePath } from "../../lib/routes";
 
 /**
- * The contact form (left) and the "contact directly" card (right; below on mobile). States:
- * idle, field error, sending, sent, send error; switched by the script at the end.
+ * The contact form (left) and the "write to us" card (right; below on mobile). The form starts
+ * with three interest cards (radios; one is always selected, from `?interest=` or the default).
+ * States: idle, field error, sending, sent, send error; switched by the script at the end.
  */
 interface Props {
   locale: Locale;
 }
 const { locale } = Astro.props;
 const endpoint = contactEndpoint();
-const privacyLink = t(locale, "collab.form.consentLink");
-const consent = withLink(t(locale, "collab.form.consent"));
+const privacyLink = t(locale, "contact.form.consentLink");
+const consent = withLink(t(locale, "contact.form.consent"));
 const privacyInfo = withLink(t(locale, "collab.form.privacyInfo"));
-const errorText = withLink(t(locale, "collab.form.errorText"), "email");
 const required = t(locale, "collab.form.required");
 const emailParts = env.contactEmail?.split("@");
+const interests = (
+  [
+    ["pilot", "icons/handshake"],
+    ["research", "icons/graduation-cap"],
+    ["general", "icons/lightbulb"],
+  ] as const satisfies readonly (readonly [(typeof contactInterests)[number], string])[]
+).map(([id, icon]) => ({
+  id,
+  icon,
+  title: t(locale, `contact.interests.${id}.title`),
+  text: t(locale, `contact.interests.${id}.text`),
+}));
 ---
 
-<section class="section" aria-labelledby="collab-form-title">
+<section class="section contact" aria-labelledby="contact-hero-title">
   <div class="container layout">
     <div class="form-column">
-      <SectionHeading id="collab-form-title" title={t(locale, "collab.form.title")} lead={t(locale, "collab.form.lead")} />
-
       <form id="contact-form" class="form" novalidate data-endpoint={endpoint} data-locale={locale}>
+        <fieldset class="interests">
+          <legend>{t(locale, "contact.form.interest")}</legend>
+          {
+            interests.map((interest) => (
+              <label class="interest">
+                <input type="radio" name="interest" value={interest.id} checked={interest.id === defaultInterest} />
+                <span class="interest-icon"><Svg name={interest.icon} /></span>
+                <span class="interest-title">{interest.title}</span>
+                <span class="interest-text">{interest.text}</span>
+              </label>
+            ))
+          }
+        </fieldset>
         <div class="row">
           <Field
             id="contact-name"
             name="name"
-            label={t(locale, "collab.form.name")}
-            placeholder={t(locale, "collab.form.namePlaceholder")}
+            label={t(locale, "contact.form.name")}
+            placeholder={t(locale, "contact.form.namePlaceholder")}
             autocomplete="name"
             requiredLabel={required}
             error={t(locale, "collab.form.errors.name")}
@@ -46,19 +69,27 @@ const emailParts = env.contactEmail?.split("@");
             id="contact-email"
             name="email"
             type="email"
-            label={t(locale, "collab.form.email")}
-            placeholder={t(locale, "collab.form.emailPlaceholder")}
+            label={t(locale, "contact.form.email")}
+            placeholder={t(locale, "contact.form.emailPlaceholder")}
             autocomplete="email"
             requiredLabel={required}
             error={t(locale, "collab.form.errors.email")}
           />
         </div>
         <Field
+          id="contact-organization"
+          name="organization"
+          label={t(locale, "contact.form.organization")}
+          placeholder={t(locale, "contact.form.organizationPlaceholder")}
+          autocomplete="organization"
+          error=""
+        />
+        <Field
           id="contact-message"
           name="message"
           multiline
-          label={t(locale, "collab.form.message")}
-          placeholder={t(locale, "collab.form.messagePlaceholder")}
+          label={t(locale, "contact.form.message")}
+          placeholder={t(locale, "contact.form.messagePlaceholder")}
           requiredLabel={required}
           error={t(locale, "collab.form.errors.message")}
         />
@@ -72,38 +103,33 @@ const emailParts = env.contactEmail?.split("@");
           </Checkbox>
           <button class="button button-primary submit" type="submit">
             <span class="spinner" aria-hidden="true" hidden></span>
-            <span data-label="idle">{t(locale, "collab.form.submit")}</span>
+            <span data-label="idle">{t(locale, "contact.form.submit")}</span>
             <span data-label="sending" hidden>{t(locale, "collab.form.sending")}</span>
             <ArrowRight class="submit-arrow" aria-hidden="true" size={18} />
           </button>
         </div>
-    
+        <p class="privacy-info">
+          {privacyInfo.before}<a href={pagePath(locale, "privacy")}>{privacyLink}</a>{privacyInfo.after}
+        </p>
+
         <div class="send-error" data-send-error role="alert" hidden>
-          <p class="state-title">{t(locale, "collab.form.errorTitle")}</p>
+          <p class="state-title">{t(locale, "contact.form.errorTitle")}</p>
           <p>
-            {
-              env.contactEmail ? (
-                <>
-                  {errorText.before}
-                  <a href={`mailto:${env.contactEmail}`}>{env.contactEmail}</a>
-                  {errorText.after}
-                </>
-              ) : null
-            }
+            {t(locale, "contact.form.errorText")}
+            {env.contactEmail && <a href={`mailto:${env.contactEmail}`}>{env.contactEmail}</a>}
           </p>
         </div>
         <p class="visually-hidden" data-live aria-live="polite"></p>
       </form>
 
       <div class="sent" data-sent tabindex="-1" role="status" hidden>
-        <p class="state-title">{t(locale, "collab.form.successTitle")}</p>
-        <p>{t(locale, "collab.form.successText")}</p>
+        <p class="state-title">{t(locale, "contact.form.successTitle")}</p>
+        <p>{t(locale, "contact.form.successText")}</p>
       </div>
     </div>
 
     <aside class="direct" aria-labelledby="contact-direct-title">
       <h2 id="contact-direct-title">{t(locale, "contact.direct.title")}</h2>
-      <p>{t(locale, "contact.direct.text")}</p>
       <ul class="channels">
         {
           env.contactEmail && (
@@ -119,12 +145,17 @@ const emailParts = env.contactEmail?.split("@");
           )
         }
       </ul>
+      <p>{t(locale, "contact.direct.text")}</p>
+      <div class="status">
+        <p class="status-title">{t(locale, "contact.status.title")}</p>
+        <p>{t(locale, "contact.status.text")}</p>
+      </div>
     </aside>
   </div>
 </section>
 
 <script>
-  import { submitContact, toPayload, validateContact, type ContactField } from "../../lib/contact";
+  import { interestFromQuery, submitContact, toPayload, validateContact, type ContactField } from "../../lib/contact";
 
   const form = document.querySelector<HTMLFormElement>("#contact-form");
   const sent = document.querySelector<HTMLElement>("[data-sent]");
@@ -137,6 +168,10 @@ const emailParts = env.contactEmail?.split("@");
     const fields: ContactField[] = ["name", "email", "message", "consent"];
     // Not importing isLocale here keeps the i18n dictionaries out of the client bundle.
     const locale = form.dataset["locale"] === "en" ? "en" : "es";
+
+    // Preselect the interest named in the URL (e.g. the Applications pilot band).
+    const preselected = interestFromQuery(new URLSearchParams(location.search).get("interest"));
+    form.querySelector<HTMLInputElement>(`[name="interest"][value="${preselected}"]`)!.checked = true;
 
     const setError = (field: ContactField, invalid: boolean) => {
       control(field).setAttribute("aria-invalid", String(invalid));
@@ -169,7 +204,8 @@ const emailParts = env.contactEmail?.split("@");
       const values = {
         name: control<HTMLInputElement>("name").value,
         email: control<HTMLInputElement>("email").value,
-        type: "",
+        organization: control<HTMLInputElement>("organization").value,
+        interest: form.querySelector<HTMLInputElement>('[name="interest"]:checked')?.value ?? "",
         message: control<HTMLTextAreaElement>("message").value,
         consent: control<HTMLInputElement>("consent").checked,
       };
@@ -194,6 +230,10 @@ const emailParts = env.contactEmail?.split("@");
 </script>
 
 <style>
+  /* Sits right under the page hero. */
+  .contact {
+    padding-top: var(--space-8);
+  }
   .layout {
     display: grid;
     gap: var(--space-12);
@@ -206,6 +246,60 @@ const emailParts = env.contactEmail?.split("@");
   .form {
     display: grid;
     gap: var(--space-5);
+  }
+  .interests {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  legend {
+    margin-bottom: var(--space-3);
+    padding: 0;
+    color: var(--color-text);
+    font-weight: 600;
+  }
+  .interest {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-1) var(--space-3);
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+    cursor: pointer;
+  }
+  .interest:has(:checked) {
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
+  }
+  .interest:has(:focus-visible) {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+  .interest input {
+    position: absolute;
+    opacity: 0;
+  }
+  .interest-icon {
+    grid-row: span 2;
+    width: 32px;
+    height: 32px;
+    color: var(--color-primary);
+  }
+  .interest-icon :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+  .interest-title {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+  .interest-text {
+    color: var(--color-text-muted);
+    font-size: var(--text-small);
   }
   .form[hidden] {
     display: none;
@@ -332,6 +426,16 @@ const emailParts = env.contactEmail?.split("@");
   }
   .channels a {
     overflow-wrap: break-word;
+    font-weight: 600;
+  }
+  .status {
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-primary-line);
+    font-size: var(--text-small);
+  }
+  .status-title {
+    color: var(--color-text);
+    font-weight: 600;
   }
 
   @media (min-width: 640px) {
@@ -344,6 +448,20 @@ const emailParts = env.contactEmail?.split("@");
     }
     .submit {
       width: auto;
+    }
+  }
+  @media (min-width: 768px) {
+    .interests {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .interests legend {
+      grid-column: 1 / -1;
+    }
+    .interest {
+      grid-template-columns: 1fr;
+    }
+    .interest-icon {
+      grid-row: auto;
     }
   }
   @media (min-width: 1024px) {

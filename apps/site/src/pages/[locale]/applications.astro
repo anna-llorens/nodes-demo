@@ -1,10 +1,11 @@
 ---
+import CtaBand from "../../components/CtaBand.astro";
 import PageHero from "../../components/PageHero.astro";
 import { isLocale, t } from "../../i18n";
 import Base from "../../layouts/Base.astro";
+import { pagePath } from "../../lib/routes";
 import { localePaths } from "../../lib/static-paths";
 import Cards from "../../sections/applications/Cards.astro";
-import PilotCta from "../../sections/applications/PilotCta.astro";
 
 export const getStaticPaths = localePaths;
 
@@ -20,5 +21,12 @@ if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
     lead={t(locale, "applications.hero.lead")}
   />
   <Cards locale={locale} />
-  <PilotCta locale={locale} />
+  <CtaBand
+    id="pilot-title"
+    icon="icons/lightbulb"
+    title={t(locale, "applications.cta.title")}
+    text={t(locale, "applications.cta.text")}
+    href={`${pagePath(locale, "contact")}?interest=pilot`}
+    label={t(locale, "applications.cta.button")}
+  />
 </Base>

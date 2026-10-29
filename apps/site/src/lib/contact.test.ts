@@ -1,16 +1,23 @@
 import { describe, expect, it, vi } from "vitest";
-import { submitContact, toPayload, validateContact, type ContactFields } from "./contact";
+import { interestFromQuery, submitContact, toPayload, validateContact, type ContactFields } from "./contact";
 
-const valid: ContactFields = { name: " Ana ", email: " ana@example.org ", type: "research", message: " Hola ", consent: true };
+const valid: ContactFields = {
+  name: " Ana ",
+  email: " ana@example.org ",
+  organization: " UPV ",
+  interest: "research",
+  message: " Hola ",
+  consent: true,
+};
 const payload = toPayload(valid, "es");
 
 describe("validateContact", () => {
-  it("accepts a complete form, with or without a type", () => {
+  it("accepts a complete form, with or without an organization", () => {
     expect(validateContact(valid)).toEqual([]);
-    expect(validateContact({ ...valid, type: "" })).toEqual([]);
+    expect(validateContact({ ...valid, organization: "" })).toEqual([]);
   });
   it("lists every invalid field in form order", () => {
-    expect(validateContact({ name: " ", email: "ana@", type: "", message: "", consent: false })).toEqual([
+    expect(validateContact({ ...valid, name: " ", email: "ana@", message: "", consent: false })).toEqual([
       "name",
       "email",
       "message",
@@ -25,13 +32,27 @@ describe("validateContact", () => {
 
 describe("toPayload", () => {
   it("trims the fields and adds the locale", () => {
-    expect(payload).toEqual({ name: "Ana", email: "ana@example.org", type: "research", message: "Hola", locale: "es" });
+    expect(payload).toEqual({
+      name: "Ana",
+      email: "ana@example.org",
+      organization: "UPV",
+      interest: "research",
+      message: "Hola",
+      locale: "es",
+    });
   });
-  it("accepts the other contact type", () => {
-    expect(toPayload({ ...valid, type: "other" }, "en").type).toBe("other");
+  it("sends an unknown interest as the default", () => {
+    expect(toPayload({ ...valid, interest: "unlisted" }, "en").interest).toBe("general");
   });
-  it("sends an unknown type as empty", () => {
-    expect(toPayload({ ...valid, type: "unlisted" }, "en").type).toBe("");
+});
+
+describe("interestFromQuery", () => {
+  it("keeps a known interest", () => {
+    expect(interestFromQuery("pilot")).toBe("pilot");
+  });
+  it("falls back to general when missing or unknown", () => {
+    expect(interestFromQuery(null)).toBe("general");
+    expect(interestFromQuery("funding")).toBe("general");
   });
 });
 

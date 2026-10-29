@@ -1,29 +1,32 @@
 ---
 import Svg from "@nodes/ui/Svg.astro";
-import Button from "../../components/Button.astro";
-import { t, type Locale } from "../../i18n";
-import { pagePath } from "../../lib/routes";
+import Button from "./Button.astro";
 
-/** Band inviting a pilot proposal; opens Contact with the pilot interest preselected. */
+/** Soft-green band closing a page: icon, title, short text and one button. */
 interface Props {
-  locale: Locale;
+  id: string;
+  icon: string;
+  title: string;
+  text: string;
+  href: string;
+  label: string;
 }
-const { locale } = Astro.props;
+const { id, icon, title, text, href, label } = Astro.props;
 ---
 
-<section class="section pilot" aria-labelledby="pilot-title">
+<section class="section cta" aria-labelledby={id}>
   <div class="container band">
-    <span class="icon"><Svg name="icons/lightbulb" /></span>
+    <span class="icon"><Svg name={icon} /></span>
     <div class="text">
-      <h2 id="pilot-title">{t(locale, "applications.cta.title")}</h2>
-      <p>{t(locale, "applications.cta.text")}</p>
+      <h2 id={id}>{title}</h2>
+      <p>{text}</p>
     </div>
-    <Button href={`${pagePath(locale, "contact")}?interest=pilot`} arrow>{t(locale, "applications.cta.button")}</Button>
+    <Button href={href} arrow>{label}</Button>
   </div>
 </section>
 
 <style>
-  .pilot {
+  .cta {
     padding-top: 0;
   }
   .band {

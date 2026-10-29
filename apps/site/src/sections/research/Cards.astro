@@ -1,0 +1,166 @@
+---
+import Svg from "@nodes/ui/Svg.astro";
+import { t, type Locale } from "../../i18n";
+
+/**
+ * Static topic chips and the six upcoming articles. Cards are not links and show no dates until
+ * the articles are written; each carries the "coming soon" label. Status note below.
+ */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const filters = (["all", "lidar", "crowd", "iot", "prediction", "useCases"] as const).map((key) =>
+  t(locale, `research.filters.${key}`),
+);
+const cards = (
+  [
+    ["lidar", "icons/point-cloud"],
+    ["prediction", "icons/people-count"],
+    ["edge", "icons/lidar-sensor"],
+    ["events", "icons/runner"],
+    ["decision", "icons/lightbulb"],
+    ["architecture", "icons/chart"],
+  ] as const
+).map(([key, icon]) => ({
+  key,
+  icon,
+  category: t(locale, `research.cards.${key}.category`),
+  title: t(locale, `research.cards.${key}.title`),
+  description: t(locale, `research.cards.${key}.description`),
+  type: t(locale, `research.cards.${key}.type`),
+}));
+---
+
+<section class="section" aria-label={t(locale, "nav.research")}>
+  <div class="container">
+    <ul class="chips">
+      {filters.map((filter, index) => <li class:list={{ active: index === 0 }}>{filter}</li>)}
+    </ul>
+    <ul class="cards">
+      {
+        cards.map((card) => (
+          <li>
+            <article aria-labelledby={`research-${card.key}`}>
+              <span class="panel"><Svg name={card.icon} /></span>
+              <div class="body">
+                <p class="category">{card.category}</p>
+                <h2 id={`research-${card.key}`}>{card.title}</h2>
+                <p>{card.description}</p>
+                <p class="meta">
+                  <span>{card.type}</span>
+                  <span class="soon">{t(locale, "research.comingSoon")}</span>
+                </p>
+              </div>
+            </article>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="note">{t(locale, "research.statusNote")}</p>
+  </div>
+</section>
+
+<style>
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-8);
+  }
+  .chips li {
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    font-size: var(--text-small);
+  }
+  .chips .active {
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+  .cards {
+    display: grid;
+    gap: var(--space-6);
+  }
+  article {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+  }
+  .panel {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 8;
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
+  .panel :global(svg) {
+    width: 64px;
+    height: 64px;
+  }
+  .body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-5);
+  }
+  h2 {
+    margin: 0;
+    font-size: 1.125rem;
+  }
+  p {
+    margin: 0;
+  }
+  .category {
+    color: var(--color-text-muted);
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-top: auto;
+    padding-top: var(--space-3);
+    color: var(--color-text-muted);
+    font-size: var(--text-small);
+  }
+  .soon {
+    padding-inline: var(--space-2);
+    border-radius: var(--radius-pill);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+  .note {
+    margin-top: var(--space-8);
+    color: var(--color-text-muted);
+    font-size: var(--text-small);
+  }
+
+  @media (min-width: 768px) {
+    .cards {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (min-width: 1024px) {
+    .cards {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

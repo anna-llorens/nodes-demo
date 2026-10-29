@@ -14,4 +14,28 @@ const legal = defineCollection({
   }),
 });
 
-export const collections = { legal };
+/**
+ * Research articles: `content/research/{locale}/{file}.md`. Entry ids keep the locale folder
+ * ("es/lidar-flujos-peatonales"); the URL uses the frontmatter `slug`. Drafts are never built.
+ */
+const research = defineCollection({
+  loader: glob({
+    pattern: "*/*.md",
+    base: "./src/content/research",
+    generateId: ({ entry }) => entry.replace(/\.md$/, ""),
+  }),
+  schema: z.object({
+    title: z.string(),
+    subtitle: z.string(),
+    slug: z.string(),
+    /** ISO date; empty while the article is a draft. */
+    date: z.string(),
+    type: z.string(),
+    category: z.string(),
+    tags: z.array(z.string()),
+    author: z.string(),
+    draft: z.boolean(),
+  }),
+});
+
+export const collections = { legal, research };

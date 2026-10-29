@@ -65,7 +65,45 @@ Validation: site typecheck and build pass.
 
 Validation: site typecheck and build pass.
 
+## S5 · Demo and Research
+
+- Shared pieces: [CtaBand](../../apps/site/src/components/CtaBand.astro) (former pilot band, now
+  props-driven, used by Applications and Demo); [PageHero](../../apps/site/src/components/PageHero.astro)
+  takes an `aside` slot that replaces the skyline; [Base](../../apps/site/src/layouts/Base.astro)
+  takes an optional `title` for pages outside the route catalog.
+- Demo: hero with the simulation notice, two scenario cards (`maraton` with
+  `scene-half-marathon`, `mascleta` with `scene-mascleta`; the mockup's train station is not a
+  scenario) opening `demoScenarioUrl` (button hidden without `PUBLIC_DEMO_URL`), and a band to
+  Contact.
+- Research: static filter chips, six "coming soon" cards on icon panels (not links, no dates)
+  and the status note.
+- Articles: `research` content collection; ids keep the locale folder, URLs use the frontmatter
+  `slug` (`/[locale]/research/[slug]`). Production builds skip drafts; `pnpm dev` serves them
+  with `article.draftNote` and noindex for review. Layout: a full-width header (back link, title, subtitle; room for a
+  future cover image), then the body and the side column (contents, details) starting level. Content type and topics show the frontmatter
+  values as written.
+- Sector tiles/cards use lucide `Building` (`Building2` is deprecated).
+
+Validation: site typecheck and build pass (no article page is built while the only one is a draft).
+
+## S6 · Contact
+
+- [contact.ts](../../apps/site/src/lib/contact.ts): `type` replaced by `interest`
+  (`pilot | research | general`) and an optional `organization`. Payload
+  `{ name, email, organization, interest, message, locale }`; validation, honeypot, states and
+  `submitContact()` → `PUBLIC_CONTACT_ENDPOINT` unchanged. `interestFromQuery` reads
+  `?interest=`; a missing or unknown value selects `general`, so one interest is always chosen and
+  no interest error message is needed. Tests updated.
+- [Form](../../apps/site/src/sections/contact/Form.astro): three interest cards (radio inputs styled
+  as cards), name*, email*, organization, message*, consent*, and the privacy info text. Copy comes
+  from `contact.form.*`; field errors, the required mark, "sending" and the privacy info reuse
+  `collab.form.*`. The send error shows `contact.form.errorText` plus the contact email when set.
+- Side card: `contact.direct.*`, the `PUBLIC_CONTACT_EMAIL` link and `contact.status.*`.
+
+Validation: site typecheck, tests (37) and build pass.
+
 ## Remaining
 
-- Demo, Research and Contact content: steps S5–S6.
+- Old `collab.form.*` keys no longer used (title, lead, type, typePlaceholder, errorText) can be
+  dropped in a later i18n cleanup.
 - `nodes-site-v2-pack/` is still untracked; its contents are copied into place.

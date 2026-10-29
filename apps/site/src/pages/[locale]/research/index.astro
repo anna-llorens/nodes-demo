@@ -1,8 +1,9 @@
 ---
-import PageHero from "../../components/PageHero.astro";
-import { isLocale, t } from "../../i18n";
-import Base from "../../layouts/Base.astro";
-import { localePaths } from "../../lib/static-paths";
+import PageHero from "../../../components/PageHero.astro";
+import { isLocale, t } from "../../../i18n";
+import Base from "../../../layouts/Base.astro";
+import { localePaths } from "../../../lib/static-paths";
+import Cards from "../../../sections/research/Cards.astro";
 
 export const getStaticPaths = localePaths;
 
@@ -17,4 +18,5 @@ if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
     title={t(locale, "research.hero.title")}
     lead={t(locale, "research.hero.lead")}
   />
+  <Cards locale={locale} />
 </Base>

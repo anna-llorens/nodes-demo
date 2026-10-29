@@ -1,4 +1,4 @@
-import { Building2, TrainFront } from "@lucide/astro";
+import { Building, TrainFront } from "@lucide/astro";
 
 /**
  * The three application sectors: the home tiles and the Applications cards. Texts come from
@@ -8,5 +8,5 @@ import { Building2, TrainFront } from "@lucide/astro";
 export const sectors = [
   { id: "events", icon: "icons/people-group", illustration: "illustrations/use-case-runner" },
   { id: "transport", lucide: TrainFront },
-  { id: "spaces", lucide: Building2, illustration: "illustrations/use-case-town-hall" },
+  { id: "spaces", lucide: Building, illustration: "illustrations/use-case-town-hall" },
 ] as const;
