@@ -1,0 +1,83 @@
+---
+import Svg from "@nodes/ui/Svg.astro";
+import { Building2, TrainFront } from "@lucide/astro";
+import { t, type Locale } from "../../i18n";
+import { pagePath } from "../../lib/routes";
+
+/** Three sector tiles under the hero, each linking to its card on the Applications page. */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const applications = pagePath(locale, "applications");
+// Lucide only where packages/ui has no asset (train, building).
+const sectors = [
+  { id: "events", icon: "icons/people-group" },
+  { id: "transport", lucide: TrainFront },
+  { id: "spaces", lucide: Building2 },
+] as const;
+---
+
+<section id="home-sectors" class="sectors" aria-label={t(locale, "nav.applications")}>
+  <ul class="container tiles">
+    {
+      sectors.map((sector) => (
+        <li>
+          <a href={`${applications}#${sector.id}`}>
+            <span class="icon">
+              {"icon" in sector ? <Svg name={sector.icon} /> : <sector.lucide aria-hidden="true" />}
+            </span>
+            <span>{t(locale, `home.sectors.${sector.id}`)}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .sectors {
+    padding-block: var(--space-8);
+  }
+  .tiles {
+    list-style: none;
+    margin-block: 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+  a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-weight: 500;
+    text-decoration: none;
+  }
+  a:hover {
+    border-color: var(--color-primary);
+  }
+  .icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
+  .icon :global(svg) {
+    width: 55%;
+    height: 55%;
+  }
+
+  @media (min-width: 768px) {
+    .tiles {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

@@ -3,6 +3,9 @@ import { isLocale } from "../../i18n";
 import Base from "../../layouts/Base.astro";
 import { localePaths } from "../../lib/static-paths";
 import Hero from "../../sections/home/Hero.astro";
+import Project from "../../sections/home/Project.astro";
+import Research from "../../sections/home/Research.astro";
+import Sectors from "../../sections/home/Sectors.astro";
 
 export const getStaticPaths = localePaths;
 
@@ -12,4 +15,7 @@ if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
 
 <Base locale={locale} page="home">
   <Hero locale={locale} />
+  <Sectors locale={locale} />
+  <Project locale={locale} />
+  <Research locale={locale} />
 </Base>

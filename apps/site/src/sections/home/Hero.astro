@@ -4,16 +4,13 @@ import { ChevronDown } from "@lucide/astro";
 import Button from "../../components/Button.astro";
 import Eyebrow from "../../components/Eyebrow.astro";
 import { t, type Locale } from "../../i18n";
-import { env } from "../../lib/env";
-import { demoDefaultUrl } from "../../lib/demo";
 import { pagePath } from "../../lib/routes";
 
-/** Home hero: badge, the page's h1, lead and 3 buttons; illustration bleeding to the right edge. */
+/** Home hero: badge, the page's h1, lead, 2 buttons and the status line; illustration bleeding to the right edge. */
 interface Props {
   locale: Locale;
 }
 const { locale } = Astro.props;
-const demoHref = demoDefaultUrl(env.demoUrl, locale);
 ---
 
 <section class="hero" aria-labelledby="hero-title">
@@ -23,16 +20,10 @@ const demoHref = demoDefaultUrl(env.demoUrl, locale);
       <h1 id="hero-title">{t(locale, "hero.title")}</h1>
       <p class="lead">{t(locale, "hero.lead")}</p>
       <div class="actions">
-        {demoHref && <Button href={demoHref} arrow>{t(locale, "hero.ctaDemo")}</Button>}
-        <Button href={pagePath(locale, "technology")} variant="outline">{t(locale, "hero.ctaProject")}</Button>
-        <Button
-          href={pagePath(locale, "contact")}
-          variant="outline"
-          class="hero-contact-button"
-        >
-          {t(locale, "hero.ctaContact")}
-        </Button>
+        <Button href={pagePath(locale, "demo")} arrow>{t(locale, "hero.ctaDemo")}</Button>
+        <Button href={pagePath(locale, "contact")} variant="outline">{t(locale, "hero.ctaContact")}</Button>
       </div>
+      <p class="status">{t(locale, "hero.status")}</p>
     </div>
   </div>
   <div class="hero-art">
@@ -43,7 +34,7 @@ const demoHref = demoDefaultUrl(env.demoUrl, locale);
       height={heroImage.height}
     />
   </div>
-  <a class="scroll-hint" href="#solution" aria-label={t(locale, "hero.scrollHint")}>
+  <a class="scroll-hint" href="#home-sectors" aria-label={t(locale, "hero.scrollHint")}>
     <ChevronDown aria-hidden="true" size={28} />
   </a>
 </section>
@@ -76,6 +67,13 @@ const demoHref = demoDefaultUrl(env.demoUrl, locale);
     align-self: stretch;
     gap: var(--space-3);
     margin-top: var(--space-4);
+  }
+  .status {
+    margin: 0;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: var(--text-small);
   }
   .hero-art {
     display: none;
@@ -110,14 +108,11 @@ const demoHref = demoDefaultUrl(env.demoUrl, locale);
     .hero-text {
       width: 50%;
     }
-    /* The three buttons stay on one row, overlapping the faded edge of the illustration. */
+    /* The buttons stay on one row, overlapping the faded edge of the illustration. */
     .actions {
       flex-direction: row;
       flex-wrap: nowrap;
       align-self: flex-start;
-    }
-    .actions :global(.hero-contact-button) {
-      display: none;
     }
     /* Starts at the text column's end and runs past the right edge of the viewport. */
     .hero-art {

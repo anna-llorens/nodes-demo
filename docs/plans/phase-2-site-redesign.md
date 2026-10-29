@@ -19,7 +19,7 @@ reuse what exists, and spend as few tokens as possible.
 ## What stays as it is
 
 - Logo, colours (`packages/ui/src/tokens.css`), font, header/footer style, cards, buttons.
-- Home hero image: the current one (`hero-lidar-valencia.svg`).
+- Home hero image: the current one (`packages/ui/assets/png/homePage.png`).
 - Language routing (`/es/`, `/en/`, root redirect, switcher), legal drafts, 404.
 - Icons and illustrations: only from `packages/ui/assets/`. Where a mockup shows a photo, use
   the closest existing SVG on a soft-green panel; if none fits, the section icon on that panel.

@@ -1,0 +1,99 @@
+---
+import Svg from "@nodes/ui/Svg.astro";
+import Button from "../../components/Button.astro";
+import Eyebrow from "../../components/Eyebrow.astro";
+import { t, type Locale } from "../../i18n";
+import { pagePath } from "../../lib/routes";
+
+/** "What we are researching": two topic cards with an icon panel (not article links) and a button to Research. */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const topics = [
+  { key: "lidar", icon: "icons/point-cloud" },
+  { key: "prediction", icon: "icons/chart" },
+] as const;
+---
+
+<section class="section" aria-labelledby="home-research-title">
+  <div class="container">
+    <div class="head">
+      <div>
+        <Eyebrow>{t(locale, "home.research.eyebrow")}</Eyebrow>
+        <h2 id="home-research-title">{t(locale, "home.research.title")}</h2>
+      </div>
+      <Button href={pagePath(locale, "research")} variant="outline" arrow>{t(locale, "home.research.cta")}</Button>
+    </div>
+    <ul class="cards">
+      {
+        topics.map((topic) => (
+          <li>
+            <article>
+              <span class="panel"><Svg name={topic.icon} /></span>
+              <h3>{t(locale, `home.research.${topic.key}.title`)}</h3>
+              <p>{t(locale, `home.research.${topic.key}.text`)}</p>
+            </article>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+  }
+  h2 {
+    margin: 0;
+  }
+  .cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-6);
+  }
+  article {
+    height: 100%;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+  }
+  .panel {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 7;
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
+  .panel :global(svg) {
+    width: 72px;
+    height: 72px;
+  }
+  h3,
+  p {
+    margin: 0;
+    padding-inline: var(--space-5);
+  }
+  h3 {
+    padding-top: var(--space-4);
+  }
+  p {
+    padding-block: var(--space-2) var(--space-5);
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 768px) {
+    .cards {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

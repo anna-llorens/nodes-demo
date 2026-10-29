@@ -25,7 +25,21 @@ Plan: [phase-2-site-redesign.md](../plans/phase-2-site-redesign.md). Mockups: `d
 
 Validation: site typecheck, tests (36) and build pass.
 
+## S2 · Home
+
+- [Hero](../../apps/site/src/sections/home/Hero.astro): keeps the current image
+  (`png/homePage.png`, confirmed). Two
+  buttons, demo → site `/demo` page and contact, then the `hero.status` line.
+- [Sectors](../../apps/site/src/sections/home/Sectors.astro): three tiles linking to
+  `applications#events|transport|spaces` (ids added in S3). Train and building use lucide (no asset).
+- [Project](../../apps/site/src/sections/home/Project.astro): `home.project.*` with
+  `skyline-header.svg`; its link goes to About.
+- [Research](../../apps/site/src/sections/home/Research.astro): two topic cards on soft-green icon
+  panels (`point-cloud`, `chart`), not links; button to Research.
+
+Validation: site typecheck and build pass.
+
 ## Remaining
 
-- Home, Technology, Applications, Demo, Research and Contact content: steps S2–S6.
+- Technology, Applications, Demo, Research and Contact content: steps S2–S6.
 - `nodes-site-v2-pack/` is still untracked; its contents are copied into place.
