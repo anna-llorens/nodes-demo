@@ -1,16 +1,13 @@
 ---
 import { Menu, X } from "@lucide/astro";
 import { t, type Locale } from "../i18n";
-import { env } from "../lib/env";
-import { demoDefaultUrl } from "../lib/demo";
 import { mainNav, pagePath, pages, type PageId } from "../lib/routes";
-import Button from "./Button.astro";
 import LanguageSwitcher from "./LanguageSwitcher.astro";
 import Logo from "./Logo.astro";
 
 /**
- * Sticky header. Desktop: logo · centred nav · language links and contact button.
- * Mobile: logo · language links · menu button opening the nav and the contact button.
+ * Sticky header. Desktop: logo · centred nav · language links.
+ * Mobile: logo · language links · menu button opening the nav.
  */
 interface Props {
   locale: Locale;
@@ -18,14 +15,7 @@ interface Props {
 }
 const { locale, page } = Astro.props;
 
-const demoHref = demoDefaultUrl(env.demoUrl, locale);
-const links = mainNav.flatMap((id) => {
-  const link = { href: pagePath(locale, id), label: t(locale, pages[id].titleKey), current: id === page, external: false };
-  return id === "technology" && demoHref
-    ? [link, { href: demoHref, label: t(locale, "nav.demo"), current: false, external: true }]
-    : [link];
-});
-const contact = { href: pagePath(locale, "contact"), label: t(locale, "collaborate.contact") };
+const links = mainNav.map((id) => ({ href: pagePath(locale, id), label: t(locale, pages[id].titleKey), current: id === page }));
 ---
 
 <header class="site-header" data-site-header>
@@ -42,7 +32,6 @@ const contact = { href: pagePath(locale, "contact"), label: t(locale, "collabora
 
     <div class="actions">
       <LanguageSwitcher locale={locale} page={page} />
-      <Button class="contact-desktop" href={contact.href}>{contact.label}</Button>
       <button
         class="menu-button"
         type="button"
@@ -65,7 +54,6 @@ const contact = { href: pagePath(locale, "contact"), label: t(locale, "collabora
           <li><a href={link.href} aria-current={link.current ? "page" : undefined}>{link.label}</a></li>
         ))}
       </ul>
-      <Button href={contact.href}>{contact.label}</Button>
     </nav>
   </div>
 </header>
@@ -112,8 +100,7 @@ const contact = { href: pagePath(locale, "contact"), label: t(locale, "collabora
     margin: 0;
     padding: 0;
   }
-  .nav-desktop,
-  .contact-desktop {
+  .nav-desktop {
     display: none;
   }
   .nav-desktop ul {
@@ -121,7 +108,7 @@ const contact = { href: pagePath(locale, "contact"), label: t(locale, "collabora
     gap: var(--space-8);
   }
   .nav-desktop a,
-  .mobile-menu a:not(.button) {
+  .mobile-menu a {
     color: var(--color-text-body);
     text-decoration: none;
     font-weight: 500;
@@ -174,7 +161,7 @@ const contact = { href: pagePath(locale, "contact"), label: t(locale, "collabora
     flex-direction: column;
     gap: var(--space-2);
   }
-  .mobile-menu a:not(.button) {
+  .mobile-menu a {
     display: block;
   }
 
@@ -182,12 +169,8 @@ const contact = { href: pagePath(locale, "contact"), label: t(locale, "collabora
     .bar {
       min-height: 72px;
     }
-    .nav-desktop,
-    .contact-desktop {
+    .nav-desktop {
       display: block;
-    }
-    .contact-desktop {
-      display: inline-flex;
     }
     .menu-button,
     .mobile-menu {

@@ -1,19 +1,12 @@
 ---
 import { isLocale } from "../../i18n";
-import Base from "../../layouts/Base.astro";
+import { pagePath } from "../../lib/routes";
 import { localePaths } from "../../lib/static-paths";
-import Contact from "../../sections/collaborate/Contact.astro";
-import Hero from "../../sections/collaborate/Hero.astro";
-import Types from "../../sections/collaborate/Types.astro";
 
+// Old Colabora page: Contact replaced it (phase 2). Static build emits a redirect page.
 export const getStaticPaths = localePaths;
 
 const { locale } = Astro.params;
 if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
+return Astro.redirect(pagePath(locale, "contact"), 301);
 ---
-
-<Base locale={locale} page="collaborate">
-  <Hero locale={locale} />
-  <Types locale={locale} />
-  <Contact locale={locale} />
-</Base>

@@ -4,7 +4,7 @@ import Svg from "@nodes/ui/Svg.astro";
 import { t, type Locale } from "../i18n";
 import { env } from "../lib/env";
 import { legalEntryId } from "../lib/legal";
-import { legalNav, mainNav, pagePath, pages } from "../lib/routes";
+import { footerNav, legalNav, pagePath, pages } from "../lib/routes";
 import Logo from "./Logo.astro";
 
 /** Footer: logo, navigation, configured social links and available legal pages. */
@@ -28,7 +28,7 @@ const year = new Date().getFullYear();
     <Logo locale={locale} />
     <nav>
       <ul>
-        {mainNav.map((id) => <li><a href={pagePath(locale, id)}>{t(locale, pages[id].titleKey)}</a></li>)}
+        {footerNav.map((id) => <li><a href={pagePath(locale, id)}>{t(locale, pages[id].titleKey)}</a></li>)}
       </ul>
     </nav>
     {social.length > 0 && (

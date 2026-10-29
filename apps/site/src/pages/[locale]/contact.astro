@@ -1,8 +1,9 @@
 ---
-import { isLocale } from "../../i18n";
+import PageHero from "../../components/PageHero.astro";
+import { isLocale, t } from "../../i18n";
 import Base from "../../layouts/Base.astro";
 import { localePaths } from "../../lib/static-paths";
-import Contact from "../../sections/collaborate/Contact.astro";
+import Form from "../../sections/contact/Form.astro";
 
 export const getStaticPaths = localePaths;
 
@@ -11,5 +12,11 @@ if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
 ---
 
 <Base locale={locale} page="contact">
-  <Contact locale={locale} />
+  <PageHero
+    id="contact-hero-title"
+    eyebrow={t(locale, "contact.hero.eyebrow")}
+    title={t(locale, "contact.hero.title")}
+    lead={t(locale, "contact.hero.lead")}
+  />
+  <Form locale={locale} />
 </Base>

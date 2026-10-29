@@ -1,0 +1,20 @@
+---
+import PageHero from "../../components/PageHero.astro";
+import { isLocale, t } from "../../i18n";
+import Base from "../../layouts/Base.astro";
+import { localePaths } from "../../lib/static-paths";
+
+export const getStaticPaths = localePaths;
+
+const { locale } = Astro.params;
+if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
+---
+
+<Base locale={locale} page="applications">
+  <PageHero
+    id="applications-hero-title"
+    eyebrow={t(locale, "applications.hero.eyebrow")}
+    title={t(locale, "applications.hero.title")}
+    lead={t(locale, "applications.hero.lead")}
+  />
+</Base>

@@ -1,56 +1,15 @@
 ---
-import { isLocale, t } from "../../i18n";
+import { isLocale } from "../../i18n";
 import Base from "../../layouts/Base.astro";
 import { localePaths } from "../../lib/static-paths";
-import Cards from "../../sections/technology/Cards.astro";
 import Hero from "../../sections/technology/Hero.astro";
-import How from "../../sections/technology/How.astro";
 
 export const getStaticPaths = localePaths;
 
 const { locale } = Astro.params;
 if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
-
-const features = (
-  [
-    ["map", "icons/map"],
-    ["alerts", "icons/bell"],
-    ["timeline", "icons/timeline-clock"],
-    ["reports", "icons/report"],
-  ] as const
-).map(([key, icon]) => ({
-  icon,
-  title: t(locale, `tech.features.${key}.title`),
-  text: t(locale, `tech.features.${key}.text`),
-}));
-const applications = (
-  [
-    ["sports", "icons/runner"],
-    ["festivals", "icons/palm"],
-    ["urban", "icons/people-group"],
-    ["planning", "icons/shield"],
-  ] as const
-).map(([key, icon]) => ({
-  icon,
-  title: t(locale, `tech.applications.${key}.title`),
-  text: t(locale, `tech.applications.${key}.text`),
-}));
 ---
 
 <Base locale={locale} page="technology">
   <Hero locale={locale} />
-  <How locale={locale} />
-  <Cards
-    id="tech-features-title"
-    title={t(locale, "tech.features.title")}
-    lead={t(locale, "tech.features.lead")}
-    cards={features}
-    label={t(locale, "tech.features.label")}
-  />
-  <Cards
-    id="tech-applications-title"
-    title={t(locale, "tech.applications.title")}
-    lead={t(locale, "tech.applications.lead")}
-    cards={applications}
-  />
 </Base>

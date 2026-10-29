@@ -4,10 +4,8 @@ import { ArrowRight } from "@lucide/astro";
 import SectionHeading from "../../components/SectionHeading.astro";
 import Checkbox from "../../components/form/Checkbox.astro";
 import Field from "../../components/form/Field.astro";
-import Select from "../../components/form/Select.astro";
 import { t, type Locale } from "../../i18n";
 import { withLink } from "../../i18n/with-link";
-import { contactTypes } from "../../lib/contact";
 import { contactEndpoint, env } from "../../lib/env";
 import { pagePath } from "../../lib/routes";
 
@@ -26,7 +24,6 @@ const privacyInfo = withLink(t(locale, "collab.form.privacyInfo"));
 const errorText = withLink(t(locale, "collab.form.errorText"), "email");
 const required = t(locale, "collab.form.required");
 const emailParts = env.contactEmail?.split("@");
-const typeOptions = contactTypes.map((type) => ({ value: type, label: t(locale, `collab.types.${type}.title`) }));
 ---
 
 <section class="section" aria-labelledby="collab-form-title">
@@ -56,13 +53,6 @@ const typeOptions = contactTypes.map((type) => ({ value: type, label: t(locale, 
             error={t(locale, "collab.form.errors.email")}
           />
         </div>
-        <Select
-          id="contact-type"
-          name="type"
-          label={t(locale, "collab.form.type")}
-          placeholder={t(locale, "collab.form.typePlaceholder")}
-          options={typeOptions}
-        />
         <Field
           id="contact-message"
           name="message"
@@ -111,16 +101,15 @@ const typeOptions = contactTypes.map((type) => ({ value: type, label: t(locale, 
       </div>
     </div>
 
-    <aside class="direct" aria-labelledby="collab-direct-title">
-      <h2 id="collab-direct-title">{t(locale, "collab.direct.title")}</h2>
-      <p>{t(locale, "collab.direct.lead")}</p>
+    <aside class="direct" aria-labelledby="contact-direct-title">
+      <h2 id="contact-direct-title">{t(locale, "contact.direct.title")}</h2>
+      <p>{t(locale, "contact.direct.text")}</p>
       <ul class="channels">
         {
           env.contactEmail && (
             <li>
               <span class="channel-icon"><Svg name="icons/mail" /></span>
               <span>
-                <span class="channel-label">{t(locale, "collab.direct.email")}</span>
                 <a href={`mailto:${env.contactEmail}`}>
                   {emailParts?.[0]}@<wbr />
                   {emailParts?.slice(1).join("@")}
@@ -130,45 +119,24 @@ const typeOptions = contactTypes.map((type) => ({ value: type, label: t(locale, 
           )
         }
       </ul>
-      <p class="note">{t(locale, "collab.direct.note")}</p>
     </aside>
   </div>
 </section>
 
 <script>
-  import { isContactType, submitContact, toPayload, validateContact, type ContactField } from "../../lib/contact";
+  import { submitContact, toPayload, validateContact, type ContactField } from "../../lib/contact";
 
   const form = document.querySelector<HTMLFormElement>("#contact-form");
   const sent = document.querySelector<HTMLElement>("[data-sent]");
-  const cards = [...document.querySelectorAll<HTMLButtonElement>("[data-contact-type]")];
 
   if (form && sent) {
     const control = <T extends HTMLElement>(name: string) => form.querySelector<T>(`[name="${name}"]`)!;
-    const select = control<HTMLSelectElement>("type");
     const submit = form.querySelector<HTMLButtonElement>("button[type=submit]")!;
     const sendError = form.querySelector<HTMLElement>("[data-send-error]")!;
     const live = form.querySelector<HTMLElement>("[data-live]")!;
     const fields: ContactField[] = ["name", "email", "message", "consent"];
     // Not importing isLocale here keeps the i18n dictionaries out of the client bundle.
     const locale = form.dataset["locale"] === "en" ? "en" : "es";
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    const markCards = () => {
-      for (const card of cards) card.setAttribute("aria-pressed", String(card.dataset["contactType"] === select.value));
-    };
-
-    // Choosing a card selects its type, then takes the visitor to the form.
-    for (const card of cards) {
-      card.addEventListener("click", () => {
-        const type = card.dataset["contactType"] ?? "";
-        if (!isContactType(type)) return;
-        select.value = type;
-        markCards();
-        form.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
-        control<HTMLInputElement>("name").focus({ preventScroll: true });
-      });
-    }
-    select.addEventListener("change", markCards);
 
     const setError = (field: ContactField, invalid: boolean) => {
       control(field).setAttribute("aria-invalid", String(invalid));
@@ -201,7 +169,7 @@ const typeOptions = contactTypes.map((type) => ({ value: type, label: t(locale, 
       const values = {
         name: control<HTMLInputElement>("name").value,
         email: control<HTMLInputElement>("email").value,
-        type: select.value,
+        type: "",
         message: control<HTMLTextAreaElement>("message").value,
         consent: control<HTMLInputElement>("consent").checked,
       };
@@ -362,17 +330,8 @@ const typeOptions = contactTypes.map((type) => ({ value: type, label: t(locale, 
     width: 55%;
     height: 55%;
   }
-  .channel-label {
-    color: var(--color-text);
-    font-weight: 600;
-  }
   .channels a {
     overflow-wrap: break-word;
-  }
-  .note {
-    padding-top: var(--space-4);
-    border-top: 1px solid var(--color-primary-line);
-    font-size: var(--text-small);
   }
 
   @media (min-width: 640px) {
