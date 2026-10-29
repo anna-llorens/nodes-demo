@@ -27,8 +27,11 @@ describe("toPayload", () => {
   it("trims the fields and adds the locale", () => {
     expect(payload).toEqual({ name: "Ana", email: "ana@example.org", type: "research", message: "Hola", locale: "es" });
   });
+  it("accepts the other contact type", () => {
+    expect(toPayload({ ...valid, type: "other" }, "en").type).toBe("other");
+  });
   it("sends an unknown type as empty", () => {
-    expect(toPayload({ ...valid, type: "other" }, "en").type).toBe("");
+    expect(toPayload({ ...valid, type: "unlisted" }, "en").type).toBe("");
   });
 });
 

@@ -30,7 +30,7 @@ const cases: { key: "halfMarathon" | "mascleta"; scenario: DemoScenario; art: st
     </SectionHeading>
     <ul class="cases">
       {cases.map(({ key, scenario, art }) => {
-        const href = demoScenarioUrl(env.demoUrl, scenario);
+        const href = demoScenarioUrl(env.demoUrl, scenario, locale);
         const title = t(locale, `useCases.${key}.title`);
         const Tag = href ? "a" : "div";
         return (

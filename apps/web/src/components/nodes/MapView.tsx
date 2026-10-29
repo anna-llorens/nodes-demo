@@ -8,6 +8,7 @@ import type { LiveScenario as Scenario } from "@/scenarios/types";
 import { heatPoints, ringsGeo, runnerHeatPoints, trafficGeo, zonesGeo } from "./geo";
 import type { RunnerHeatSample, TrafficLevel } from "@nodes/core";
 import type { MapCamera, MapLayers, RunnerPalette } from "@/lib/map-share";
+import { mapText, type MapLocale } from "@/i18n/map";
 
 // maplibre necesita colores literales en su paint (no lee variables CSS)
 const C = {
@@ -61,6 +62,7 @@ export default function MapView({
   initialCamera,
   fitBounds,
   onCameraChange,
+  locale = "es",
 }: {
   traffic: { id: string; level: TrafficLevel }[];
   /** Representative runners at the current tick (empty when the scenario has no route). */
@@ -75,6 +77,7 @@ export default function MapView({
   /** Encuadre inicial que contiene todo el escenario; tiene prioridad sobre initialCamera */
   fitBounds?: [[number, number], [number, number]];
   onCameraChange?: (camera: MapCamera) => void;
+  locale?: MapLocale;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -120,7 +123,7 @@ export default function MapView({
     map.on("error", (e: { error?: unknown }) => {
       if (!map.isStyleLoaded() && !failed) {
         failed = true;
-        console.warn("Mapa no disponible", e.error);
+        console.warn(mapText(locale, "map.schematic"), e.error);
         onError();
       }
     });

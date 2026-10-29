@@ -1,5 +1,5 @@
 ---
-import Svg from "@nodes/ui/Svg.astro";
+import heroImage from "@nodes/ui/assets/png/homePage.png";
 import { ChevronDown } from "@lucide/astro";
 import Button from "../../components/Button.astro";
 import Eyebrow from "../../components/Eyebrow.astro";
@@ -23,12 +23,23 @@ const { locale } = Astro.props;
       <div class="actions">
         {env.demoUrl && <Button href={env.demoUrl} arrow>{t(locale, "hero.ctaDemo")}</Button>}
         <Button href={pagePath(locale, "technology")} variant="outline">{t(locale, "hero.ctaProject")}</Button>
-        <Button href={pagePath(locale, "collaborate")} variant="outline">{t(locale, "hero.ctaContact")}</Button>
+        <Button
+          href={pagePath(locale, "collaborate")}
+          variant="outline"
+          class="hero-contact-button"
+        >
+          {t(locale, "hero.ctaContact")}
+        </Button>
       </div>
     </div>
   </div>
   <div class="hero-art">
-    <Svg name="illustrations/hero-lidar-valencia" label={t(locale, "hero.imageAlt")} />
+    <img
+      src={heroImage.src}
+      alt={t(locale, "hero.imageAlt")}
+      width={heroImage.width}
+      height={heroImage.height}
+    />
   </div>
   <a class="scroll-hint" href="#solution" aria-label={t(locale, "hero.scrollHint")}>
     <ChevronDown aria-hidden="true" size={28} />
@@ -65,10 +76,11 @@ const { locale } = Astro.props;
     margin-top: var(--space-4);
   }
   .hero-art {
+    display: none;
     margin-top: var(--space-8);
     color: var(--color-primary-decor);
   }
-  .hero-art :global(svg) {
+  .hero-art :global(img) {
     display: block;
     width: 100%;
     height: auto;
@@ -102,12 +114,16 @@ const { locale } = Astro.props;
       flex-wrap: nowrap;
       align-self: flex-start;
     }
+    .actions :global(.hero-contact-button) {
+      display: none;
+    }
     /* Starts at the text column's end and runs past the right edge of the viewport. */
     .hero-art {
+      display: block;
       position: absolute;
       top: 50%;
-      left: max(48%, calc(50% - var(--container-max) / 2 + var(--container-max) * 0.48));
-      width: 62vw;
+      left: max(20%, calc(20% - var(--container-max) / 2 + var(--container-max) * 0.48));
+      width: 112vw;
       margin: 0;
       transform: translateY(-50%);
       /* The illustration has its own tinted background: fade its left edge into the page. */

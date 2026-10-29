@@ -1,27 +1,53 @@
 # NODES
 
-NODES uses temporary, relocatable LiDAR nodes to count people and measure density and flow at
-street events in València, so the people running an event can decide in time. This repository
-holds the operator dashboard and its domain logic. It is a prototype: all data is simulated
-and no real sensor is connected yet.
+## Run locally
+
+Requires Node.js 22.23.4 or later and pnpm 10. The repository pins pnpm 10.34.9 in
+`package.json` and the Node.js version in `.nvmrc`. With [nvm](https://github.com/nvm-sh/nvm),
+install and activate the required Node.js version, then enable the pinned pnpm version:
+
+```
+nvm install 22.23.4
+nvm use 22.23.4
+corepack enable
+corepack prepare pnpm@10.34.9 --activate
+```
+
+From the repository root, install dependencies once:
+
+```
+pnpm install
+```
+
+Start either app from the repository root. Each command runs a local development server; open
+the localhost URL printed in that terminal:
+
+```
+# Operator dashboard (apps/web)
+pnpm dev
+
+# Public website (apps/site)
+pnpm dev:site
+```
+
+To run both apps at the same time, start each command in a separate terminal. Stop a server with
+Ctrl+C.
+
+The dashboard prototype uses simulated data and does not require a physical sensor. Supabase
+environment variables are needed only for features that connect to Supabase; keep local secrets
+in an ignored `.env` file and never commit them. The public website can run without
+`PUBLIC_SITE_URL` locally; that variable is for canonical URLs when deployed.
+
 
 ## Layout
 
 - `apps/web` — the dashboard (TanStack Start, React, MapLibre). Spanish UI.
+- `apps/site` — the public website (Astro), available in Spanish and English.
 - `packages/core` — pure TypeScript domain: scenarios, seeded simulator, measured and
   estimated counts, alerts, reports.
 - `packages/data-source` — the `DataSource` interface and `SimulatedSource`.
 - `docs/` — decisions (ADRs), plans and sources for real-world figures.
 
-## Run
-
-Requires Node 22.23.4 or later 22.x (`.nvmrc`; Astro 7 needs it) and pnpm 10 (`corepack enable`, or prefix commands with
-`npx pnpm@10.34.9`).
-
-```
-pnpm install
-pnpm dev
-```
 
 ## Test
 

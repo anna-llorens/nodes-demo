@@ -14,6 +14,17 @@ describe('shared map state', () => {
     expect(search.scenario).toBe('maraton');
     expect(restoreMapState(search, maraton)).toEqual({ layers: state.layers, camera: state.camera, palette: state.palette, time: state.time });
   });
+  it("can build a shared map link under a locale-specific path", () => {
+    const url = new URL(buildMapShareUrl("https://nodes-demo.lovable.app", {
+      scenario: "maraton",
+      layers: defaultLayers,
+      camera: { lng: -0.37, lat: 39.47, zoom: 14, bearing: 0, pitch: 0 },
+      palette: "termica",
+      time: 523,
+    }, "/en/demo/map"));
+    expect(url.pathname).toBe("/en/demo/map");
+    expect(url.searchParams.get("scenario")).toBe("maraton");
+  });
   it('preserves an explicitly empty layer selection', () => {
     const restored = restoreMapState(validateMapSearch({ layers: '' }), maraton);
     expect(Object.values(restored.layers)).toEqual([false, false, false, false, false, false, false, false]);

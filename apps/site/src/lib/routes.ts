@@ -6,6 +6,7 @@ export const pages = {
   technology: { path: "tecnologia", titleKey: "nav.technology" },
   about: { path: "sobre-nosotras", titleKey: "nav.about" },
   collaborate: { path: "colabora", titleKey: "nav.collaborate" },
+  contact: { path: "contacto", titleKey: "collaborate.contact" },
   legalNotice: { path: "legal/aviso-legal", titleKey: "legal.legalNotice.title" },
   privacy: { path: "legal/privacidad", titleKey: "legal.privacy.title" },
   cookies: { path: "legal/cookies", titleKey: "legal.cookies.title" },

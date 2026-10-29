@@ -3,6 +3,7 @@ import { Menu, X } from "@lucide/astro";
 import { t, type Locale } from "../i18n";
 import { env } from "../lib/env";
 import { mainNav, pagePath, pages, type PageId } from "../lib/routes";
+import Button from "./Button.astro";
 import LanguageSwitcher from "./LanguageSwitcher.astro";
 import Logo from "./Logo.astro";
 
@@ -22,7 +23,7 @@ const links = mainNav.flatMap((id) => {
     ? [link, { href: env.demoUrl, label: t(locale, "nav.demo"), current: false, external: true }]
     : [link];
 });
-const contact = { href: pagePath(locale, "collaborate"), label: t(locale, "collaborate.contact") };
+const contact = { href: pagePath(locale, "contact"), label: t(locale, "collaborate.contact") };
 ---
 
 <header class="site-header" data-site-header>
@@ -39,7 +40,7 @@ const contact = { href: pagePath(locale, "collaborate"), label: t(locale, "colla
 
     <div class="actions">
       <LanguageSwitcher locale={locale} page={page} />
-      <a class="button button-primary contact-desktop" href={contact.href}>{contact.label}</a>
+      <Button class="contact-desktop" href={contact.href}>{contact.label}</Button>
       <button
         class="menu-button"
         type="button"
@@ -62,7 +63,7 @@ const contact = { href: pagePath(locale, "collaborate"), label: t(locale, "colla
           <li><a href={link.href} aria-current={link.current ? "page" : undefined}>{link.label}</a></li>
         ))}
       </ul>
-      <a class="button button-primary" href={contact.href}>{contact.label}</a>
+      <Button href={contact.href}>{contact.label}</Button>
     </nav>
   </div>
 </header>

@@ -32,10 +32,12 @@ dist-ssr
 *.sln
 *.sw?
 
-# Local overrides of committed env files
+# Local environment files (keep example templates trackable)
+**/.env
+**/.env.*
+!**/.env.example
 .env.local
 .env.*.local
-/apps/web/.env
 
 # Local Claude Code settings and preview config
 .claude/

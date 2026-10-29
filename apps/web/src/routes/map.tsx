@@ -6,6 +6,7 @@ import { getScenario } from "@/scenarios";
 import type { Scenario } from "@/scenarios/types";
 import { scenarioBounds } from "@/components/nodes/geo";
 import { DEFAULT_SPEED, readMapCache, restoreFromCache, restoreMapState, validateMapSearch, writeMapCache, type MapSearch } from "@/lib/map-share";
+import { mapText, type MapLocale } from "@/i18n/map";
 
 export const Route = createFileRoute("/map")({
   validateSearch: validateMapSearch,
@@ -32,7 +33,17 @@ function MapaPage() {
   return <ScenarioMap key={scenario.id} scenario={scenario} search={search} />;
 }
 
-function ScenarioMap({ scenario, search }: { scenario: Scenario; search: MapSearch }) {
+export function ScenarioMap({
+  scenario,
+  search,
+  mapOnlyNavigation = false,
+  locale = "es",
+}: {
+  scenario: Scenario;
+  search: MapSearch;
+  mapOnlyNavigation?: boolean;
+  locale?: MapLocale;
+}) {
   const [initial, setInitial] = useState(() => ({ ...restoreMapState(search, scenario), speed: DEFAULT_SPEED }));
   // Scenarios that ask for it open framing every node and polygon unless a link or the cache brings a camera.
   const [fit, setFit] = useState(Boolean(scenario.fitToZones && !search.camera));
@@ -58,16 +69,18 @@ function ScenarioMap({ scenario, search }: { scenario: Scenario; search: MapSear
       sidebarExtra={
         <div className="flex flex-col gap-5">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Escenario</p>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{mapText(locale, "sidebar.scenario")}</p>
             <p className="mt-1 font-display font-semibold text-brand-ink">{scenario.name}</p>
-            <p className="text-xs text-muted-foreground">Simulación · {scenario.schedule.start}–{scenario.schedule.end}</p>
+            <p className="text-xs text-muted-foreground">{mapText(locale, "sidebar.simulation")} · {scenario.schedule.start}–{scenario.schedule.end}</p>
           </div>
           {/* Hueco donde MapStage monta el panel de capas en ordenador */}
           <div id="map-layers-slot" />
         </div>
       }
+      mapOnlyNavigation={mapOnlyNavigation}
+      mapLocale={locale}
     >
-      {restored && <MapStage scenario={scenario} layers={layers} onLayerChange={setLayer} initialCamera={initial.camera} {...(fit ? { fitBounds: scenarioBounds(scenario) } : {})} initialPalette={initial.palette} initialMinute={initial.time} initialSpeed={initial.speed} />}
+      {restored && <MapStage scenario={scenario} layers={layers} onLayerChange={setLayer} initialCamera={initial.camera} {...(fit ? { fitBounds: scenarioBounds(scenario) } : {})} initialPalette={initial.palette} initialMinute={initial.time} initialSpeed={initial.speed} locale={locale} mapOnlyNavigation={mapOnlyNavigation} />}
     </AppShell>
   );
 }

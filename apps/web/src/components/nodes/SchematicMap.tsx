@@ -1,6 +1,7 @@
 import type { LiveScenario as Scenario } from "@/scenarios/types";
 import { densityLevel } from "@/scenarios/types";
 import { cn } from "@/lib/utils";
+import { mapText, type MapLocale } from "@/i18n/map";
 
 const fillCls: Record<string, string> = {
   low: "fill-dens-low",
@@ -10,7 +11,7 @@ const fillCls: Record<string, string> = {
 };
 
 /** Plano esquemático SVG cuando el mapa base no está disponible. */
-export function SchematicMap({ scenario, selectedId, onSelect }: { scenario: Scenario; selectedId: string | null; onSelect: (id: string) => void }) {
+export function SchematicMap({ scenario, selectedId, onSelect, locale = "es" }: { scenario: Scenario; selectedId: string | null; onSelect: (id: string) => void; locale?: MapLocale }) {
   const pts = [...(scenario.route ?? []), ...scenario.nodes.map((n) => n.lngLat)];
   const xs = pts.map((p) => p[0]);
   const ys = pts.map((p) => p[1]);
@@ -44,7 +45,7 @@ export function SchematicMap({ scenario, selectedId, onSelect }: { scenario: Sce
         })}
       </svg>
       <p className="absolute left-4 top-4 rounded-full bg-card px-3 py-1 text-xs text-muted-foreground shadow-card lg:left-auto lg:right-4">
-        Plano esquemático · recorrido aproximado
+        {mapText(locale, "map.schematic")}
       </p>
     </div>
   );

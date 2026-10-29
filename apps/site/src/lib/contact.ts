@@ -4,8 +4,8 @@
  */
 import type { Locale } from "../i18n";
 
-/** Collaboration types, in the order of the cards; keys of `collab.types.*` in i18n. */
-export const contactTypes = ["events", "ideas", "research", "funding"] as const;
+/** Contact form options; keys of `collab.types.*` in i18n. */
+export const contactTypes = ["events", "ideas", "research", "funding", "other"] as const;
 export type ContactType = (typeof contactTypes)[number];
 
 export interface ContactFields {

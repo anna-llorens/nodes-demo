@@ -5,6 +5,8 @@
 import { aggregateReport, fmtClock, type DensityAlert as CoreAlert, type EventTime, type TrafficTimes } from "@nodes/core";
 import type { NodeSeries } from "@nodes/data-source";
 import { CSV_HEADER, suggestionLabel } from "@/labels/es";
+import { suggestionLabel as englishSuggestionLabel } from "@/labels/en";
+import type { MapLocale } from "@/i18n/map";
 import type { Scenario } from "@/scenarios/types";
 
 /** An alert with the node name, formatted time and suggestion text. */
@@ -15,7 +17,7 @@ export interface DensityAlert extends Omit<CoreAlert, "suggestion"> {
   suggestion?: string;
 }
 
-export function labelAlert(s: Scenario, a: CoreAlert): DensityAlert {
+export function labelAlert(s: Scenario, a: CoreAlert, locale: MapLocale = "es"): DensityAlert {
   const node = s.nodes.find((n) => n.id === a.nodeId);
   const { suggestion, ...rest } = a;
   return {
@@ -23,7 +25,7 @@ export function labelAlert(s: Scenario, a: CoreAlert): DensityAlert {
     time: fmtClock(a.minute),
     node: node?.name ?? a.nodeId,
     zone: node?.address ?? node?.name ?? a.nodeId,
-    ...(suggestion ? { suggestion: suggestionLabel[suggestion] } : {}),
+    ...(suggestion ? { suggestion: (locale === "en" ? englishSuggestionLabel : suggestionLabel)[suggestion] } : {}),
   };
 }
 

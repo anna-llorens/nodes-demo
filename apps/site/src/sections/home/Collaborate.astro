@@ -21,7 +21,7 @@ const { locale } = Astro.props;
         <p>{t(locale, "collaborate.lead")}</p>
         <div class="actions">
           <Button href={pagePath(locale, "collaborate")} arrow>{t(locale, "collaborate.cta")}</Button>
-          <Button href={pagePath(locale, "collaborate")} variant="outline">{t(locale, "collaborate.contact")}</Button>
+          <Button href={pagePath(locale, "contact")} variant="outline">{t(locale, "collaborate.contact")}</Button>
         </div>
       </div>
       <span class="art"><Svg name="illustrations/skyline-header" /></span>

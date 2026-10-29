@@ -13,7 +13,7 @@ interface Props {
   locale: Locale;
 }
 const { locale } = Astro.props;
-const types: { type: ContactType; icon: string }[] = [
+const types: { type: Exclude<ContactType, "other">; icon: string }[] = [
   { type: "events", icon: "icons/calendar" },
   { type: "ideas", icon: "icons/lightbulb" },
   { type: "research", icon: "icons/graduation-cap" },

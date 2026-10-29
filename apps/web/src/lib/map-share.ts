@@ -64,8 +64,8 @@ export function restoreFromCache(cache: MapCache, scenario: Scenario) {
   const speed = typeof cache.speed === 'number' && cache.speed > 0 ? cache.speed : DEFAULT_SPEED;
   return { ...restoreMapState(search, scenario), speed };
 }
-export function buildMapShareUrl(origin: string, state: { scenario: string; layers: MapLayers; camera: MapCamera; palette: RunnerPalette; time: number }) {
-  const url = new URL('/map', origin);
+export function buildMapShareUrl(origin: string, state: { scenario: string; layers: MapLayers; camera: MapCamera; palette: RunnerPalette; time: number }, path = "/map") {
+  const url = new URL(path, origin);
   url.searchParams.set('scenario', state.scenario);
   url.searchParams.set('layers', layerKeys.filter(k => state.layers[k]).join(','));
   url.searchParams.set('camera', [state.camera.lng, state.camera.lat, state.camera.zoom, state.camera.bearing, state.camera.pitch].join(','));

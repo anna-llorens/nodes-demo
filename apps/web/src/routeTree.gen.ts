@@ -22,8 +22,10 @@ import { Route as MasRouteImport } from './routes/mas'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as ZonasRouteImport } from './routes/zonas'
 import { Route as ZonesRouteImport } from './routes/zones'
+import { Route as DemoMapRouteImport } from './routes/demo.map'
 import { Route as NodeIdRouteImport } from './routes/node.$id'
 import { Route as NodoIdRouteImport } from './routes/nodo.$id'
+import { Route as LocaleDemoMapRouteImport } from './routes/$locale.demo.map'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -90,6 +92,11 @@ const ZonesRoute = ZonesRouteImport.update({
   path: '/zones',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DemoMapRoute = DemoMapRouteImport.update({
+  id: '/demo/map',
+  path: '/demo/map',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NodeIdRoute = NodeIdRouteImport.update({
   id: '/node/$id',
   path: '/node/$id',
@@ -98,6 +105,11 @@ const NodeIdRoute = NodeIdRouteImport.update({
 const NodoIdRoute = NodoIdRouteImport.update({
   id: '/nodo/$id',
   path: '/nodo/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocaleDemoMapRoute = LocaleDemoMapRouteImport.update({
+  id: '/$locale/demo/map',
+  path: '/$locale/demo/map',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -115,8 +127,10 @@ export interface FileRoutesByFullPath {
   '/reports': typeof ReportsRoute
   '/zonas': typeof ZonasRoute
   '/zones': typeof ZonesRoute
+  '/demo/map': typeof DemoMapRoute
   '/node/$id': typeof NodeIdRoute
   '/nodo/$id': typeof NodoIdRoute
+  '/$locale/demo/map': typeof LocaleDemoMapRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -132,8 +146,10 @@ export interface FileRoutesByTo {
   '/reports': typeof ReportsRoute
   '/zonas': typeof ZonasRoute
   '/zones': typeof ZonesRoute
+  '/demo/map': typeof DemoMapRoute
   '/node/$id': typeof NodeIdRoute
   '/nodo/$id': typeof NodoIdRoute
+  '/$locale/demo/map': typeof LocaleDemoMapRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -150,8 +166,10 @@ export interface FileRoutesById {
   '/reports': typeof ReportsRoute
   '/zonas': typeof ZonasRoute
   '/zones': typeof ZonesRoute
+  '/demo/map': typeof DemoMapRoute
   '/node/$id': typeof NodeIdRoute
   '/nodo/$id': typeof NodoIdRoute
+  '/$locale/demo/map': typeof LocaleDemoMapRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -169,8 +187,10 @@ export interface FileRouteTypes {
     | '/reports'
     | '/zonas'
     | '/zones'
+    | '/demo/map'
     | '/node/$id'
     | '/nodo/$id'
+    | '/$locale/demo/map'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -186,8 +206,10 @@ export interface FileRouteTypes {
     | '/reports'
     | '/zonas'
     | '/zones'
+    | '/demo/map'
     | '/node/$id'
     | '/nodo/$id'
+    | '/$locale/demo/map'
   id:
     | '__root__'
     | '/'
@@ -203,8 +225,10 @@ export interface FileRouteTypes {
     | '/reports'
     | '/zonas'
     | '/zones'
+    | '/demo/map'
     | '/node/$id'
     | '/nodo/$id'
+    | '/$locale/demo/map'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -221,8 +245,10 @@ export interface RootRouteChildren {
   ReportsRoute: typeof ReportsRoute
   ZonasRoute: typeof ZonasRoute
   ZonesRoute: typeof ZonesRoute
+  DemoMapRoute: typeof DemoMapRoute
   NodeIdRoute: typeof NodeIdRoute
   NodoIdRoute: typeof NodoIdRoute
+  LocaleDemoMapRoute: typeof LocaleDemoMapRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -318,6 +344,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ZonesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/demo/map': {
+      id: '/demo/map'
+      path: '/demo/map'
+      fullPath: '/demo/map'
+      preLoaderRoute: typeof DemoMapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/node/$id': {
       id: '/node/$id'
       path: '/node/$id'
@@ -330,6 +363,13 @@ declare module '@tanstack/react-router' {
       path: '/nodo/$id'
       fullPath: '/nodo/$id'
       preLoaderRoute: typeof NodoIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$locale/demo/map': {
+      id: '/$locale/demo/map'
+      path: '/$locale/demo/map'
+      fullPath: '/$locale/demo/map'
+      preLoaderRoute: typeof LocaleDemoMapRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -349,8 +389,10 @@ const rootRouteChildren: RootRouteChildren = {
   ReportsRoute: ReportsRoute,
   ZonasRoute: ZonasRoute,
   ZonesRoute: ZonesRoute,
+  DemoMapRoute: DemoMapRoute,
   NodeIdRoute: NodeIdRoute,
   NodoIdRoute: NodoIdRoute,
+  LocaleDemoMapRoute: LocaleDemoMapRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

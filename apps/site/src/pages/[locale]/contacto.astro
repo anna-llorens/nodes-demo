@@ -1,0 +1,15 @@
+---
+import { isLocale } from "../../i18n";
+import Base from "../../layouts/Base.astro";
+import { localePaths } from "../../lib/static-paths";
+import Contact from "../../sections/collaborate/Contact.astro";
+
+export const getStaticPaths = localePaths;
+
+const { locale } = Astro.params;
+if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
+---
+
+<Base locale={locale} page="contact">
+  <Contact locale={locale} />
+</Base>
