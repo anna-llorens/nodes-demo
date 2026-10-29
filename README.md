@@ -46,7 +46,8 @@ in an ignored `.env` file and never commit them. The public website can run with
 - `packages/core` — pure TypeScript domain: scenarios, seeded simulator, measured and
   estimated counts, alerts, reports.
 - `packages/data-source` — the `DataSource` interface and `SimulatedSource`.
-- `docs/` — decisions (ADRs), plans and sources for real-world figures.
+- `docs/` — see [`docs/README.md`](docs/README.md) for the documentation index, including
+  design references, decisions, plans, sources and dated change summaries.
 
 
 ## Test
