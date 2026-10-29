@@ -5,10 +5,10 @@ import { Area, AreaChart, Bar, BarChart, CartesianGrid, Legend, ResponsiveContai
 import { AppShell } from "@/components/nodes/AppShell";
 import { Button } from "@/components/ui/button";
 import { getScenario, scenarios } from "@/scenarios";
-import { ESTIMATE_LABEL } from "@/scenarios/types";
 import { fmtClock, toMin } from "@/sim/engine";
 import { buildReport, reportCsv } from "@/sim/reports";
 import { tFor, useFmt, useT } from "@/i18n/useT";
+import { useLocalizeScenario } from "@/i18n/scenarios";
 
 export const Route = createFileRoute("/reports")({
   head: ({ match }) => {
@@ -31,9 +31,11 @@ const tooltipStyle = { background: "var(--card)", border: "1px solid var(--borde
 function ReportsPage() {
   const t = useT();
   const fmt = useFmt();
+  const ESTIMATE_LABEL = t.common.estimateLabel;
+  const localize = useLocalizeScenario();
   const [tab, setTab] = useState<(typeof tabs)[number]>("summary");
   const [scenarioId, setScenarioId] = useState("maraton");
-  const scenario = getScenario(scenarioId);
+  const scenario = localize(getScenario(scenarioId));
   const [nodeId, setNodeId] = useState("all");
   const [start, setStart] = useState(scenario.schedule.start);
   const [end, setEnd] = useState(scenario.schedule.end);
@@ -58,7 +60,7 @@ function ReportsPage() {
       </header>
       <label className="mt-2 grid max-w-md gap-1 text-xs font-semibold text-muted-foreground">{t.reports.scenario}
         <select aria-label={t.reports.scenarioAria} value={scenario.id} onChange={(event) => selectScenario(event.target.value)} className="h-10 min-w-0 rounded-lg border border-input bg-card px-3 text-sm font-semibold text-foreground">
-          {scenarios.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+          {scenarios.map(localize).map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
         </select>
       </label>
       <div role="tablist" aria-label={t.reports.tabsAria} className="mt-5 grid grid-cols-4 border-b border-border">

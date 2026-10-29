@@ -4,10 +4,11 @@ import { ArrowLeft, Users, UsersRound, MapPin, TrendingUp, TrendingDown, LogIn, 
 import { AppShell } from "@/components/nodes/AppShell";
 import { EstimateTag, levelDot } from "@/components/nodes/MapStage";
 import { findNode } from "@/scenarios";
-import { ESTIMATE_LABEL, densityLabel, densityLevel, type DensityLevel } from "@/scenarios/types";
+import { densityLevel, type DensityLevel } from "@/scenarios/types";
 import { scenarioAlerts, scenarioNodeState, toMin, fmtClock } from "@/sim/engine";
 import { cn } from "@/lib/utils";
-import { tFor, useFmt, useT } from "@/i18n/useT";
+import { parseLang, tFor, useFmt, useT } from "@/i18n/useT";
+import { localizeScenario, useLocalizeScenario } from "@/i18n/scenarios";
 
 export const Route = createFileRoute("/node/$id")({
   validateSearch: (s: Record<string, unknown>): { t?: number | undefined; alert?: string | undefined } => ({
@@ -21,11 +22,16 @@ export const Route = createFileRoute("/node/$id")({
   },
   head: ({ loaderData, match }) => {
     const t = tFor(match.search.lang).node;
+    const found = findNode(match.params.id);
+    const scenario = found && localizeScenario(found.scenario, parseLang(match.search.lang));
+    const node = scenario?.nodes.find((n) => n.id === found?.node.id);
+    const name = node?.name ?? loaderData?.name;
+    const scenarioName = scenario?.shortName ?? loaderData?.scenario;
     return {
     meta: [
-      { title: t.title(loaderData?.name, loaderData?.scenario) },
-      { name: "description", content: t.description(loaderData?.name, loaderData?.scenario) },
-      { property: "og:title", content: t.ogTitle(loaderData?.name) },
+      { title: t.title(name, scenarioName) },
+      { name: "description", content: t.description(name, scenarioName) },
+      { property: "og:title", content: t.ogTitle(name) },
       { property: "og:description", content: t.ogDescription },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -46,9 +52,14 @@ const LEVELS: DensityLevel[] = ["baja", "media", "alta", "muy-alta"];
 function NodePage() {
   const tr = useT();
   const fmt = useFmt();
+  const densityLabel = tr.common.densityLevels;
+  const ESTIMATE_LABEL = tr.common.estimateLabel;
+  const localize = useLocalizeScenario();
   const { id } = Route.useParams();
   const { t, alert: alertId } = Route.useSearch();
-  const { scenario, node } = findNode(id)!;
+  const found = findNode(id)!;
+  const scenario = localize(found.scenario);
+  const node = scenario.nodes.find((n) => n.id === found.node.id)!;
   const start = toMin(scenario.schedule.start);
   const end = toMin(scenario.schedule.end);
   const [minute, setMinute] = useState(Math.round(t ?? toMin(scenario.defaultTime ?? scenario.schedule.start)));

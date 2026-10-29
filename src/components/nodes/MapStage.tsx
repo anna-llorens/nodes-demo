@@ -6,7 +6,7 @@ import type { LiveScenario as Scenario, Scenario as RawScenario } from "@/scenar
 import { visibleAlerts, simulate, toMin, fmtClock, trafficAt, trafficTimesAt } from "@/sim/engine";
 import { setSimClock } from "@/lib/sim-clock";
 import { scenarios } from "@/scenarios";
-import { ESTIMATE_LABEL, densityLabel, densityLevel } from "@/scenarios/types";
+import { densityLevel } from "@/scenarios/types";
 import { SchematicMap } from "./SchematicMap";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import { trackNodeClick } from "@/lib/analytics";
 import { buildMapShareUrl, writeMapCache, DEFAULT_SPEED, type MapCamera, type MapLayers, type RunnerPalette } from "@/lib/map-share";
 import { ShareMapDialog } from "./ShareMapDialog";
 import { useFmt, useT } from "@/i18n/useT";
+import { useLocalizeScenario } from "@/i18n/scenarios";
 export type { MapLayers, RunnerPalette } from "@/lib/map-share";
 
 const MapView = lazy(() => import("./MapView"));
@@ -32,6 +33,8 @@ export const levelDot: Record<string, string> = {
 export function MapStage({ scenario: base, layers, onLayerChange, initialCamera, fitBounds, initialPalette = "termica", initialMinute, initialSpeed = DEFAULT_SPEED }: { scenario: RawScenario; layers: MapLayers; onLayerChange: (key: keyof MapLayers, value: boolean) => void; initialCamera?: MapCamera; fitBounds?: [[number, number], [number, number]]; initialPalette?: RunnerPalette; initialMinute?: number; initialSpeed?: number }) {
   const t = useT();
   const fmt = useFmt();
+  const densityLabel = t.common.densityLevels;
+  const localize = useLocalizeScenario();
   const start = toMin(base.schedule.start);
   const end = toMin(base.schedule.end);
   const [minute, setMinute] = useState(initialMinute ?? toMin(base.defaultTime ?? base.schedule.start));
@@ -170,7 +173,7 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
                 </button>
               </PopoverTrigger>
               <PopoverContent align="start" className="w-80 max-w-[calc(100vw-2rem)] p-1.5">
-                {scenarios.map((s) => (
+                {scenarios.map(localize).map((s) => (
                   <Link key={s.id} to="/map" search={{ scenario: s.id }} className={cn("block rounded-lg px-3 py-2 text-sm hover:bg-muted", s.id === base.id && "bg-muted font-semibold")}>
                     {s.name}
                     <span className="block text-xs font-normal text-muted-foreground">{s.schedule.start}–{s.schedule.end} · {t.common.nodes(s.nodes.length)}</span>
@@ -314,6 +317,7 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
 function NodeBubble({ node, onClose, detailed, minute }: { node: Scenario["nodes"][number]; onClose: () => void; detailed?: boolean; minute: number }) {
   const t = useT();
   const fmt = useFmt();
+  const densityLabel = t.common.densityLevels;
   const lvl = densityLevel(node.snapshot.density);
   return (
     <div>
@@ -374,6 +378,7 @@ function PeopleSummary({ measured, estimated }: { measured: number; estimated: n
 }
 
 export function EstimateTag() {
+  const ESTIMATE_LABEL = useT().common.estimateLabel;
   return <span className="ml-1 inline-block whitespace-nowrap rounded-full border border-dashed border-border px-1.5 py-px align-middle text-[10px] font-semibold text-muted-foreground">{ESTIMATE_LABEL}</span>;
 }
 

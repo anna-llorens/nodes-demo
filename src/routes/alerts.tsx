@@ -3,11 +3,11 @@ import { lazy, Suspense, useMemo, useState } from "react";
 import { ChevronRight, TriangleAlert, X } from "lucide-react";
 import { AppShell } from "@/components/nodes/AppShell";
 import { getScenario, scenarios } from "@/scenarios";
-import { densityLabel } from "@/scenarios/types";
 import { fmtClock, visibleAlerts, type DensityAlert } from "@/sim/engine";
 import { selectSimScenario, useSimClock } from "@/lib/sim-clock";
 import { cn } from "@/lib/utils";
 import { tFor, useFmt, useT } from "@/i18n/useT";
+import { useLocalizeScenario } from "@/i18n/scenarios";
 
 const AlertsMap = lazy(() => import("@/components/nodes/AlertsMap"));
 
@@ -33,10 +33,12 @@ const tone = (a: DensityAlert) => (a.level === "muy-alta" ? "bg-dens-crit" : "bg
 function AlertsPage() {
   const t = useT();
   const fmt = useFmt();
+  const densityLabel = t.common.densityLevels;
+  const localize = useLocalizeScenario();
   const pct = (v: number) => t.common.percent(`${v >= 0 ? "+" : ""}${Math.round(v * 100)}`);
   const dens = (d: number) => fmt(d, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   const clock = useSimClock();
-  const scenario = getScenario(clock.scenarioId);
+  const scenario = localize(getScenario(clock.scenarioId));
   const alerts = useMemo(() => visibleAlerts(scenario, clock.minute), [scenario, clock.minute]);
   const [filter, setFilter] = useState<Filter>("todas");
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -59,7 +61,7 @@ function AlertsPage() {
             onChange={(e) => { setSelectedId(null); selectSimScenario(e.target.value); }}
             className="h-10 max-w-full rounded-lg border border-input bg-card px-3 text-sm font-semibold"
           >
-            {scenarios.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+            {scenarios.map(localize).map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
           </select>
         </header>
 

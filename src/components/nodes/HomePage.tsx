@@ -7,9 +7,11 @@ import mascletaImg from "@/assets/mascleta.jpg";
 import { maraton } from "@/scenarios/maraton";
 import { mascleta } from "@/scenarios/mascleta";
 import { useT } from "@/i18n/useT";
+import { useLocalizeScenario } from "@/i18n/scenarios";
 
 export function HomePage() {
   const t = useT();
+  const localize = useLocalizeScenario();
   return (
     <AppShell>
       <div className="mx-auto flex min-h-full w-full max-w-5xl flex-col px-5 py-6 sm:px-8 lg:py-12">
@@ -28,14 +30,14 @@ export function HomePage() {
             scenarioId={maraton.id}
             img={maratonImg}
             icon={<Activity className="h-8 w-8" strokeWidth={1.8} />}
-            title={maraton.name}
+            title={localize(maraton).name}
             subtitle={`${maraton.schedule.start}–${maraton.schedule.end} · ${t.common.nodes(maraton.nodes.length)}`}
           />
           <EventCard
             scenarioId={mascleta.id}
             img={mascletaImg}
             icon={<Landmark className="h-8 w-8" strokeWidth={1.8} />}
-            title={mascleta.name}
+            title={localize(mascleta).name}
             subtitle={`${mascleta.schedule.start}–${mascleta.schedule.end} · ${t.common.nodes(mascleta.nodes.length)}`}
           />
         </div>

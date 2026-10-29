@@ -33,3 +33,24 @@ The app on `main` is published from Lovable. Changes here must be small and safe
 - Database: every Supabase change is a new SQL migration, shown to me before applying. RLS on every new table.
 - One small commit per step; plan first, wait for approval, stop after each step.
 - Report: files changed (with a one-line reason each) and anything you chose not to do.
+
+## Git: I commit, not you
+
+- Never run git commit, git push, git merge, git rebase, git reset or git stash.
+  Do not stage files either (no git add). Leave every change in the working tree.
+- When you finish a step, end your reply with exactly this block:
+
+  ### Changes
+  - `path/to/file` — one-line reason
+  - …
+
+  ### Checks
+  - typecheck / lint / test / build: pass or fail (with the error if it fails)
+
+  ### Suggested commit message
+  <type>(<scope>): <short summary, imperative, max 72 chars>
+
+<optional body: what changed and why, wrapped at 72>
+
+  Use Conventional Commits in English (feat, fix, refactor, test, docs, chore).
+  If the changes are better as more than one commit, suggest each one with the files it should include.

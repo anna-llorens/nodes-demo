@@ -1,3 +1,5 @@
+import { ESTIMATE_LABEL, densityLabel } from "@/scenarios/types";
+
 export type Lang = "es" | "en";
 
 /** Spanish is the source of truth: texts are copied verbatim from the screens. */
@@ -33,6 +35,8 @@ const es = {
     avgSpeed: "Velocidad media",
     roadway: "En calzada",
     sidewalk: "En aceras",
+    estimateLabel: ESTIMATE_LABEL,
+    densityLevels: densityLabel,
   },
   index: {
     title: "NODES — Datos para decidir a tiempo en eventos de exterior",
@@ -272,6 +276,13 @@ const en: Dictionary = {
     avgSpeed: "Average speed",
     roadway: "On the roadway",
     sidewalk: "On the sidewalks",
+    estimateLabel: "Extrapolated estimate · not measured",
+    densityLevels: {
+      baja: "Low density",
+      media: "Medium density",
+      alta: "High density",
+      "muy-alta": "Very high density",
+    },
   },
   index: {
     title: "NODES — Data to decide in time at outdoor events",

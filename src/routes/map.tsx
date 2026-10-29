@@ -5,13 +5,14 @@ import { MapStage, type MapLayers } from "@/components/nodes/MapStage";
 import { getScenario } from "@/scenarios";
 import type { Scenario } from "@/scenarios/types";
 import { scenarioBounds } from "@/components/nodes/geo";
-import { tFor, useT } from "@/i18n/useT";
+import { parseLang, tFor, useT } from "@/i18n/useT";
+import { localizeScenario, useLocalizeScenario } from "@/i18n/scenarios";
 import { DEFAULT_SPEED, readMapCache, restoreFromCache, restoreMapState, validateMapSearch, writeMapCache, type MapSearch } from "@/lib/map-share";
 
 export const Route = createFileRoute("/map")({
   validateSearch: validateMapSearch,
   head: ({ match }) => {
-    const scenario = getScenario(match.search.scenario);
+    const scenario = localizeScenario(getScenario(match.search.scenario), parseLang(match.search.lang));
     const t = tFor(match.search.lang).map;
     return {
     meta: [
@@ -30,7 +31,8 @@ export const Route = createFileRoute("/map")({
 function MapaPage() {
   const search = Route.useSearch();
   // Resolve shared IDs against the configured scenarios; unknown IDs fall back to the marathon.
-  const scenario = getScenario(search.scenario);
+  const localize = useLocalizeScenario();
+  const scenario = localize(getScenario(search.scenario));
   return <ScenarioMap key={scenario.id} scenario={scenario} search={search} />;
 }
 
