@@ -239,6 +239,23 @@ const es = {
     distribution: "Distribución de la densidad",
     distributionSub: (start: string, end: string) => `Tiempo en cada nivel (${start}–${end})`,
   },
+  contact: {
+    title: "Contacto — NODES",
+    description: "Escríbenos sobre el prototipo NODES o sobre un despliegue para tu evento.",
+    eyebrow: "Contacto",
+    heading: "Hablemos de tu evento",
+    intro: "Cuéntanos qué necesitas y te responderemos por correo.",
+    name: "Nombre",
+    email: "Correo electrónico",
+    message: "Mensaje",
+    send: "Enviar",
+    sending: "Enviando…",
+    sent: "Mensaje enviado. Gracias, te responderemos pronto.",
+    error: "No se pudo enviar el mensaje. Inténtalo de nuevo en unos minutos.",
+    invalid: "Revisa los campos: nombre, un correo válido y un mensaje de hasta 2000 caracteres.",
+    privacy: "Solo guardamos tu nombre, tu correo y tu mensaje para poder responderte.",
+    aboutLink: "¿Quieres usar NODES en tu evento? Escríbenos",
+  },
 };
 
 export type Dictionary = typeof es;
@@ -484,6 +501,23 @@ const en: Dictionary = {
     legendRunners: "Runners",
     distribution: "Density distribution",
     distributionSub: (start: string, end: string) => `Time at each level (${start}–${end})`,
+  },
+  contact: {
+    title: "Contact — NODES",
+    description: "Write to us about the NODES prototype or a deployment for your event.",
+    eyebrow: "Contact",
+    heading: "Let's talk about your event",
+    intro: "Tell us what you need and we will reply by email.",
+    name: "Name",
+    email: "Email",
+    message: "Message",
+    send: "Send",
+    sending: "Sending…",
+    sent: "Message sent. Thank you, we will get back to you soon.",
+    error: "The message could not be sent. Please try again in a few minutes.",
+    invalid: "Please check the fields: name, a valid email and a message of up to 2000 characters.",
+    privacy: "We only keep your name, email and message so we can reply to you.",
+    aboutLink: "Want to use NODES at your event? Write to us",
   },
 };
 

@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { CheckCircle2 } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { CheckCircle2, ChevronRight } from "lucide-react";
 import { AppShell } from "@/components/nodes/AppShell";
 import { Logo } from "@/components/nodes/Logo";
 import { tFor, useT } from "@/i18n/useT";
@@ -52,6 +52,10 @@ function MasPage() {
             </li>
           ))}
         </ul>
+        <Link to="/contact" className="mt-6 flex items-center justify-between gap-3 rounded-2xl bg-card p-4 text-sm font-semibold text-primary shadow-card hover:bg-muted/60">
+          {t.contact.aboutLink}
+          <ChevronRight className="h-4 w-4 shrink-0" />
+        </Link>
       </div>
     </AppShell>
   );
