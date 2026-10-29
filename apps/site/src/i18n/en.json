@@ -137,7 +137,7 @@
   "collab.form.required": "Required",
   "collab.form.consent": "I have read and accept the {link}.",
   "collab.form.consentLink": "privacy policy",
-  "collab.form.privacyInfo": "Controller: NODES. Purpose: replying to your message. We do not share your data with third parties. You can exercise your rights by writing to us. More information in the {link}.",
+  "collab.form.privacyInfo": "Controller: Anna Llorens (NODES). Purpose: handling and responding to your enquiries and collaboration proposals. You can exercise your rights by email. More information in the {link}.",
   "collab.form.submit": "Send message",
   "collab.form.sending": "Sending…",
   "collab.form.successTitle": "Thank you! We have received your message.",

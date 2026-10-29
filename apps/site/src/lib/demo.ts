@@ -1,6 +1,10 @@
 /** Scenarios of the demo (apps/web) that the site links to. Ids are stable (see CLAUDE.md). */
 export type DemoScenario = "maraton" | "mascleta";
 
+/** General demo links open the marathon map directly in the site's language. */
+export const demoDefaultUrl = (demoUrl: string | undefined, locale: "es" | "en") =>
+  demoScenarioUrl(demoUrl, "maraton", locale);
+
 /**
  * Link to a localized demo scenario, or undefined when the demo URL is not configured.
  */

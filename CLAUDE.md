@@ -9,8 +9,9 @@ state: prototype with simulated data only. No real sensor is connected yet.
 - Code, comments, JSDoc, commit messages, docs, ADRs, test names: English.
 - UI strings shown to users come only from i18n files, never hardcoded in components:
   - `apps/site`: Spanish and English (`src/i18n/es.json`, `en.json`, same keys).
-  - `apps/web` (demo): Spanish only until its own i18n step. Until then its strings live in
-    `apps/web/src/labels/es.ts`, `src/i18n/demo-entry.*.json` or the component that shows them.
+  - `apps/web`: demo entry, map and authentication support Spanish and English through their
+    scoped catalogs. The remaining dashboard screens stay Spanish until their i18n step.
+    Existing dashboard strings live in `apps/web/src/labels/es.ts` or their components.
 - Never mix: no Spanish comments, no English text hardcoded in the UI.
 - Site languages (ADR 0004): every page exists at `/es/...` and `/en/...` (Valencian `/va/`
   later, only when translations exist), with `hreflang` for both and `x-default` → `/en/`.
@@ -97,6 +98,15 @@ Before finishing any task: `pnpm typecheck && pnpm lint && pnpm test && pnpm bui
   (`packages/core/test/golden`).
 - Small commits, Conventional Commits (`feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`, `ci:`).
 - Record non-trivial decisions as a short ADR (Context · Decision · Consequences · Alternatives).
+- Document work by feature in English under `docs/changes/`, reusing the feature's existing
+  record or creating `docs/changes/<feature>.md` if none exists. While the feature's changes are
+  uncommitted, keep updating that same file across tasks and follow-up fixes; do not create a
+  new file for each completed task, conversation turn or date. Focus on decisions taken, their
+  rationale and trade-offs, the resulting behavior, affected-file links, actual validation and
+  remaining limitations. Revise the record as the implementation evolves so it describes the
+  final feature rather than a task-by-task transcript. Keep affected guides, plans, TODOs and
+  ADRs consistent. For requested staged-change summaries, inspect `git diff --cached` and
+  distinguish the staged snapshot from unstaged work. Do not rely on the chat as the record.
 - Do not add dependencies without saying why; prefer what is already installed.
 - Do not edit generated files or lockfiles by hand.
 
@@ -111,8 +121,16 @@ Before finishing any task: `pnpm typecheck && pnpm lint && pnpm test && pnpm bui
 - Web navigation uses the typed `Routes` catalog in `apps/web/src/lib/routes.ts`; keep literal
   paths in `createFileRoute` calls because the TanStack generator requires them. Add new routes
   to the catalog after generation; the routing test checks it against the registered pages.
+- Temporary app authentication uses `admin` / `admin`, checked on the server, with an eight-hour
+  sealed session. See `docs/authentication.md` and ADR 0007. `/`, `/home`, `/login` and the two
+  localized demo maps are public; other registered pages require a session. Components read
+  `useAuth()` instead of `mapOnlyNavigation`; private server functions verify the session too.
+- General site-to-app demo links open `/{locale}/demo/map?scenario=maraton` directly. Root/home
+  entries still accept `?lang=es|en`; localized map paths take precedence over that parameter.
+  The app remembers the choice in its own `nodes_lang` cookie and provides it through
+  `useAppLocale()`, including after login/logout. See ADR 0008.
 - Map layer visibility is one shared state in the map route, exposed through Capas.
-- `DemoHeader` (logo to `PUBLIC_SITE_URL`, simulation badge, "Volver a la web", alerts bell inside
+- `DemoHeader` (logo to `PUBLIC_SITE_URL`, simulation badge, "Ir a la web", alerts bell inside
   scenarios) is the single header of every demo screen; `AppShell` and `DemoEntry` render it once.
 - Runner heat colours read semantic CSS tokens through canvas colour conversion so MapLibre uses
   the theme palette.
@@ -125,4 +143,4 @@ Before finishing any task: `pnpm typecheck && pnpm lint && pnpm test && pnpm bui
 
 - Backend stack and hosting for the API.
 - Data format and transport from physical nodes.
-- Authentication and user roles.
+- Production authentication and user roles (the temporary shared login is specified in ADR 0007).

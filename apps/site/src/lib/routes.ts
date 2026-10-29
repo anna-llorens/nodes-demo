@@ -21,8 +21,8 @@ export const pagePath = (locale: Locale, page: PageId) => `/${locale}/${pages[pa
 export const mainNav: PageId[] = ["home", "technology", "about", "collaborate"];
 
 /** Footer legal links, with their labels. */
-export const legalNav: { page: PageId; labelKey: Key }[] = [
+export const legalNav = [
   { page: "legalNotice", labelKey: "footer.legal" },
   { page: "privacy", labelKey: "footer.privacy" },
   { page: "cookies", labelKey: "footer.cookies" },
-];
+] as const satisfies readonly { page: PageId; labelKey: Key }[];

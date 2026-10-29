@@ -4,6 +4,7 @@ import type { FileRoutesByPath } from "@tanstack/react-router";
 export const Routes = {
   root: "/",
   home: "/home",
+  login: "/login",
   map: "/map",
   alerts: "/alerts",
   reports: "/reports",

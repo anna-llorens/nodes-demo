@@ -1,0 +1,12 @@
+{
+  "title": "Acceso administrador",
+  "user": "Usuario",
+  "password": "Contraseña",
+  "login": "Entrar",
+  "loggingIn": "Entrando…",
+  "invalidCredentials": "Usuario o contraseña incorrectos",
+  "loginError": "No se ha podido iniciar sesión. Inténtalo de nuevo.",
+  "logout": "Cerrar sesión",
+  "loggingOut": "Cerrando sesión…",
+  "logoutError": "No se ha podido cerrar sesión. Inténtalo de nuevo."
+}

@@ -1,3 +1,4 @@
+import { useAuth } from "@/auth/context";
 import { Routes } from "@/lib/routes";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Home, Map, FileBarChart, MoreHorizontal, Layers, Bell } from "lucide-react";
@@ -20,17 +21,19 @@ export const navItems = [
 export function AppShell({
   children,
   sidebarExtra,
-  mapOnlyNavigation = false,
   mapLocale = "es",
 }: {
   children: ReactNode;
   sidebarExtra?: ReactNode;
-  mapOnlyNavigation?: boolean;
   mapLocale?: MapLocale;
 }) {
+  const { isAuthenticated } = useAuth();
   const path = useRouterState({ select: (r) => r.location.pathname });
   const clock = useSimClock();
   const alertCount = useAlerts(clock.scenarioId, clock.minute).length;
+  const isNavActive = (to: (typeof navItems)[number]["to"]) => to === Routes.home
+    ? path === Routes.root || path === Routes.home
+    : to === Routes.map ? path === Routes.map || path === mapRoutePath(mapLocale) : path.startsWith(to);
   return (
     <div className="flex h-dvh w-full overflow-hidden bg-background">
       {/* Barra lateral (ordenador) */}
@@ -38,11 +41,11 @@ export function AppShell({
         <div className="px-6 pb-4 pt-6">
           <SiteLogo className="text-3xl" />
           <p className="mt-1 text-xs text-muted-foreground">
-            {mapOnlyNavigation ? mapText(mapLocale, "sidebar.tagline") : "Datos para decidir a tiempo"}
+            {!isAuthenticated ? mapText(mapLocale, "sidebar.tagline") : "Datos para decidir a tiempo"}
           </p>
         </div>
         <nav className="flex flex-col gap-1 px-3">
-          {mapOnlyNavigation ? (
+          {!isAuthenticated ? (
             <a
               href={mapRoutePath(mapLocale)}
               aria-current={path === mapRoutePath(mapLocale) ? "page" : undefined}
@@ -52,11 +55,12 @@ export function AppShell({
               {mapText(mapLocale, "nav.map")}
             </a>
           ) : navItems.map((navItem) => {
-            const active = navItem.to === Routes.home ? path === Routes.root || path === Routes.home : path.startsWith(navItem.to);
+            const active = isNavActive(navItem.to);
             return (
               <Link
                 key={navItem.to}
                 to={navItem.to}
+                aria-current={active ? "page" : undefined}
                 className={cn(
                   "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors",
                   active ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-muted-foreground hover:bg-muted",
@@ -76,8 +80,8 @@ export function AppShell({
 
       <div className="flex min-w-0 flex-1 flex-col">
         <DemoHeader
-          {...(mapOnlyNavigation ? {} : { alertCount })}
-          {...(mapOnlyNavigation ? { mapLocale } : {})}
+          {...(isAuthenticated ? { alertCount } : {})}
+          {...(path === mapRoutePath(mapLocale) ? { mapLocale } : {})}
           hideLogoOnDesktop
         />
         <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
@@ -86,10 +90,10 @@ export function AppShell({
         <nav
           className={cn(
             "grid shrink-0 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] lg:hidden",
-            mapOnlyNavigation ? "grid-cols-1" : "grid-cols-5",
+            !isAuthenticated ? "grid-cols-1" : "grid-cols-5",
           )}
         >
-          {mapOnlyNavigation ? (
+          {!isAuthenticated ? (
             <a
               href={mapRoutePath(mapLocale)}
               aria-current={path === mapRoutePath(mapLocale) ? "page" : undefined}
@@ -99,11 +103,12 @@ export function AppShell({
               {mapText(mapLocale, "nav.map")}
             </a>
           ) : navItems.map((it) => {
-            const active = it.to === Routes.home ? path === Routes.root || path === Routes.home : path.startsWith(it.to);
+            const active = isNavActive(it.to);
             return (
               <Link
                 key={it.to}
                 to={it.to}
+                aria-current={active ? "page" : undefined}
                 className={cn(
                   "flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold",
                   active ? "text-primary" : "text-muted-foreground",

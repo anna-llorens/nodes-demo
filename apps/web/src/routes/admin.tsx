@@ -1,13 +1,15 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { Routes } from "@/lib/routes";
+import { createFileRoute, redirect, useRouter } from "@tanstack/react-router";
 import { AppShell } from "@/components/nodes/AppShell";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { adminLogin, adminLogout, getAdminMetrics } from "@/lib/admin.functions";
+import { getAdminMetrics } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin")({
-  loader: () => getAdminMetrics(),
+  loader: async () => {
+    const data = await getAdminMetrics();
+    if (!data.authorized) throw redirect({ to: Routes.login, search: { redirect: Routes.admin }, replace: true });
+    return data;
+  },
   head: () => ({
     meta: [
       { title: "Administración — NODES" },
@@ -28,32 +30,10 @@ function AdminPage() {
   const data = Route.useLoaderData();
   return (
     <AppShell>
-      <div className={data.authorized ? "mx-auto max-w-4xl px-5 py-8" : "mx-auto max-w-md px-5 py-10"}>
-        {data.authorized ? <Dashboard m={data} /> : <Login />}
+      <div className="mx-auto max-w-4xl px-5 py-8">
+        <Dashboard m={data} />
       </div>
     </AppShell>
-  );
-}
-
-function Login() {
-  const router = useRouter();
-  const login = useServerFn(adminLogin);
-  const [error, setError] = useState(false);
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const f = new FormData(e.currentTarget);
-    const r = await login({ data: { user: String(f.get("user")), password: String(f.get("password")) } });
-    if (r.ok) await router.invalidate();
-    else setError(true);
-  }
-  return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-3 rounded-2xl bg-card p-6 shadow-card">
-      <h1 className="font-display text-xl font-bold text-brand-ink">Acceso administrador</h1>
-      <Input name="user" placeholder="Usuario" autoComplete="username" required />
-      <Input name="password" type="password" placeholder="Contraseña" autoComplete="current-password" required />
-      {error && <p className="text-sm text-destructive">Usuario o contraseña incorrectos</p>}
-      <Button type="submit">Entrar</Button>
-    </form>
   );
 }
 
@@ -94,7 +74,6 @@ function Bars({ title, rows, empty }: { title: string; rows: { label: string; va
 
 function Dashboard({ m }: { m: Metrics }) {
   const router = useRouter();
-  const logout = useServerFn(adminLogout);
   const maxDay = Math.max(1, ...m.days.map((d) => d.value));
   return (
     <div className="flex flex-col gap-4">
@@ -102,16 +81,6 @@ function Dashboard({ m }: { m: Metrics }) {
         <h1 className="font-display text-xl font-bold text-brand-ink">Analíticas</h1>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={() => router.invalidate()}>Actualizar</Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={async () => {
-              await logout();
-              await router.invalidate();
-            }}
-          >
-            Salir
-          </Button>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

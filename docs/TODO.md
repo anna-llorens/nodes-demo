@@ -54,8 +54,9 @@ implementation scope and approval remain governed by the relevant plan and
 ## 3. Resolve publishing blockers
 
 - [ ] Obtain team-written and reviewed legal texts in Spanish and English, including confirmed
-      company information; restore the legal content and routes, footer links, contact consent
-      checkbox and first-layer privacy text with its policy link.
+      company information. Privacy content and links are restored as a draft; complete its
+      providers/transfer section and review both languages. Add legal notice and cookie-policy
+      content and routes when supplied.
       References: [legal publishing blocker](plans/phase-0-follow-ups.md),
       [legal content location](../apps/site/src/content/legal/README.md),
       [Phase 1 legal and contact requirements](plans/phase-1-public-site.md).
@@ -106,8 +107,9 @@ every item below. Confirm each item is still outstanding before scheduling chang
       approach, accounting for the existing map-scoped catalogs.
       Additional references: [two-app decision](decisions/0004-one-repo-two-apps.md),
       [localized-map decision](decisions/0005-localized-demo-map.md).
-- [ ] Plan a public `/demo/app` route and private access for the other web-app routes, as
-      requested on 2026-10-29. Confirm how this entry relates to the current localized demo map,
-      then decide authentication and roles in a separate plan before implementing access control.
-      References: [current demo-map routes](decisions/0005-localized-demo-map.md),
-      [undecided authentication and roles](../CLAUDE.md).
+- [ ] Replace the temporary shared login with the production identity and authorization model
+      when individual accounts and roles are specified. The approved temporary implementation
+      keeps `/es/demo/map` and `/en/demo/map` public and supersedes the earlier `/demo/app` idea.
+      References: [authentication guide](authentication.md),
+      [temporary authentication plan](plans/temporary-authentication.md),
+      [session decision](decisions/0007-temporary-application-session.md).

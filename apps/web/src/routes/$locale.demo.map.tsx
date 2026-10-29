@@ -1,5 +1,4 @@
-import { Routes } from "@/lib/routes";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import { ScenarioMap } from "./map";
 import { getScenario } from "@/scenarios";
 import { validateMapSearch } from "@/lib/map-share";
@@ -7,9 +6,9 @@ import { isMapLocale, mapText } from "@/i18n/map";
 
 export const Route = createFileRoute("/$locale/demo/map")({
   validateSearch: validateMapSearch,
-  beforeLoad: ({ params, search }) => {
+  beforeLoad: ({ params }) => {
     if (!isMapLocale(params.locale)) {
-      throw redirect({ to: Routes.demoMap, search, replace: true });
+      throw notFound();
     }
   },
   head: ({ params, match }) => {
@@ -30,5 +29,5 @@ function DemoMapPage() {
   const search = Route.useSearch();
   const locale = isMapLocale(localeParam) ? localeParam : "es";
   const scenario = getScenario(search.scenario, locale);
-  return <ScenarioMap key={scenario.id} scenario={scenario} search={search} mapOnlyNavigation locale={locale} />;
+  return <ScenarioMap key={scenario.id} scenario={scenario} search={search} locale={locale} />;
 }

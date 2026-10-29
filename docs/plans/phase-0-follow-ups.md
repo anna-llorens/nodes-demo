@@ -31,13 +31,14 @@ Collected while doing Step 1 (monorepo and domain extraction). Not in scope ther
       `astro check` (`this.bridge.deleteEnv is not a function`). Drop the pin when that peer goes.
 - [ ] **`sharp` build script** is ignored by pnpm (`onlyBuiltDependencies`); fine while the site
       uses no Astro image optimisation, revisit if it does.
-- [ ] **Final legal texts are required before publishing the site** (blocking). The legal pages
-      (aviso legal, privacidad, cookies) were removed until the team writes and reviews them.
-      To restore: add `apps/site/src/content/legal/{es,en}/{legal-notice,privacy,cookies}.md`
-      (with `draft:`), recreate the three routes under `src/pages/[locale]/legal/` with
-      `LegalPage.astro` (kept), and uncomment the links left in `Footer.astro` and in the
-      Colabora form (`sections/collaborate/Contact.astro`: consent checkbox and first-layer
-      privacy text, which Spanish/EU law requires to link to the privacy policy).
+- [ ] **Final legal texts are required before publishing the site** (blocking). The privacy
+      policy supplied on 2026-10-29 is restored at `/es/legal/privacy` and `/en/legal/privacy`,
+      with links in the footer and contact forms. It remains a draft because the providers and
+      international-transfer section contains a placeholder; complete it and review both
+      languages before marking it final. Legal notice and cookie-policy pages still need team
+      content at `apps/site/src/content/legal/{es,en}/{legal-notice,cookies}.md` (with `draft:`)
+      and matching routes under `src/pages/[locale]/legal/`, using `LegalPage.astro`. The footer
+      now shows only links with available legal content.
 - [ ] **Committed `apps/site/.env`** holds public values only (demo URL, contact email). Move them
       to the hosting environment when the site is deployed (Step 3), if preferred.
 - [ ] **`apps/web/src/assets/maraton.jpg` is unused** since the demo entry uses illustrations;

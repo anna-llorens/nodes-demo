@@ -9,6 +9,7 @@ import { t, type Locale } from "../../i18n";
 import { withLink } from "../../i18n/with-link";
 import { contactTypes } from "../../lib/contact";
 import { contactEndpoint, env } from "../../lib/env";
+import { pagePath } from "../../lib/routes";
 
 /**
  * The contact form (left) and the "contact directly" card (right; below on mobile). States:
@@ -77,8 +78,7 @@ const typeOptions = contactTypes.map((type) => ({ value: type, label: t(locale, 
         </div>
         <div class="submit-row">
           <Checkbox id="contact-consent" name="consent" required error={t(locale, "collab.form.errors.consent")}>
-            {/* Link off until the privacy policy exists. Restore (with pagePath from lib/routes): <a href={pagePath(locale, "privacy")}>{privacyLink}</a> */}
-            {consent.before}{privacyLink}{consent.after}
+            {consent.before}<a href={pagePath(locale, "privacy")}>{privacyLink}</a>{consent.after}
           </Checkbox>
           <button class="button button-primary submit" type="submit">
             <span class="spinner" aria-hidden="true" hidden></span>
@@ -87,10 +87,7 @@ const typeOptions = contactTypes.map((type) => ({ value: type, label: t(locale, 
             <ArrowRight class="submit-arrow" aria-hidden="true" size={18} />
           </button>
         </div>
-        <p class="privacy-info">
-          {/* Link off until the privacy policy exists. Restore (with pagePath from lib/routes): <a href={pagePath(locale, "privacy")}>{privacyLink}</a> */}
-          {privacyInfo.before}{privacyLink}{privacyInfo.after}
-        </p>
+    
         <div class="send-error" data-send-error role="alert" hidden>
           <p class="state-title">{t(locale, "collab.form.errorTitle")}</p>
           <p>

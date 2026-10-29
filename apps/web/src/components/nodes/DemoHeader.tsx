@@ -1,24 +1,29 @@
+import { useAppLocale } from "@/i18n/locale-context";
+import { useAuth } from "@/auth/context";
+import { LogoutButton } from "@/auth/LogoutButton";
 import { Routes } from "@/lib/routes";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { ArrowLeft, Bell } from "lucide-react";
 import { SiteLogo, SimBadge } from "./Logo";
-import { demoText } from "@/i18n/demo-entry";
 import { localizedSiteUrl, siteUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { mapRoutePath, mapText, type MapLocale } from "@/i18n/map";
 
 /**
- * Header of every demo screen: logo (to the public site), the simulation badge, "Volver a la web"
+ * Header of every demo screen: logo (to the public site), the simulation badge, "Ir a la web"
  * and, inside scenarios, the alerts bell. On mobile the site link moves into a menu.
  * The site links only render once PUBLIC_SITE_URL is set.
  */
 export function DemoHeader({ alertCount, hideLogoOnDesktop = false, mapLocale }: { alertCount?: number; hideLogoOnDesktop?: boolean; mapLocale?: MapLocale }) {
+  const { isAuthenticated } = useAuth();
+  const appLocale = useAppLocale();
+  const locale = mapLocale ?? appLocale;
   const path = useRouterState({ select: (router) => router.location.pathname });
   const searchStr = useRouterState({ select: (router) => router.location.searchStr });
   const showSiteLink = Boolean(siteUrl && (path === Routes.demoMap || (mapLocale && path === mapRoutePath(mapLocale))));
-  const back = mapLocale ? mapText(mapLocale, "demo.backToSite") : demoText("demoEntry.backToSite");
-  const badgeLabel = mapLocale ? mapText(mapLocale, "demo.simulationBadge") : undefined;
-  const siteHref = localizedSiteUrl(siteUrl, mapLocale ?? "es");
+  const back = mapText(locale, "demo.backToSite");
+  const badgeLabel = mapText(locale, "demo.simulationBadge");
+  const siteHref = localizedSiteUrl(siteUrl, locale);
   return (
     <header className="relative shrink-0 border-b border-border bg-card">
       <div className="flex min-h-14 items-center gap-3 px-4 py-2 sm:px-6">
@@ -32,9 +37,11 @@ export function DemoHeader({ alertCount, hideLogoOnDesktop = false, mapLocale }:
             <SimBadge className="hidden sm:inline-flex lg:hidden" label={badgeLabel} />
           </>
         ) : (
-          <SimBadge className="hidden sm:inline-flex" label={badgeLabel} />
+          // <SimBadge className="hidden sm:inline-flex" label={badgeLabel} />
+          <></>
         )}
         <div className="ml-auto flex items-center gap-1 sm:gap-2">
+          {isAuthenticated && <LogoutButton locale={locale} />}
           {mapLocale && (
             <nav aria-label={mapText(mapLocale, "language.label")} className="flex items-center gap-1 text-sm font-semibold">
               <a
@@ -53,7 +60,7 @@ export function DemoHeader({ alertCount, hideLogoOnDesktop = false, mapLocale }:
             </nav>
           )}
           {showSiteLink && <SimBadge className="hidden lg:inline-flex" label={badgeLabel} />}
-          {alertCount !== undefined && (
+          {isAuthenticated && alertCount !== undefined && (
             <Link to={Routes.alerts} aria-label={`Alertas: ${alertCount}`} className="relative grid h-11 w-11 place-items-center rounded-full text-muted-foreground hover:bg-muted">
               <Bell className="h-[18px] w-[18px]" strokeWidth={1.8} />
               {alertCount > 0 && (

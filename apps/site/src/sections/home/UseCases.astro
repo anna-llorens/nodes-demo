@@ -4,7 +4,7 @@ import { ArrowRight } from "@lucide/astro";
 import Button from "../../components/Button.astro";
 import SectionHeading from "../../components/SectionHeading.astro";
 import { t, type Locale } from "../../i18n";
-import { demoScenarioUrl, type DemoScenario } from "../../lib/demo";
+import { demoDefaultUrl, demoScenarioUrl, type DemoScenario } from "../../lib/demo";
 import { env } from "../../lib/env";
 
 /** The two demo scenarios as cards, each linking to its scenario in the demo. */
@@ -12,6 +12,7 @@ interface Props {
   locale: Locale;
 }
 const { locale } = Astro.props;
+const demoHref = demoDefaultUrl(env.demoUrl, locale);
 const cases: { key: "halfMarathon" | "mascleta"; scenario: DemoScenario; art: string }[] = [
   { key: "halfMarathon", scenario: "maraton", art: "illustrations/use-case-runner" },
   { key: "mascleta", scenario: "mascleta", art: "illustrations/use-case-town-hall" },
@@ -26,7 +27,7 @@ const cases: { key: "halfMarathon" | "mascleta"; scenario: DemoScenario; art: st
       title={t(locale, "useCases.title")}
       lead={t(locale, "useCases.lead")}
     >
-      {env.demoUrl && <Button class="full-demo-desktop" href={env.demoUrl} arrow>{t(locale, "useCases.fullDemo")}</Button>}
+      {demoHref && <Button class="full-demo-desktop" href={demoHref} arrow>{t(locale, "useCases.fullDemo")}</Button>}
     </SectionHeading>
     <ul class="cases">
       {cases.map(({ key, scenario, art }) => {
@@ -45,8 +46,8 @@ const cases: { key: "halfMarathon" | "mascleta"; scenario: DemoScenario; art: st
         );
       })}
     </ul>
-    {env.demoUrl && (
-      <a class="full-demo-mobile" href={env.demoUrl}>
+    {demoHref && (
+      <a class="full-demo-mobile" href={demoHref}>
         {t(locale, "useCases.fullDemo")}
         <ArrowRight aria-hidden="true" size={18} />
       </a>

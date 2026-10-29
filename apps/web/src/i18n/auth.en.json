@@ -1,0 +1,12 @@
+{
+  "title": "Administrator access",
+  "user": "Username",
+  "password": "Password",
+  "login": "Sign in",
+  "loggingIn": "Signing in…",
+  "invalidCredentials": "Incorrect username or password",
+  "loginError": "Could not sign in. Please try again.",
+  "logout": "Sign out",
+  "loggingOut": "Signing out…",
+  "logoutError": "Could not sign out. Please try again."
+}

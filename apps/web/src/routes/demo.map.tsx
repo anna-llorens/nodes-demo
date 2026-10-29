@@ -4,10 +4,10 @@ import { validateMapSearch } from "@/lib/map-share";
 
 export const Route = createFileRoute("/demo/map")({
   validateSearch: validateMapSearch,
-  beforeLoad: ({ search }) => {
+  beforeLoad: ({ search, context }) => {
     throw redirect({
       to: Routes.localizedDemoMap,
-      params: { locale: "es" },
+      params: { locale: context.locale },
       search,
       replace: true,
     });

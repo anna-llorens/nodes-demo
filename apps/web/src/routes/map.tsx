@@ -7,19 +7,21 @@ import type { Scenario } from "@/scenarios/types";
 import { scenarioBounds } from "@/components/nodes/geo";
 import { DEFAULT_SPEED, readMapCache, restoreFromCache, restoreMapState, validateMapSearch, writeMapCache, type MapSearch } from "@/lib/map-share";
 import { mapText, type MapLocale } from "@/i18n/map";
+import { useAppLocale } from "@/i18n/locale-context";
 
 export const Route = createFileRoute("/map")({
   validateSearch: validateMapSearch,
   head: ({ match }) => {
-    const scenario = getScenario(match.search.scenario);
+    const locale = match.context.locale;
+    const scenario = getScenario(match.search.scenario, locale);
     return {
     meta: [
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { title: `Mapa · ${scenario.name} — NODES` },
-      { name: "description", content: `Mapa simulado de densidad y flujo por zonas cubiertas con nodos LiDAR: ${scenario.name}.` },
-      { property: "og:title", content: `Mapa · ${scenario.name} — NODES` },
-      { property: "og:description", content: "Simulación de densidad por zona con nodos LiDAR anónimos." },
+      { title: mapText(locale, "meta.title", { scenario: scenario.name }) },
+      { name: "description", content: mapText(locale, "meta.description", { scenario: scenario.name }) },
+      { property: "og:title", content: mapText(locale, "meta.title", { scenario: scenario.name }) },
+      { property: "og:description", content: mapText(locale, "meta.description", { scenario: scenario.name }) },
     ],
     };
   },
@@ -27,21 +29,20 @@ export const Route = createFileRoute("/map")({
 });
 
 function MapaPage() {
+  const locale = useAppLocale();
   const search = Route.useSearch();
   // Resolve shared IDs against the configured scenarios; unknown IDs fall back to the marathon.
-  const scenario = getScenario(search.scenario);
-  return <ScenarioMap key={scenario.id} scenario={scenario} search={search} />;
+  const scenario = getScenario(search.scenario, locale);
+  return <ScenarioMap key={scenario.id} scenario={scenario} search={search} locale={locale} />;
 }
 
 export function ScenarioMap({
   scenario,
   search,
-  mapOnlyNavigation = false,
   locale = "es",
 }: {
   scenario: Scenario;
   search: MapSearch;
-  mapOnlyNavigation?: boolean;
   locale?: MapLocale;
 }) {
   const [initial, setInitial] = useState(() => ({ ...restoreMapState(search, scenario), speed: DEFAULT_SPEED }));
@@ -77,10 +78,9 @@ export function ScenarioMap({
           <div id="map-layers-slot" />
         </div>
       }
-      mapOnlyNavigation={mapOnlyNavigation}
       mapLocale={locale}
     >
-      {restored && <MapStage scenario={scenario} layers={layers} onLayerChange={setLayer} initialCamera={initial.camera} {...(fit ? { fitBounds: scenarioBounds(scenario) } : {})} initialPalette={initial.palette} initialMinute={initial.time} initialSpeed={initial.speed} locale={locale} mapOnlyNavigation={mapOnlyNavigation} />}
+      {restored && <MapStage scenario={scenario} layers={layers} onLayerChange={setLayer} initialCamera={initial.camera} {...(fit ? { fitBounds: scenarioBounds(scenario) } : {})} initialPalette={initial.palette} initialMinute={initial.time} initialSpeed={initial.speed} locale={locale} />}
     </AppShell>
   );
 }

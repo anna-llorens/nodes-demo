@@ -225,8 +225,8 @@ export default function MapView({
         createRoot(el).render(
           <>
             {c.underpass && (
-              <span className="mb-1 rounded-full border-2 border-dens-crit bg-card px-2 py-0.5 text-center text-[10px] font-bold leading-tight text-foreground shadow-card">
-                Paso inferior<br />cerrado
+              <span className="mb-1 whitespace-pre-line rounded-full border-2 border-dens-crit bg-card px-2 py-0.5 text-center text-[10px] font-bold leading-tight text-foreground shadow-card">
+                {mapText(locale, "traffic.underpassClosed")}
               </span>
             )}
             <span className="h-4 w-4 rounded-full border-[3px] border-dens-crit bg-muted shadow-card" />

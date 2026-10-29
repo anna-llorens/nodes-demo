@@ -2,6 +2,7 @@
 import { Menu, X } from "@lucide/astro";
 import { t, type Locale } from "../i18n";
 import { env } from "../lib/env";
+import { demoDefaultUrl } from "../lib/demo";
 import { mainNav, pagePath, pages, type PageId } from "../lib/routes";
 import Button from "./Button.astro";
 import LanguageSwitcher from "./LanguageSwitcher.astro";
@@ -17,10 +18,11 @@ interface Props {
 }
 const { locale, page } = Astro.props;
 
+const demoHref = demoDefaultUrl(env.demoUrl, locale);
 const links = mainNav.flatMap((id) => {
   const link = { href: pagePath(locale, id), label: t(locale, pages[id].titleKey), current: id === page, external: false };
-  return id === "technology" && env.demoUrl
-    ? [link, { href: env.demoUrl, label: t(locale, "nav.demo"), current: false, external: true }]
+  return id === "technology" && demoHref
+    ? [link, { href: demoHref, label: t(locale, "nav.demo"), current: false, external: true }]
     : [link];
 });
 const contact = { href: pagePath(locale, "contact"), label: t(locale, "collaborate.contact") };

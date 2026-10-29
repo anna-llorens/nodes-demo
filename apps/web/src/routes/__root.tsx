@@ -5,6 +5,7 @@ import {
   Outlet,
   Link,
   createRootRouteWithContext,
+  redirect,
   useRouter,
   HeadContent,
   Scripts,
@@ -16,6 +17,11 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { initAnalytics, initClickTracking, trackPageView } from "../lib/analytics";
 import { useRouterState } from "@tanstack/react-router";
+import { getSession } from "@/auth/functions";
+import { AuthContext } from "@/auth/context";
+import { isPublicPath } from "@/auth/policy";
+import { AppLocaleContext } from "@/i18n/locale-context";
+import { requestedLocale, validateLanguageSearch } from "@/i18n/locale";
 
 function NotFoundComponent() {
   return (
@@ -78,6 +84,15 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  validateSearch: validateLanguageSearch,
+  beforeLoad: async ({ location, matches, search }) => {
+    const { locale, ...auth } = await getSession({ data: { locale: requestedLocale(location.pathname, search.lang) } });
+    const matchedPage = matches.some((match) => match.routeId !== "__root__");
+    if (matchedPage && !auth.isAuthenticated && !isPublicPath(location.pathname)) {
+      throw redirect({ to: Routes.login, search: { redirect: location.href }, replace: true });
+    }
+    return { auth, locale };
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -106,8 +121,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  const locale = useRouterState({ select: (state) => state.matches[0]?.context.locale ?? "es" });
   return (
-    <html lang="es">
+    <html lang={locale}>
       <head>
         <HeadContent />
       </head>
@@ -120,7 +136,8 @@ function RootShell({ children }: { children: ReactNode }) {
 }
 
 function RootComponent() {
-  const { queryClient } = Route.useRouteContext();
+  const { queryClient, auth, locale } = Route.useRouteContext();
+  const router = useRouter();
   const path = useRouterState({ select: (s) => s.location.pathname });
   useEffect(() => {
     initAnalytics();
@@ -129,14 +146,27 @@ function RootComponent() {
   useEffect(() => {
     if (!path.startsWith(Routes.admin)) trackPageView(path);
   }, [path]);
-
+  useEffect(() => {
+    const onFocus = () => { void router.invalidate(); };
+    const onPageShow = (event: PageTransitionEvent) => { if (event.persisted) window.location.reload(); };
+    window.addEventListener("focus", onFocus);
+    window.addEventListener("pageshow", onPageShow);
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      window.removeEventListener("pageshow", onPageShow);
+    };
+  }, [router]);
 
   return (
     <QueryClientProvider client={queryClient}>
-      <DataSourceProvider>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-      </DataSourceProvider>
+      <AuthContext.Provider value={auth}>
+        <AppLocaleContext.Provider value={locale}>
+          <DataSourceProvider>
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+          </DataSourceProvider>
+        </AppLocaleContext.Provider>
+      </AuthContext.Provider>
     </QueryClientProvider>
   );
 }

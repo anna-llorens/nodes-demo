@@ -14,6 +14,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as HomeRouteImport } from './routes/home'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as DemoMapRouteImport } from './routes/demo.map'
@@ -43,6 +44,11 @@ const AlertsRoute = AlertsRouteImport.update({
 const HomeRoute = HomeRouteImport.update({
   id: '/home',
   path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MapRoute = MapRouteImport.update({
@@ -77,6 +83,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/alerts': typeof AlertsRoute
   '/home': typeof HomeRoute
+  '/login': typeof LoginRoute
   '/map': typeof MapRoute
   '/reports': typeof ReportsRoute
   '/demo/map': typeof DemoMapRoute
@@ -89,6 +96,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/alerts': typeof AlertsRoute
   '/home': typeof HomeRoute
+  '/login': typeof LoginRoute
   '/map': typeof MapRoute
   '/reports': typeof ReportsRoute
   '/demo/map': typeof DemoMapRoute
@@ -102,6 +110,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/alerts': typeof AlertsRoute
   '/home': typeof HomeRoute
+  '/login': typeof LoginRoute
   '/map': typeof MapRoute
   '/reports': typeof ReportsRoute
   '/demo/map': typeof DemoMapRoute
@@ -116,6 +125,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/alerts'
     | '/home'
+    | '/login'
     | '/map'
     | '/reports'
     | '/demo/map'
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/alerts'
     | '/home'
+    | '/login'
     | '/map'
     | '/reports'
     | '/demo/map'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/alerts'
     | '/home'
+    | '/login'
     | '/map'
     | '/reports'
     | '/demo/map'
@@ -153,6 +165,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AlertsRoute: typeof AlertsRoute
   HomeRoute: typeof HomeRoute
+  LoginRoute: typeof LoginRoute
   MapRoute: typeof MapRoute
   ReportsRoute: typeof ReportsRoute
   DemoMapRoute: typeof DemoMapRoute
@@ -195,6 +208,13 @@ declare module '@tanstack/react-router' {
       path: '/home'
       fullPath: '/home'
       preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/map': {
@@ -241,6 +261,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AlertsRoute: AlertsRoute,
   HomeRoute: HomeRoute,
+  LoginRoute: LoginRoute,
   MapRoute: MapRoute,
   ReportsRoute: ReportsRoute,
   DemoMapRoute: DemoMapRoute,

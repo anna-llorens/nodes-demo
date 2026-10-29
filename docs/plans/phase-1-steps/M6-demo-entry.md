@@ -8,7 +8,7 @@ Reference: `docs/design/reference/demo-entry-approved.png`.
 
 - Entry screen at the demo root with the two scenario cards (`scene-half-marathon.svg`,
   `scene-mascleta.svg` instead of photos), copy from `apps/web/src/i18n/demo-entry.*.json`.
-- Demo header: logo linking to `PUBLIC_SITE_URL`, the simulation badge, "Volver a la web".
+- Demo header: logo linking to `PUBLIC_SITE_URL`, the simulation badge, "Ir a la web".
   No alerts bell on the entry screen; inside a scenario keep the current alerts behaviour.
 - Map, node detail, alerts and reports: untouched.
 

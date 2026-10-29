@@ -1,15 +1,19 @@
 ---
+import { getCollection } from "astro:content";
 import Svg from "@nodes/ui/Svg.astro";
 import { t, type Locale } from "../i18n";
 import { env } from "../lib/env";
-import { mainNav, pagePath, pages } from "../lib/routes";
+import { legalEntryId } from "../lib/legal";
+import { legalNav, mainNav, pagePath, pages } from "../lib/routes";
 import Logo from "./Logo.astro";
 
-/** Footer: logo · nav · social icons (only when configured) · © year. Legal links are off until the legal texts exist. */
+/** Footer: logo, navigation, configured social links and available legal pages. */
 interface Props {
   locale: Locale;
 }
 const { locale } = Astro.props;
+const legalEntries = new Set((await getCollection("legal")).map((entry) => entry.id));
+const legalLinks = legalNav.filter((item) => legalEntries.has(legalEntryId(locale, item.page)));
 
 // Brand names are proper nouns, not translated copy.
 const social = [
@@ -40,11 +44,11 @@ const year = new Date().getFullYear();
     )}
   </div>
   <div class="container bottom">
-    {/* Legal links: off until the final legal texts exist (see docs/plans/phase-0-follow-ups.md).
-    <ul class="legal">
-      {legalNav.map((item) => <li><a href={pagePath(locale, item.page)}>{t(locale, item.labelKey)}</a></li>)}
-    </ul>
-    */}
+    {legalLinks.length > 0 && (
+      <ul class="legal">
+        {legalLinks.map((item) => <li><a href={pagePath(locale, item.page)}>{t(locale, item.labelKey)}</a></li>)}
+      </ul>
+    )}
     <p>{t(locale, "footer.copyright", { year })}</p>
   </div>
 </footer>

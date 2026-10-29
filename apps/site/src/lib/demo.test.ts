@@ -1,5 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { demoScenarioUrl } from "./demo";
+import { demoDefaultUrl, demoScenarioUrl } from "./demo";
+
+describe("demoDefaultUrl", () => {
+  it("opens the marathon map directly in the site's locale", () => {
+    expect(demoDefaultUrl("https://demo.example", "en")).toBe("https://demo.example/en/demo/map?scenario=maraton");
+    expect(demoDefaultUrl("https://demo.example/", "es")).toBe("https://demo.example/es/demo/map?scenario=maraton");
+  });
+  it("preserves a configured app base path", () => {
+    expect(demoDefaultUrl("https://example.org/app", "en"))
+      .toBe("https://example.org/app/en/demo/map?scenario=maraton");
+  });
+  it("keeps the link absent when the demo URL is unset", () => {
+    expect(demoDefaultUrl(undefined, "en")).toBeUndefined();
+  });
+});
 
 describe("demoScenarioUrl", () => {
   it("links to the scenario on the map in the selected language", () => {

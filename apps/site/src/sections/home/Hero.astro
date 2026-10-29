@@ -5,6 +5,7 @@ import Button from "../../components/Button.astro";
 import Eyebrow from "../../components/Eyebrow.astro";
 import { t, type Locale } from "../../i18n";
 import { env } from "../../lib/env";
+import { demoDefaultUrl } from "../../lib/demo";
 import { pagePath } from "../../lib/routes";
 
 /** Home hero: badge, the page's h1, lead and 3 buttons; illustration bleeding to the right edge. */
@@ -12,6 +13,7 @@ interface Props {
   locale: Locale;
 }
 const { locale } = Astro.props;
+const demoHref = demoDefaultUrl(env.demoUrl, locale);
 ---
 
 <section class="hero" aria-labelledby="hero-title">
@@ -21,7 +23,7 @@ const { locale } = Astro.props;
       <h1 id="hero-title">{t(locale, "hero.title")}</h1>
       <p class="lead">{t(locale, "hero.lead")}</p>
       <div class="actions">
-        {env.demoUrl && <Button href={env.demoUrl} arrow>{t(locale, "hero.ctaDemo")}</Button>}
+        {demoHref && <Button href={demoHref} arrow>{t(locale, "hero.ctaDemo")}</Button>}
         <Button href={pagePath(locale, "technology")} variant="outline">{t(locale, "hero.ctaProject")}</Button>
         <Button
           href={pagePath(locale, "collaborate")}

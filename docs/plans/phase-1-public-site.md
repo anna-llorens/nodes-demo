@@ -184,7 +184,7 @@ Behaviour:
   `apps/web/src/i18n/demo-entry.es.json` and `.en.json` (provided; Spanish only shown until the
   demo gets its own i18n step).
 - Header for every demo screen: logo (links to the public site `PUBLIC_SITE_URL`), the existing
-  simulation badge, a "Volver a la web" link and the hamburger on mobile. **No alerts bell on
+  simulation badge, a "Ir a la web" link and the hamburger on mobile. **No alerts bell on
   the entry screen**; inside a scenario, keep the existing alerts behaviour.
 - Card photos: the mockup photos are generated images. Use them only if the team provides the
   original files with rights to use them; until then, a soft-green gradient with the scenario

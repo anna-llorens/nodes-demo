@@ -4,8 +4,7 @@ import { describe, expect, it } from "vitest";
 import { locales } from "../i18n";
 import { legalPages, legalSlug } from "./legal";
 
-// The legal texts are not in the repo yet (pages off until they are final). When they arrive,
-// every page must exist in both languages with a draft flag.
+// Available legal texts must exist in both languages and declare their draft status.
 const dir = join(import.meta.dirname, "../content/legal");
 const filesOf = (locale: string) => (existsSync(join(dir, locale)) ? readdirSync(join(dir, locale)).sort() : []);
 

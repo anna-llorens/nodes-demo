@@ -1,3 +1,4 @@
+import { useAuth } from "@/auth/context";
 import { Routes } from "@/lib/routes";
 import { ClientOnly, Link } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
@@ -41,7 +42,8 @@ export const levelDot: Record<string, string> = {
 const fmt = (n: number, locale: MapLocale) => n.toLocaleString(locale === "en" ? "en-US" : "es-ES");
 const NO_RUNNERS: RunnerHeatSample[] = [];
 
-export function MapStage({ scenario: base, layers, onLayerChange, initialCamera, fitBounds, initialPalette = "termica", initialMinute, initialSpeed = DEFAULT_SPEED, locale = "es", mapOnlyNavigation = false }: { scenario: RawScenario; layers: MapLayers; onLayerChange: (key: keyof MapLayers, value: boolean) => void; initialCamera?: MapCamera; fitBounds?: [[number, number], [number, number]]; initialPalette?: RunnerPalette; initialMinute?: number; initialSpeed?: number; locale?: MapLocale; mapOnlyNavigation?: boolean }) {
+export function MapStage({ scenario: base, layers, onLayerChange, initialCamera, fitBounds, initialPalette = "termica", initialMinute, initialSpeed = DEFAULT_SPEED, locale = "es" }: { scenario: RawScenario; layers: MapLayers; onLayerChange: (key: keyof MapLayers, value: boolean) => void; initialCamera?: MapCamera; fitBounds?: [[number, number], [number, number]]; initialPalette?: RunnerPalette; initialMinute?: number; initialSpeed?: number; locale?: MapLocale }) {
+  const { isAuthenticated } = useAuth();
   const densityLabels = mapDensityLabel(locale);
   const suggestionLabels = mapSuggestionLabel(locale);
   const localizedScenarios = useMemo(() => getScenarios(locale), [locale]);
@@ -189,8 +191,8 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
                 {localizedScenarios.map((s) => (
                   <Link
                     key={s.id}
-                    to={mapOnlyNavigation ? Routes.localizedDemoMap : Routes.map}
-                    {...(mapOnlyNavigation ? { params: { locale } } : {})}
+                    to={!isAuthenticated ? Routes.localizedDemoMap : Routes.map}
+                    {...(!isAuthenticated ? { params: { locale } } : {})}
                     search={{ scenario: s.id }}
                     className={cn("block rounded-lg px-3 py-2 text-sm hover:bg-muted", s.id === base.id && "bg-muted font-semibold")}
                   >
@@ -207,7 +209,7 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
             <span className="hidden items-center gap-2 text-sm text-muted-foreground lg:flex"><Clock className="h-4 w-4" /> {scenario.schedule.start}–{scenario.schedule.end}</span>
             <ShareMapDialog
               locale={locale}
-              getUrl={() => buildMapShareUrl(window.location.origin, { scenario: base.id, layers, camera, palette, time: minute }, mapOnlyNavigation ? mapRoutePath(locale) : Routes.map)}
+              getUrl={() => buildMapShareUrl(window.location.origin, { scenario: base.id, layers, camera, palette, time: minute }, !isAuthenticated ? mapRoutePath(locale) : locale === "en" ? `${Routes.map}?lang=en` : Routes.map)}
             />
           </div>
         </div>
@@ -290,7 +292,7 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
           {/* Burbuja del nodo */}
           {selected && (
             <div className="absolute left-1/2 top-16 w-[min(260px,calc(100%-2rem))] -translate-x-1/2 rounded-2xl bg-card p-3.5 shadow-float lg:left-auto lg:right-14 lg:translate-x-0 lg:hidden">
-              <NodeBubble minute={minute} node={selected} onClose={() => setSelectedId(null)} locale={locale} mapOnlyNavigation={mapOnlyNavigation} />
+              <NodeBubble minute={minute} node={selected} onClose={() => setSelectedId(null)} locale={locale} />
             </div>
           )}
 
@@ -323,7 +325,7 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
         <aside className="hidden w-80 shrink-0 flex-col gap-4 overflow-y-auto border-l border-border bg-background p-4 lg:flex 2xl:w-96">
           {selected ? (
             <div className="rounded-2xl bg-card p-4 shadow-card">
-              <NodeBubble minute={minute} node={selected} onClose={() => setSelectedId(null)} detailed locale={locale} mapOnlyNavigation={mapOnlyNavigation} />
+              <NodeBubble minute={minute} node={selected} onClose={() => setSelectedId(null)} detailed locale={locale} />
             </div>
           ) : (
             <p className="rounded-2xl bg-card p-4 text-sm text-muted-foreground shadow-card">{mapText(locale, "scenario.noNodeSelected")}</p>
@@ -338,8 +340,9 @@ export function MapStage({ scenario: base, layers, onLayerChange, initialCamera,
   );
 }
 
-function NodeBubble({ node, onClose, detailed, minute, locale, mapOnlyNavigation }: { node: Scenario["nodes"][number]; onClose: () => void; detailed?: boolean; minute: number; locale: MapLocale; mapOnlyNavigation: boolean }) {
+function NodeBubble({ node, onClose, detailed, minute, locale }: { node: Scenario["nodes"][number]; onClose: () => void; detailed?: boolean; minute: number; locale: MapLocale }) {
   const lvl = densityLevel(node.snapshot.density);
+  const { isAuthenticated } = useAuth();
   const densityLabels = mapDensityLabel(locale);
   const suggestionLabels = mapSuggestionLabel(locale);
   return (
@@ -376,7 +379,7 @@ function NodeBubble({ node, onClose, detailed, minute, locale, mapOnlyNavigation
           <p className="col-span-2 text-[11px] text-muted-foreground">{mapText(locale, "node.estimatedByZone")}</p>
         </div>
       )}
-      {!mapOnlyNavigation && <Link
+      {isAuthenticated && <Link
         to={Routes.node}
         params={{ id: node.id }}
         search={{ t: Math.round(minute) }}
