@@ -1,8 +1,14 @@
 import sitemap from "@astrojs/sitemap";
 import { defineConfig } from "astro/config";
-import { loadEnv } from "vite";
 
-const siteUrl = loadEnv(process.env.NODE_ENV ?? "production", process.cwd(), "PUBLIC_").PUBLIC_SITE_URL?.trim();
+// Local builds read apps/site/.env; in CI (Cloudflare) the variable comes from the environment,
+// which wins over the file. `vite` is not a direct dependency, so it must not be imported here.
+try {
+  process.loadEnvFile();
+} catch {
+  // No .env file: fine in CI.
+}
+const siteUrl = process.env.PUBLIC_SITE_URL?.trim();
 const site = siteUrl ? siteUrl.replace(/\/+$/, "") : undefined;
 
 // Static public website (ADR 0004). Routes are /es/... and /en/...; only the root page picks
