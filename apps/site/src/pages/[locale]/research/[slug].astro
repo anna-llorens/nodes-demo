@@ -157,6 +157,20 @@ const languageHrefs = Object.fromEntries(
   .prose :global(ol) {
     margin: 0 0 var(--space-4);
   }
+  /* Article images: full column width, never wider than the text column. */
+  .prose :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-card, 12px);
+  }
+  /* Image caption: the italic line right after an image. */
+  .prose :global(p:has(> img) + p > em:only-child) {
+    display: block;
+    margin-top: calc(-1 * var(--space-2));
+    font-size: var(--text-small);
+    color: var(--color-text-muted, inherit);
+  }
   aside {
     display: flex;
     flex-direction: column;

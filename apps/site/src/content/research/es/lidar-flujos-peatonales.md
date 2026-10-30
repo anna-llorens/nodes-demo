@@ -21,6 +21,10 @@ Un LiDAR (*Light Detection and Ranging*) emite pulsos de luz láser y mide cuán
 
 donde *c* es la velocidad de la luz y *t* el tiempo medido; se divide entre dos porque el pulso va y vuelve. Repitiendo la medida cientos de miles de veces por segundo en distintas direcciones, el sensor construye una **nube de puntos**: un conjunto de coordenadas (x, y, z) que dibuja en 3D lo que tiene alrededor ([NOAA](https://oceanservice.noaa.gov/facts/LiDAR.html)). Cada punto lleva además su intensidad, cuánta luz volvió, que depende del material y el color.
 
+![Nube de puntos de una plaza vista por un sensor LiDAR montado en un poste: las personas aparecen como siluetas de puntos, sin rasgos reconocibles](../../../assets/research/lidar-point-cloud-plaza.jpg)
+
+*Ilustración: así «ve» una plaza un LiDAR. Cada persona es un conjunto de puntos en 3D, sin cara ni color.*
+
 La tecnología no nació para las multitudes. Los primeros sistemas se usaron en meteorología y cartografía; en 1971 la misión Apolo 15 cartografió la Luna con un altímetro láser ([Wikipedia](https://en.wikipedia.org/wiki/Lidar)). Después se convirtió en un sensor clave de los vehículos autónomos, y en los últimos años se prueba para medir flujos de personas en estaciones, aeropuertos y espacios públicos ([Khanfor et al., 2026](https://arxiv.org/html/2603.27663v1)).
 
 Hay sensores con espejos giratorios que barren 360°, sensores de estado sólido con un campo de visión más estrecho y sensores con patrones de barrido no repetitivos que van rellenando la escena con el tiempo. Para monitorizar personas suelen montarse fijos, en altura: en una farola, un techo o un mástil.

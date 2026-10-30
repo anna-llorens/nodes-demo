@@ -1,5 +1,7 @@
 ---
 import Svg from "@nodes/ui/Svg.astro";
+import { Image } from "astro:assets";
+import lidarImage from "../../assets/research/lidar-point-cloud-plaza.jpg";
 import Button from "../../components/Button.astro";
 import Eyebrow from "../../components/Eyebrow.astro";
 import { t, type Locale } from "../../i18n";
@@ -7,7 +9,7 @@ import { articleFor, articlePath } from "../../lib/research";
 import { pagePath } from "../../lib/routes";
 
 /**
- * "What we are researching": two topic cards with an icon panel and a button to Research. A topic
+ * "What we are researching": two topic cards with an image (or an icon panel) and a button to Research. A topic
  * whose article is published in this locale links to it; the title link covers the whole card.
  */
 interface Props {
@@ -17,8 +19,8 @@ const { locale } = Astro.props;
 const topics = await Promise.all(
   (
     [
-      { key: "lidar", icon: "icons/point-cloud" },
-      { key: "prediction", icon: "icons/chart" },
+      { key: "lidar", icon: "icons/point-cloud", image: lidarImage },
+      { key: "prediction", icon: "icons/chart", image: undefined },
     ] as const
   ).map(async (topic) => {
     const article = await articleFor(topic.key, locale);
@@ -41,7 +43,11 @@ const topics = await Promise.all(
         topics.map((topic) => (
           <li>
             <article class:list={{ linked: topic.href }}>
-              <span class="panel"><Svg name={topic.icon} /></span>
+              {topic.image ? (
+                <Image class="photo" src={topic.image} alt="" widths={[480, 800, 1200]} sizes="(min-width: 768px) 50vw, 100vw" />
+              ) : (
+                <span class="panel"><Svg name={topic.icon} /></span>
+              )}
               <h3>
                 {topic.href ? (
                   <a href={topic.href}>{t(locale, `home.research.${topic.key}.title`)}</a>
@@ -112,6 +118,14 @@ const topics = await Promise.all(
     aspect-ratio: 16 / 7;
     background: var(--color-primary-soft);
     color: var(--color-primary);
+  }
+  /* Decorative card image, same frame as the icon panel. */
+  .photo {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 7;
+    object-fit: cover;
   }
   .panel :global(svg) {
     width: 72px;

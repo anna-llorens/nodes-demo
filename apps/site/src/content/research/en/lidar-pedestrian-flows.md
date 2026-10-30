@@ -21,6 +21,10 @@ A LiDAR (*Light Detection and Ranging*) emits pulses of laser light and measures
 
 where *c* is the speed of light and *t* the measured time; it is divided by two because the pulse travels out and back. By repeating the measurement hundreds of thousands of times per second in different directions, the sensor builds a **point cloud**: a set of (x, y, z) coordinates that draws its surroundings in 3D ([NOAA](https://oceanservice.noaa.gov/facts/LiDAR.html)). Each point also carries its intensity, how much light came back, which depends on the material and colour.
 
+![Point cloud of a square seen by a LiDAR sensor mounted on a pole: people appear as silhouettes made of points, with no recognisable features](../../../assets/research/lidar-point-cloud-plaza.jpg)
+
+*Illustration: how a LiDAR "sees" a square. Each person is a set of 3D points, with no face or colour.*
+
 The technology was not born for crowds. The first systems were used in meteorology and mapping; in 1971 the Apollo 15 mission mapped the Moon with a laser altimeter ([Wikipedia](https://en.wikipedia.org/wiki/Lidar)). It then became a key sensor for autonomous vehicles, and in recent years it has been tested to measure flows of people in stations, airports and public spaces ([Khanfor et al., 2026](https://arxiv.org/html/2603.27663v1)).
 
 There are sensors with rotating mirrors that sweep 360°, solid-state sensors with a narrower field of view, and sensors with non-repetitive scan patterns that fill in the scene over time. To monitor people they are usually mounted in a fixed position, up high: on a street light, a ceiling or a mast.
