@@ -154,7 +154,7 @@
   "research.hero.eyebrow": "Investigación",
   "research.hero.title": "Conocimiento para nuevas aplicaciones.",
   "research.hero.lead": "Compartimos análisis, experimentos y aprendizajes sobre tecnologías de percepción, análisis de datos y dinámica de multitudes.",
-  "research.hero.imageAlt": "Ilustración de un sensor LiDAR en un poste sobre una plaza: cada persona aparece dentro de un volumen verde, sin rasgos reconocibles",
+  "research.hero.imageAlt": "Nube de puntos de una calle peatonal vista por un sensor LiDAR: las personas aparecen como siluetas de puntos de colores, sin rasgos reconocibles",
   "research.filters.all": "Todos",
   "research.filters.lidar": "LiDAR",
   "research.filters.crowd": "Dinámica de multitudes",

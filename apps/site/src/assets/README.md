@@ -10,7 +10,7 @@ Add a row before publishing a new one (see CLAUDE.md, UI content rules).
 | `applications/spaces-stadium.webp` | Applications · venues and public spaces card | Generated illustration (AI, supplied by the team) | Own |
 | `research/decision-venue-flows.webp` | Decision-support article cover, Research card | Generated illustration (AI, supplied by the team) | Own |
 | `research/events-race-start.webp` | Research · sports events card | Generated illustration (AI, supplied by the team) | Own |
-| `research/research-hero.jpg` | Research · page hero | Generated illustration (NODES) | Own |
+| `research/research-hero.webp` | Research · page hero | Generated illustration (AI, supplied by the team) | Own |
 | `technology/technology-hero.jpg` | Technology · page hero | Generated illustration (NODES) | Own |
 | `research/lidar-point-cloud-plaza.jpg` | LiDAR article and its cover, home and Research cards | Generated illustration (NODES) | Own |
 | `research/prediction-city-map.webp` | Congestion prediction article cover, home and Research cards | Generated illustration (AI, supplied by the team) | Own |
