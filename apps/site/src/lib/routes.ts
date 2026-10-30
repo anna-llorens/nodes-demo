@@ -8,7 +8,7 @@ export const pages = {
   demo: { path: "demo", titleKey: "nav.demo", descriptionKey: "demo.hero.lead" },
   research: { path: "research", titleKey: "nav.research", descriptionKey: "research.hero.lead" },
   contact: { path: "contact", titleKey: "nav.contact", descriptionKey: "contact.hero.lead" },
-  about: { path: "about", titleKey: "nav.about", descriptionKey: "about.lead" },
+  about: { path: "about", titleKey: "nav.about", descriptionKey: "about.hero.lead" },
   legalNotice: { path: "legal/legal-notice", titleKey: "legal.legalNotice.title", descriptionKey: "legal.legalNotice.description" },
   privacy: { path: "legal/privacy", titleKey: "legal.privacy.title", descriptionKey: "legal.privacy.description" },
   cookies: { path: "legal/cookies", titleKey: "legal.cookies.title", descriptionKey: "legal.cookies.description" },
@@ -21,12 +21,12 @@ export const pagePath = (locale: Locale, page: PageId) => `/${locale}/${pages[pa
 
 /**
  * Main navigation, in order. Technology is hidden for now (its page is not built); restore it
- * between "applications" and "demo" together with its `getStaticPaths`.
+ * after "research" together with its `getStaticPaths`.
  */
-export const mainNav: PageId[] = ["home", "applications", /* "technology", */ "demo", "research", "contact"];
+export const mainNav: PageId[] = ["home", "applications", "research", /* "technology", */ "demo", "about", "contact"];
 
-/** Footer navigation: the main links plus About, which is not in the header. */
-export const footerNav: PageId[] = [...mainNav, "about"];
+/** Footer navigation: the same links as the header. */
+export const footerNav: PageId[] = mainNav;
 
 /** Footer legal links, with their labels. */
 export const legalNav = [

@@ -1,8 +1,13 @@
 ---
-import { isLocale } from "../../i18n";
+import heroImage from "../../assets/about/about-hero.webp";
+import Button from "../../components/Button.astro";
+import PageHero from "../../components/PageHero.astro";
+import { isLocale, t } from "../../i18n";
 import Base from "../../layouts/Base.astro";
 import { localePaths } from "../../lib/static-paths";
-import Intro from "../../sections/about/Intro.astro";
+import Approach from "../../sections/about/Approach.astro";
+import Collaborate from "../../sections/about/Collaborate.astro";
+import Context from "../../sections/about/Context.astro";
 import Team from "../../sections/about/Team.astro";
 
 export const getStaticPaths = localePaths;
@@ -12,6 +17,18 @@ if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
 ---
 
 <Base locale={locale} page="about">
-  <Intro locale={locale} />
-  <Team locale={locale} showMore={false} showEyebrow={false} />
+  <PageHero
+    id="about-hero-title"
+    eyebrow={t(locale, "about.hero.eyebrow")}
+    title={t(locale, "about.hero.title")}
+    lead={t(locale, "about.hero.lead")}
+    image={heroImage}
+    imageAlt={t(locale, "about.hero.imageAlt")}
+  >
+    <Button slot="aside" href="#our-story" arrow>{t(locale, "about.hero.cta")}</Button>
+  </PageHero>
+  <Approach locale={locale} />
+  <Team locale={locale} />
+  <Context locale={locale} />
+  <Collaborate locale={locale} />
 </Base>

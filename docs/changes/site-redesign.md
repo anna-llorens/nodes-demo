@@ -185,6 +185,35 @@ Between the hero and the card list, the Research page now has two sections from 
 Validation: typecheck, lint, test and build pass; checked in the browser at 1440 px and 375 px, and
 the list no longer contains "LiDAR for pedestrian flow analysis" in either locale.
 
+## About page redesign
+
+[about.astro](../../apps/site/src/pages/%5Blocale%5D/about.astro) follows the "About NODES" mockup:
+photo hero, "Our approach", founders, "Our context" and a dark "Collaborate" band. The old intro
+(three values) and the initials avatar are gone.
+
+- Hero: `PageHero` with the photo and an "Our story" button that jumps to `#our-story` (the
+  context section). For every photo hero, the lead is capped at 40ch and the photo's left fade is
+  longer (to 45%), so the text no longer runs over the image; this also affects Technology.
+- The hero photo shows realistic people with detection boxes, which the CLAUDE.md content rules
+  exclude. The team chose to use it anyway; the exception is recorded in the image register.
+- [Approach](../../apps/site/src/sections/about/Approach.astro): three values (innovation, privacy
+  by design, real-world impact) with existing icons. The mockup's "safer" became "more
+  comfortable" (copy rules avoid safety framing).
+- [Team](../../apps/site/src/sections/about/Team.astro): one card per founder with an illustrated
+  neutral silhouette ([avatar-person.svg](../../packages/ui/assets/illustrations/avatar-person.svg))
+  instead of a photo; the mockup faces are fictional. Bios and roles are the longer mockup versions
+  ("CTO · Technology", "CEO · Business"). Sarolta has no LinkedIn link yet.
+- [Context](../../apps/site/src/sections/about/Context.astro): R&D stage text and a link to
+  Research. "Testing in real environments" became "preparing tests", since no real sensor is
+  connected yet. The illustration's edges are masked so its off-white background blends in.
+- [Collaborate](../../apps/site/src/sections/about/Collaborate.astro): dark band over the Research
+  hero image with a left gradient, white text and a button to Contact.
+- About is now in the header (`mainNav`); the footer uses the same list.
+- Old `about.*` keys and the unused `team.eyebrow/title/lead/more` keys were removed.
+
+Validation: typecheck, lint, test and build pass; checked in the browser at 1440 px (EN) and
+375 px (ES) with no horizontal scroll.
+
 ## Remaining
 
 - Old `collab.form.*` keys no longer used (title, lead, type, typePlaceholder, errorText) can be

@@ -193,12 +193,15 @@ const { id, eyebrow, title, lead, image, imageAlt = "", plain = false, centered 
       width: 45%;
       padding-bottom: 0;
     }
+    .has-photo .lead {
+      max-width: 40ch;
+    }
     .photo {
       position: absolute;
       inset: 0 0 0 auto;
       width: 70%;
       margin: 0;
-      mask-image: linear-gradient(to right, transparent, black 30%);
+      mask-image: linear-gradient(to right, transparent 5%, black 45%);
     }
     .photo :global(img) {
       height: 100%;

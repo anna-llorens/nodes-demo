@@ -1,0 +1,118 @@
+---
+import Svg from "@nodes/ui/Svg.astro";
+import Eyebrow from "../../components/Eyebrow.astro";
+import { t, type Locale } from "../../i18n";
+
+/** "Our approach": heading with a lead beside it, then three values separated by thin rules. */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const values = [
+  { key: "innovation", icon: "icons/lightbulb" },
+  { key: "privacy", icon: "icons/shield" },
+  { key: "impact", icon: "icons/chart" },
+] as const;
+---
+
+<section class="section approach" aria-labelledby="about-approach-title">
+  <div class="container">
+    <div class="head">
+      <div>
+        <Eyebrow>{t(locale, "about.approach.eyebrow")}</Eyebrow>
+        <h2 id="about-approach-title">{t(locale, "about.approach.title")}</h2>
+      </div>
+      <p class="lead">{t(locale, "about.approach.lead")}</p>
+    </div>
+    <ul class="values">
+      {
+        values.map(({ key, icon }) => (
+          <li>
+            <span class="icon"><Svg name={icon} /></span>
+            <div>
+              <h3>{t(locale, `about.approach.${key}.title`)}</h3>
+              <p>{t(locale, `about.approach.${key}.text`)}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .approach {
+    background: var(--color-surface);
+  }
+  .head {
+    display: grid;
+    gap: var(--space-4);
+    margin-bottom: var(--space-12);
+  }
+  h2 {
+    margin-top: var(--space-3);
+    font-size: var(--text-h2);
+  }
+  p {
+    margin: 0;
+  }
+  .lead {
+    max-width: 48ch;
+    color: var(--color-text-muted);
+  }
+  .values {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-8);
+  }
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-5);
+  }
+  .icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
+  .icon :global(svg) {
+    width: 55%;
+    height: 55%;
+  }
+  h3 {
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+  li p {
+    margin-top: var(--space-2);
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 1024px) {
+    .head {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: end;
+      gap: var(--space-12);
+    }
+    .values {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+    }
+    li {
+      padding-inline: var(--space-8);
+    }
+    li:first-child {
+      padding-left: 0;
+    }
+    li + li {
+      border-left: 1px solid var(--color-border);
+    }
+  }
+</style>

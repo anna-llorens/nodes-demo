@@ -10,7 +10,7 @@ Add a row before publishing a new one (see CLAUDE.md, UI content rules).
 | `applications/spaces-stadium.webp` | Applications · venues and public spaces card | Generated illustration (AI, supplied by the team) | Own |
 | `research/decision-venue-flows.webp` | Decision-support article cover, Research card | Generated illustration (AI, supplied by the team) | Own |
 | `research/events-race-start.webp` | Research · sports events card | Generated illustration (AI, supplied by the team) | Own |
-| `research/research-hero.webp` | Research · page hero | Generated illustration (AI, supplied by the team) | Own |
+| `research/research-hero.webp` | Research · page hero, About · collaborate band | Generated illustration (AI, supplied by the team) | Own |
 | `research/area-*.png` | Research · research areas (four illustrations) | Generated illustration (AI, supplied by the team) | Own |
 | `technology/technology-hero.jpg` | Technology · page hero | Generated illustration (AI, supplied by the team, 30 Oct 2026) | Own |
 | `research/lidar-point-cloud-plaza.jpg` | LiDAR article and its cover, home card, Research featured section | Generated illustration (NODES) | Own |
@@ -32,3 +32,5 @@ Add a row before publishing a new one (see CLAUDE.md, UI content rules).
 | `research/architecture-vue-probes.jpg` | Distributed architectures article | Baena et al. (2021), Sensors 21(10):3404, fig. 14 | CC BY 4.0 |
 | `research/lidar-faq-cover.jpg` | LiDAR in 10 questions article cover, Research card | Generated illustration (AI, supplied by the team) | Own |
 | `research/lidar-mounting-*.svg` | LiDAR in 10 questions article | Original diagram (NODES), own calculation from the Livox Mid-360 datasheet | Own |
+| `about/about-hero.webp` | About · page hero | Generated illustration (AI, supplied by the team). Shows realistic people with detection boxes: an explicit team-approved exception to the CLAUDE.md content rule | Own |
+| `about/about-context.webp` | About · context section | Generated illustration (AI, supplied by the team) | Own |

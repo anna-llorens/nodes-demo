@@ -1,0 +1,74 @@
+---
+import { Image } from "astro:assets";
+import contextImage from "../../assets/about/about-context.webp";
+import Button from "../../components/Button.astro";
+import Eyebrow from "../../components/Eyebrow.astro";
+import { t, type Locale } from "../../i18n";
+import { pagePath } from "../../lib/routes";
+
+/**
+ * "Our context": where NODES stands today (research and development) and a link to Research,
+ * with a decorative illustration on the right (below on mobile). The hero's "Our story" button
+ * jumps here.
+ */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+---
+
+<section id="our-story" class="section context" aria-labelledby="about-context-title">
+  <div class="container layout">
+    <div class="text">
+      <Eyebrow>{t(locale, "about.context.eyebrow")}</Eyebrow>
+      <h2 id="about-context-title">{t(locale, "about.context.title")}</h2>
+      <p>{t(locale, "about.context.text")}</p>
+      <Button href={pagePath(locale, "research")} variant="outline" arrow>{t(locale, "about.context.cta")}</Button>
+    </div>
+    <Image class="art" src={contextImage} alt="" widths={[640, 1024, 1600]} sizes="(min-width: 1024px) 55vw, 100vw" />
+  </div>
+</section>
+
+<style>
+  .context {
+    background: var(--color-surface);
+  }
+  .layout {
+    display: grid;
+    gap: var(--space-8);
+  }
+  .text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+  h2 {
+    margin-top: var(--space-1);
+    font-size: var(--text-h2);
+    white-space: pre-line;
+  }
+  p {
+    margin: 0 0 var(--space-2);
+    max-width: 48ch;
+    color: var(--color-text-muted);
+  }
+  /* The illustration has an off-white background; fading its edges blends it into the band. */
+  .art {
+    display: block;
+    width: 100%;
+    height: auto;
+    mask-image:
+      linear-gradient(to right, transparent, black 12%, black 88%, transparent),
+      linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+    mask-composite: intersect;
+  }
+
+  @media (min-width: 1024px) {
+    .layout {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      align-items: center;
+      gap: var(--space-12);
+    }
+  }
+</style>

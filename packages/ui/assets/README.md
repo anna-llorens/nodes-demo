@@ -42,6 +42,7 @@ The site favicons (`apps/site/public/`) are the "O" of the light file in `--colo
 | `illustrations/hero-lidar-valencia.svg` | Tecnología · hero; Home · hero until its own illustration exists |
 | `illustrations/skyline-header.svg` | Colabora · hero; Home · collaborate band |
 | `illustrations/skyline-footer.svg` | Home · use cases (small); bottom of demo entry |
+| `illustrations/avatar-person.svg` | Sobre NODES · founder cards (neutral silhouette instead of a photo) |
 | `_unused/flask-wide.svg` | Not used (duplicate of `status-simulation`) |
 
 ## Still missing (build a simple version and list it in the report)
