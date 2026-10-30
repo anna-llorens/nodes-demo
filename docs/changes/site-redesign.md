@@ -95,12 +95,28 @@ Validation: site typecheck and build pass (no article page is built while the on
   `?interest=`; a missing or unknown value selects `general`, so one interest is always chosen and
   no interest error message is needed. Tests updated.
 - [Form](../../apps/site/src/sections/contact/Form.astro): three interest cards (radio inputs styled
-  as cards), name*, email*, organization, message*, consent*, and the privacy info text. Copy comes
+  as cards), name*, email*, organization, message*, and consent* linked to the privacy page. The
+  separate privacy info paragraph has been removed. Copy comes
   from `contact.form.*`; field errors, the required mark, "sending" and the privacy info reuse
   `collab.form.*`. The send error shows `contact.form.errorText` plus the contact email when set.
-- Side card: `contact.direct.*`, the `PUBLIC_CONTACT_EMAIL` link and `contact.status.*`.
+- Side card (`contact.direct.*`, the `PUBLIC_CONTACT_EMAIL` link and `contact.status.*`) is
+  temporarily disabled using an Astro `{/* ... */}` comment. Shell-style `#` prefixes are not
+  valid comments in an Astro template: they caused `Invalid Character` at `Form.astro:134:5`.
+  Email splitting stays inside the disabled markup so there is no unused frontmatter helper.
+- The contact layout now uses one centered column capped at 48rem, replacing the desktop
+  two-column grid that reserved space for the disabled sidebar. It fits the available width
+  on mobile and centers the form, submission errors and success confirmation together.
 
 Validation: site typecheck, tests (37) and build pass.
+Disabled-card fix: reproduced the compiler error with the site build before the change;
+repository typecheck, lint, 179 tests and both app builds pass after the fix. Lint reports five
+warnings in generated Worker types and existing web components. Built Spanish and English
+contact pages contain the form and consent checkbox, without the disabled side card.
+`git diff --check` passes. Browser interaction and real contact submissions were not tested.
+Centered-layout validation: repository typecheck, lint, 179 tests and both app builds pass;
+lint reports the same five warnings. Built contact CSS contains the centered 48rem column and
+no longer contains the old desktop columns. `git diff --check` passes. Visual verification was
+unavailable because the browser connection failed before opening a page.
 
 ## Contact email delivery
 
@@ -114,6 +130,29 @@ Validation: site typecheck, tests (37) and build pass.
   build settings). The privacy text must name Formspree before going public.
 
 Validation: site typecheck, tests and build pass; a real submission is not yet verified.
+
+## Published research articles
+
+The LiDAR article is published in es and en. Decisions:
+
+- The research schema has an optional `card` field ([content.config.ts](../../apps/site/src/content.config.ts)).
+  It pairs an article's translations (slugs differ by locale) and its Research card. Both LiDAR
+  articles use `card: "lidar"`. Lookups live in [research.ts](../../apps/site/src/lib/research.ts);
+  only published articles count.
+- [Cards](../../apps/site/src/sections/research/Cards.astro): a card with a published article in
+  the current locale links to it. The title link stretches over the card, so the markup and look
+  stay; hover and keyboard focus outline the card. The date replaces "coming soon" in the same pill.
+- Article pages pass their translations to [Base](../../apps/site/src/layouts/Base.astro):
+  canonical, `hreflang` es/en and `x-default` (English). The language switcher goes to the other
+  translation, or to that locale's Research index when there is none.
+- The sitemap reads the research frontmatter with `fs` in
+  [astro.config.mjs](../../apps/site/astro.config.mjs) (`astro:content` is not available there)
+  and gives each article its translations as alternates.
+- `research.statusNote` now says articles are published once finished; the rest are in preparation.
+
+Validation: site typecheck and build pass. With `PUBLIC_SITE_URL=https://nodes-data.com`, both
+articles have canonical, es/en and x-default alternates, the switcher links to the other article,
+the cards link with the date, and the sitemap lists both articles with their alternates.
 
 ## Remaining
 

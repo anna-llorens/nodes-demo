@@ -35,6 +35,8 @@ const research = defineCollection({
     tags: z.array(z.string()),
     author: z.string(),
     draft: z.boolean(),
+    /** Research card key ("lidar"): pairs the translations of an article and links its card. */
+    card: z.string().optional(),
   }),
 });
 

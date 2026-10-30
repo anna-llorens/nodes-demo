@@ -21,8 +21,16 @@ interface Props {
   title?: string | undefined;
   /** Meta description for pages outside the catalog (articles); catalog pages use their own key. */
   description?: string | undefined;
+  /**
+   * Translations of a page outside the catalog (articles), itself included: canonical, hreflang
+   * and x-default (English) come from here instead of `page`.
+   */
+  translations?: { locale: Locale; path: string }[] | undefined;
+  /** Language switcher targets for pages outside the catalog. */
+  languageHrefs?: Partial<Record<Locale, string>> | undefined;
 }
-const { locale, page, noindex = false, title: pageTitle, description: pageDescription } = Astro.props;
+const { locale, page, noindex = false, title: pageTitle, description: pageDescription, translations, languageHrefs } =
+  Astro.props;
 
 const title = pageTitle
   ? `${pageTitle} · NODES`
@@ -32,9 +40,10 @@ const title = pageTitle
 const description = pageDescription ?? t(locale, page ? pages[page].descriptionKey : "meta.description");
 // One default share image for every page (1200×630, cropped from the home page asset).
 const ogImage = absoluteUrl("/og-default.jpg");
-const alternates = page ? locales.map((item) => ({ locale: item, href: absoluteUrl(pagePath(item, page)) })) : [];
-const canonical = page ? absoluteUrl(pagePath(locale, page)) : undefined;
-const xDefault = page ? absoluteUrl(pagePath("en", page)) : undefined;
+const paths = translations ?? (page ? locales.map((item) => ({ locale: item, path: pagePath(item, page) })) : []);
+const alternates = paths.map((item) => ({ locale: item.locale, href: absoluteUrl(item.path) }));
+const canonical = alternates.find((item) => item.locale === locale)?.href;
+const xDefault = alternates.find((item) => item.locale === "en")?.href;
 ---
 
 <!doctype html>
@@ -65,7 +74,7 @@ const xDefault = page ? absoluteUrl(pagePath("en", page)) : undefined;
     <slot name="head" />
   </head>
   <body>
-    <Header locale={locale} page={page} />
+    <Header locale={locale} page={page} languageHrefs={languageHrefs} />
     <main id="main">
       <slot />
     </main>

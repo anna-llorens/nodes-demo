@@ -133,11 +133,6 @@ Reference: [focused underpass change record](2026-10-29-underpass-label.md).
 
 ## Verification and review points
 
-The current staged implementation passed `pnpm typecheck`, `pnpm lint`, `pnpm test` (175 tests
-across 26 files, including the domain golden test) and `pnpm build` for both apps. Astro reports
-one unused-`privacyInfo` hint in the contact component; ESLint retains its three existing
-warnings in `AppShell.tsx` and `MapStage.tsx`.
-
 Earlier live HTTP checks covered authentication, language persistence and privacy-page
 responses. They predate the staged removal of the first-layer privacy paragraph and should not
 be read as verifying that paragraph in this snapshot. Visual browser QA was unavailable because

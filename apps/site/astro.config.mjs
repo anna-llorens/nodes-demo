@@ -1,3 +1,4 @@
+import { readdirSync, readFileSync } from "node:fs";
 import sitemap from "@astrojs/sitemap";
 import { defineConfig } from "astro/config";
 
@@ -10,6 +11,29 @@ try {
 }
 const siteUrl = process.env.PUBLIC_SITE_URL?.trim();
 const site = siteUrl ? siteUrl.replace(/\/+$/, "") : undefined;
+
+/**
+ * Research article paths grouped by their `card` frontmatter, so the sitemap can pair the
+ * translations (their slugs differ, so the sitemap's own i18n matching cannot). Reads the
+ * Markdown frontmatter directly because `astro:content` is not available in the config.
+ */
+function researchTranslations() {
+  const base = new URL("./src/content/research/", import.meta.url);
+  const byCard = new Map();
+  for (const locale of readdirSync(base)) {
+    for (const file of readdirSync(new URL(`${locale}/`, base)).filter((name) => name.endsWith(".md"))) {
+      const text = readFileSync(new URL(`${locale}/${file}`, base), "utf8").split(/^---$/m)[1] ?? "";
+      const field = (name) => text.match(new RegExp(`^${name}:\\s*"?([^"\\n]*)"?\\s*$`, "m"))?.[1];
+      const card = field("card");
+      if (!card || field("draft") !== "false") continue;
+      byCard.set(card, [...(byCard.get(card) ?? []), { lang: locale, path: `/${locale}/research/${field("slug")}` }]);
+    }
+  }
+  const byPath = new Map();
+  for (const group of byCard.values()) for (const item of group) byPath.set(item.path, group);
+  return byPath;
+}
+const articleTranslations = researchTranslations();
 
 // Static public website (ADR 0004). Routes are /es/... and /en/...; only the root page picks
 // the language (src/pages/index.astro), so Astro must not redirect on its own.
@@ -34,9 +58,15 @@ export default defineConfig({
         );
       },
       // Same URL form as the canonical links: no trailing slash except the locale roots (/en/).
+      // Research articles get their translations as alternates.
       serialize: (item) => {
         const trim = (url) => url.replace(/^(.+\/\w{2}\/.+?)\/$/, "$1");
-        return { ...item, url: trim(item.url), links: item.links?.map((link) => ({ ...link, url: trim(link.url) })) };
+        const url = trim(item.url);
+        const article = articleTranslations.get(new URL(url).pathname);
+        const links = article
+          ? article.map(({ lang, path }) => ({ lang, url: new URL(path, url).href }))
+          : item.links?.map((link) => ({ ...link, url: trim(link.url) }));
+        return { ...item, url, links };
       },
     }),
   ],

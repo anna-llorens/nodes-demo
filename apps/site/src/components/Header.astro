@@ -12,8 +12,10 @@ import Logo from "./Logo.astro";
 interface Props {
   locale: Locale;
   page?: PageId | undefined;
+  /** Language switcher targets for pages outside the catalog (articles). */
+  languageHrefs?: Partial<Record<Locale, string>> | undefined;
 }
-const { locale, page } = Astro.props;
+const { locale, page, languageHrefs } = Astro.props;
 
 const links = mainNav.map((id) => ({ href: pagePath(locale, id), label: t(locale, pages[id].titleKey), current: id === page }));
 ---
@@ -31,7 +33,7 @@ const links = mainNav.map((id) => ({ href: pagePath(locale, id), label: t(locale
     </nav>
 
     <div class="actions">
-      <LanguageSwitcher locale={locale} page={page} />
+      <LanguageSwitcher locale={locale} page={page} hrefs={languageHrefs} />
       <button
         class="menu-button"
         type="button"

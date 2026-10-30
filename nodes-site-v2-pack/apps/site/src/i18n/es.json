@@ -48,7 +48,6 @@
   "collab.form.required": "Obligatorio",
   "collab.form.consent": "He leído y acepto la {link}.",
   "collab.form.consentLink": "política de privacidad",
-  "collab.form.privacyInfo": "Responsable: Anna Llorens (NODES). Finalidad: gestionar y responder tus consultas y propuestas de colaboración. Puedes ejercer tus derechos por correo electrónico. Más información en la {link}.",
   "collab.form.submit": "Enviar mensaje",
   "collab.form.sending": "Enviando…",
   "collab.form.successTitle": "¡Gracias! Hemos recibido tu mensaje.",

@@ -1,10 +1,12 @@
 ---
 import Svg from "@nodes/ui/Svg.astro";
 import { t, type Locale } from "../../i18n";
+import { articleFor, articlePath, formatArticleDate } from "../../lib/research";
 
 /**
- * Static topic chips and the six upcoming articles. Cards are not links and show no dates until
- * the articles are written; each carries the "coming soon" label. Status note below.
+ * Static topic chips and the six research cards. A card whose article is published in this
+ * locale links to it (the title link covers the whole card) and shows the publication date;
+ * the others keep the "coming soon" label. Status note below.
  */
 interface Props {
   locale: Locale;
@@ -13,7 +15,8 @@ const { locale } = Astro.props;
 const filters = (["all", "lidar", "crowd", "iot", "prediction", "useCases"] as const).map((key) =>
   t(locale, `research.filters.${key}`),
 );
-const cards = (
+const cards = await Promise.all(
+  (
   [
     ["lidar", "icons/point-cloud"],
     ["prediction", "icons/people-count"],
@@ -22,14 +25,20 @@ const cards = (
     ["decision", "icons/lightbulb"],
     ["architecture", "icons/chart"],
   ] as const
-).map(([key, icon]) => ({
-  key,
-  icon,
-  category: t(locale, `research.cards.${key}.category`),
-  title: t(locale, `research.cards.${key}.title`),
-  description: t(locale, `research.cards.${key}.description`),
-  type: t(locale, `research.cards.${key}.type`),
-}));
+).map(async ([key, icon]) => {
+    const article = await articleFor(key, locale);
+    return {
+      key,
+      icon,
+      category: t(locale, `research.cards.${key}.category`),
+      title: t(locale, `research.cards.${key}.title`),
+      description: t(locale, `research.cards.${key}.description`),
+      type: t(locale, `research.cards.${key}.type`),
+      href: article && articlePath(article),
+      date: article?.data.date || undefined,
+    };
+  }),
+);
 ---
 
 <section class="section" aria-label={t(locale, "nav.research")}>
@@ -41,15 +50,21 @@ const cards = (
       {
         cards.map((card) => (
           <li>
-            <article aria-labelledby={`research-${card.key}`}>
+            <article class:list={{ linked: card.href }} aria-labelledby={`research-${card.key}`}>
               <span class="panel"><Svg name={card.icon} /></span>
               <div class="body">
                 <p class="category">{card.category}</p>
-                <h2 id={`research-${card.key}`}>{card.title}</h2>
+                <h2 id={`research-${card.key}`}>{card.href ? <a href={card.href}>{card.title}</a> : card.title}</h2>
                 <p>{card.description}</p>
                 <p class="meta">
                   <span>{card.type}</span>
-                  <span class="soon">{t(locale, "research.comingSoon")}</span>
+                  {card.date ? (
+                    <time class="soon" datetime={card.date}>
+                      {formatArticleDate(card.date, locale)}
+                    </time>
+                  ) : (
+                    <span class="soon">{t(locale, "research.comingSoon")}</span>
+                  )}
                 </p>
               </div>
             </article>
@@ -97,6 +112,31 @@ const cards = (
     border: 1px solid var(--color-border);
     border-radius: var(--radius-card);
     background: var(--color-surface);
+  }
+  /* Linked card: the title link stretches over the whole card. */
+  .linked {
+    position: relative;
+    transition: border-color 0.15s;
+  }
+  .linked:hover,
+  .linked:focus-within {
+    border-color: var(--color-primary);
+  }
+  .linked h2 a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .linked h2 a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+  .linked h2 a:focus-visible {
+    outline: none;
+  }
+  .linked:has(a:focus-visible) {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
   }
   .panel {
     display: grid;

@@ -1,9 +1,10 @@
 ---
 import { getCollection, render } from "astro:content";
 import { ArrowLeft } from "@lucide/astro";
-import { isLocale, t } from "../../../i18n";
+import { isLocale, locales, t } from "../../../i18n";
 import Base from "../../../layouts/Base.astro";
 import { pagePath } from "../../../lib/routes";
+import { formatArticleDate, translationsOf } from "../../../lib/research";
 
 /**
  * Research article. The build only includes published articles; `pnpm dev` also serves drafts,
@@ -23,10 +24,16 @@ const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
 const { title, subtitle, date, type, tags, draft } = entry.data;
 const toc = headings.filter((heading) => heading.depth === 2);
-const published = date ? new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(new Date(date)) : undefined;
+const published = date ? formatArticleDate(date, locale) : undefined;
+// Drafts (dev only) get no alternates. The switcher goes to the other translation, or to the
+// research index of a locale the article is not translated into.
+const translations = draft ? undefined : await translationsOf(entry);
+const languageHrefs = Object.fromEntries(
+  locales.map((item) => [item, translations?.find((tr) => tr.locale === item)?.path ?? pagePath(item, "research")]),
+);
 ---
 
-<Base locale={locale} title={title} description={subtitle} noindex={draft}>
+<Base locale={locale} title={title} description={subtitle} noindex={draft} translations={translations} languageHrefs={languageHrefs}>
   <section class="section article-page">
     <!-- Page header: back link, title and subtitle; the future cover image goes here. -->
     <header class="container header">

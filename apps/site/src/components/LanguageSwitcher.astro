@@ -9,8 +9,10 @@ import { pagePath, type PageId } from "../lib/routes";
 interface Props {
   locale: Locale;
   page?: PageId | undefined;
+  /** Per-locale targets for pages outside the catalog (articles); overrides `page`. */
+  hrefs?: Partial<Record<Locale, string>> | undefined;
 }
-const { locale, page = "home" } = Astro.props;
+const { locale, page = "home", hrefs } = Astro.props;
 ---
 
 <nav class="language" aria-label={t(locale, "nav.language")}>
@@ -19,7 +21,7 @@ const { locale, page = "home" } = Astro.props;
       <>
         {index > 0 && <span aria-hidden="true">·</span>}
         <a
-          href={pagePath(item, page)}
+          href={hrefs?.[item] ?? pagePath(item, page)}
           hreflang={item}
           lang={item}
           data-locale={item}
