@@ -9,6 +9,8 @@ tags: ["lidar", "percepcion", "flujos-peatonales", "tecnologia", "espacios-publi
 author: "Anna Llorens Roig"
 draft: false
 card: "lidar"
+cover: "../../../assets/research/lidar-point-cloud-plaza.jpg"
+coverAlt: "Nube de puntos de una plaza vista por un sensor LiDAR: las personas aparecen como siluetas de puntos"
 ---
 
 Un LiDAR puede contar y seguir personas sin captar caras ni imágenes, de día y de noche, con errores de centímetros en la posición. Los mejores resultados publicados superan el 90 % de acierto en seguimiento, pero en multitudes muy densas, a distancia o con ropa oscura el rendimiento cae. Este artículo resume qué mide, cómo se procesa, qué dicen los estudios con datos reales y dónde están sus límites.

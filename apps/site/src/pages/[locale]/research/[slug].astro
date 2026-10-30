@@ -1,10 +1,19 @@
 ---
 import { getCollection, render } from "astro:content";
-import { ArrowLeft } from "@lucide/astro";
+import { Image } from "astro:assets";
+import Svg from "@nodes/ui/Svg.astro";
+import { ArrowLeft, ArrowRight, Calendar, FileText, Tag } from "@lucide/astro";
 import { isLocale, locales, t } from "../../../i18n";
 import Base from "../../../layouts/Base.astro";
 import { pagePath } from "../../../lib/routes";
-import { formatArticleDate, translationsOf } from "../../../lib/research";
+import {
+  articlePath,
+  cardIcons,
+  formatArticleDate,
+  formatShortDate,
+  relatedArticles,
+  translationsOf,
+} from "../../../lib/research";
 
 /**
  * Research article. The build only includes published articles; `pnpm dev` also serves drafts,
@@ -22,9 +31,22 @@ const { locale } = Astro.params;
 if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
-const { title, subtitle, date, type, tags, draft } = entry.data;
+const { title, subtitle, date, type, category, tags, draft, cover, coverAlt } = entry.data;
 const toc = headings.filter((heading) => heading.depth === 2);
 const published = date ? formatArticleDate(date, locale) : undefined;
+// Eyebrow: category label (Research filters, raw key as fallback) · type · short date.
+const categoryOf = (key: string) => t(locale, `research.filters.${key}` as Parameters<typeof t>[1]) ?? key;
+const eyebrow = [categoryOf(category), type, date && formatShortDate(date, locale)]
+  .filter(Boolean)
+  .join(" · ");
+const related = (await relatedArticles(entry)).map((item) => ({
+  href: articlePath(item),
+  title: item.data.title,
+  category: categoryOf(item.data.category),
+  date: item.data.date,
+  cover: item.data.cover,
+  icon: cardIcons[item.data.card as keyof typeof cardIcons] ?? cardIcons.lidar,
+}));
 // Drafts (dev only) get no alternates. The switcher goes to the other translation, or to the
 // research index of a locale the article is not translated into.
 const translations = draft ? undefined : await translationsOf(entry);
@@ -34,100 +56,202 @@ const languageHrefs = Object.fromEntries(
 ---
 
 <Base locale={locale} title={title} description={subtitle} noindex={draft} translations={translations} languageHrefs={languageHrefs}>
-  <section class="section article-page">
-    <!-- Page header: back link, title and subtitle; the future cover image goes here. -->
-    <header class="container header">
+  <!-- Full-width dark header; the cover, when there is one, fills it behind a left gradient. -->
+  <header class:list={["article-header", { "has-cover": cover }]}>
+    {
+      cover && (
+        <Image
+          class="cover"
+          src={cover}
+          alt={coverAlt ?? ""}
+          widths={[640, 960, 1440, 1920]}
+          sizes="100vw"
+          loading="eager"
+          fetchpriority="high"
+        />
+      )
+    }
+    <div class="container header-text">
       <a class="back" href={pagePath(locale, "research")}>
         <ArrowLeft aria-hidden="true" size={18} />
         {t(locale, "article.back")}
       </a>
       {draft && <p class="draft" role="note">{t(locale, "article.draftNote")}</p>}
+      <p class="eyebrow">{eyebrow}</p>
       <h1>{title}</h1>
       <p class="subtitle">{subtitle}</p>
-    </header>
+    </div>
+  </header>
 
-    <!-- Body and side column start at the same height. -->
-    <div class="container layout">
-      <article class="prose"><Content /></article>
-
-      <aside>
-        {
-          toc.length > 0 && (
+  <!-- The aside comes first so it sits between header and body on mobile; on desktop it is the
+       right column. -->
+  <div class="container layout">
+    <aside>
+      {
+        toc.length > 0 && (
+          <details class="card toc" open>
+            <summary id="article-toc-title">{t(locale, "article.toc.title")}</summary>
             <nav aria-labelledby="article-toc-title">
-              <h2 id="article-toc-title">{t(locale, "article.toc.title")}</h2>
               <ol>
-                {toc.map((heading) => (
+                {toc.map((heading, index) => (
                   <li>
-                    <a href={`#${heading.slug}`}>{heading.text}</a>
+                    <a href={`#${heading.slug}`} data-toc={heading.slug}>
+                      <span class="num">{String(index + 1).padStart(2, "0")}</span>
+                      {heading.text}
+                    </a>
                   </li>
                 ))}
               </ol>
             </nav>
+          </details>
+        )
+      }
+      <dl class="card details">
+        {
+          published && (
+            <div>
+              <Calendar aria-hidden="true" size={20} />
+              <dt>{t(locale, "article.details.publicationDate")}</dt>
+              <dd>{published}</dd>
+            </div>
           )
         }
-        <dl>
-          {
-            published && (
-              <div>
-                <dt>{t(locale, "article.details.publicationDate")}</dt>
-                <dd>{published}</dd>
-              </div>
-            )
-          }
-          <div>
-            <dt>{t(locale, "article.details.contentType")}</dt>
-            <dd>{type}</dd>
-          </div>
-          {
-            tags.length > 0 && (
-              <div>
-                <dt>{t(locale, "article.details.topics")}</dt>
-                <dd>
-                  <ul class="tags">
-                    {tags.map((tag) => (
-                      <li>{tag}</li>
-                    ))}
-                  </ul>
-                </dd>
-              </div>
-            )
-          }
-        </dl>
-      </aside>
-    </div>
-  </section>
+        <div>
+          <FileText aria-hidden="true" size={20} />
+          <dt>{t(locale, "article.details.contentType")}</dt>
+          <dd>{type}</dd>
+        </div>
+        {
+          tags.length > 0 && (
+            <div>
+              <Tag aria-hidden="true" size={20} />
+              <dt>{t(locale, "article.details.topics")}</dt>
+              <dd>
+                <ul class="tags">
+                  {tags.map((tag) => (
+                    <li>{tag}</li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+          )
+        }
+      </dl>
+      {
+        related.length > 0 && (
+          <section class="related" aria-labelledby="article-related-title">
+            <h2 id="article-related-title">{t(locale, "article.related.title")}</h2>
+            <ul>
+              {related.map((item) => (
+                <li>
+                  <a href={item.href}>
+                    {item.cover ? (
+                      <Image class="thumb" src={item.cover} alt="" widths={[160, 320]} sizes="120px" />
+                    ) : (
+                      <span class="thumb panel">
+                        <Svg name={item.icon} />
+                      </span>
+                    )}
+                    <span class="related-text">
+                      <span class="related-category">{item.category}</span>
+                      <span class="related-title">{item.title}</span>
+                      <time datetime={item.date}>{formatShortDate(item.date, locale)}</time>
+                    </span>
+                    <ArrowRight aria-hidden="true" size={18} class="arrow" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+    </aside>
+
+    <article class="prose"><Content /></article>
+  </div>
 </Base>
 
-<style>
-  .article-page {
-    padding-block: var(--space-8) var(--space-12);
+<script>
+  // Marks the TOC item of the section being read. Without JS the list stays plain links.
+  const links = new Map(
+    [...document.querySelectorAll<HTMLAnchorElement>("[data-toc]")].map((link) => [link.dataset["toc"], link]),
+  );
+  const sections = [...links.keys()].flatMap((id) => document.getElementById(id ?? "") ?? []);
+  const setCurrent = (id: string) =>
+    links.forEach((link, key) => (key === id ? link.setAttribute("aria-current", "true") : link.removeAttribute("aria-current")));
+  const first = sections[0];
+  if (first) {
+    setCurrent(first.id);
+    const observer = new IntersectionObserver(
+      () => {
+        // Current = the last heading above the upper third of the viewport.
+        const line = window.innerHeight / 3;
+        const passed = sections.filter((section) => section.getBoundingClientRect().top <= line);
+        setCurrent((passed.at(-1) ?? first).id);
+      },
+      { rootMargin: "0px 0px -66% 0px" },
+    );
+    sections.forEach((section) => observer.observe(section));
   }
-  .header {
+</script>
+
+<style>
+  .article-header {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-surface-inverse);
+    color: var(--color-text-inverse-muted);
+  }
+  .cover {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: right center;
+  }
+  /* Solid dark under the text column, fading out to the right so the image shows there. */
+  .has-cover::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      var(--color-surface-inverse) 0%,
+      color-mix(in srgb, var(--color-surface-inverse) 92%, transparent) 40%,
+      color-mix(in srgb, var(--color-surface-inverse) 35%, transparent) 75%,
+      transparent 100%
+    );
+  }
+  .header-text {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
-    gap: var(--space-5);
-    margin-bottom: var(--space-12);
-    padding-bottom: var(--space-8);
-    border-bottom: 1px solid var(--color-border);
-  }
-  .layout {
-    display: grid;
-    gap: var(--space-12);
-  }
-  article {
-    max-width: 70ch;
+    gap: var(--space-4);
+    padding-block: var(--space-8) var(--space-12);
   }
   .back {
     display: inline-flex;
     align-items: center;
     align-self: flex-start;
     gap: var(--space-2);
-    color: var(--color-primary);
+    margin-bottom: var(--space-4);
+    color: var(--color-text-inverse);
     font-weight: 600;
     text-decoration: none;
   }
+  .back:hover {
+    text-decoration: underline;
+  }
+  .eyebrow {
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
   .draft {
-    margin: 0;
+    align-self: flex-start;
     padding: var(--space-3) var(--space-4);
     border: 1px solid var(--color-error);
     border-radius: var(--radius-button);
@@ -135,13 +259,26 @@ const languageHrefs = Object.fromEntries(
     color: var(--color-error);
     font-weight: 600;
   }
-  h1,
-  .subtitle {
+  .header-text p,
+  h1 {
     margin: 0;
   }
+  h1 {
+    max-width: 20ch;
+    color: var(--color-text-inverse);
+  }
   .subtitle {
-    max-width: 60ch;
+    max-width: 48ch;
     font-size: 1.125rem;
+  }
+
+  .layout {
+    display: grid;
+    gap: var(--space-8);
+    padding-block: var(--space-8) var(--space-12);
+  }
+  article {
+    max-width: 70ch;
   }
   .prose :global(h2:first-child) {
     margin-top: 0;
@@ -171,15 +308,28 @@ const languageHrefs = Object.fromEntries(
     font-size: var(--text-small);
     color: var(--color-text-muted, inherit);
   }
+
   aside {
     display: flex;
     flex-direction: column;
-    gap: var(--space-6);
+    gap: var(--space-4);
     font-size: var(--text-small);
   }
-  aside h2 {
-    margin: 0 0 var(--space-3);
+  .card {
+    margin: 0;
+    padding: var(--space-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface-muted);
+  }
+  summary {
+    color: var(--color-text);
     font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .toc[open] summary {
+    margin-bottom: var(--space-3);
   }
   ol,
   .tags {
@@ -187,27 +337,57 @@ const languageHrefs = Object.fromEntries(
     padding: 0;
     list-style: none;
   }
-  ol li + li {
-    margin-top: var(--space-2);
-  }
-  aside a {
+  ol a {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2);
+    border-radius: var(--radius-button);
     color: var(--color-text-body);
+    text-decoration: none;
   }
-  dl {
+  ol a:hover {
+    color: var(--color-text);
+  }
+  .num {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    color: var(--color-primary);
+    font-size: var(--text-eyebrow);
+    font-weight: 700;
+  }
+  ol a[aria-current] {
+    background: var(--color-primary-soft);
+    color: var(--color-text);
+  }
+  ol a[aria-current] .num {
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+  .details {
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
-    margin: 0;
-    padding: var(--space-5);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-card);
+  }
+  .details > div {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: var(--space-3);
+  }
+  .details svg {
+    grid-row: span 2;
+    color: var(--color-primary);
   }
   dt {
-    color: var(--color-text-muted);
+    color: var(--color-text);
   }
   dd {
     margin: 0;
-    color: var(--color-text);
+    color: var(--color-text-muted);
   }
   .tags {
     display: flex;
@@ -216,20 +396,105 @@ const languageHrefs = Object.fromEntries(
     margin-top: var(--space-2);
   }
   .tags li {
-    padding-inline: var(--space-2);
+    padding: 2px var(--space-3);
+    border: 1px solid var(--color-primary-line);
     border-radius: var(--radius-pill);
-    background: var(--color-primary-soft);
+    background: var(--color-surface);
     color: var(--color-primary);
   }
 
+  .related h2 {
+    margin: var(--space-4) 0 var(--space-3);
+    color: var(--color-text);
+    font-size: 1.125rem;
+  }
+  .related ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .related a {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-4);
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+  .related a:hover .related-title {
+    color: var(--color-primary);
+  }
+  .thumb {
+    display: block;
+    width: 120px;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    border-radius: var(--radius-button);
+    object-fit: cover;
+  }
+  .panel {
+    display: grid;
+    place-items: center;
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
+  .panel :global(svg) {
+    width: 36px;
+    height: 36px;
+  }
+  .related-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .related-category {
+    color: var(--color-primary);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .related-title {
+    color: var(--color-text);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  time {
+    font-size: var(--text-eyebrow);
+    text-transform: uppercase;
+  }
+  .related :global(.arrow) {
+    color: var(--color-text);
+  }
+
   @media (min-width: 1024px) {
-    .layout {
-      grid-template-columns: minmax(0, 1fr) 280px;
+    .header-text {
+      padding-block: var(--space-12);
     }
+    .layout {
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: var(--space-12);
+    }
+    /* Not sticky: with related articles the column is taller than the viewport. */
     aside {
-      position: sticky;
-      top: calc(72px + var(--space-6));
+      grid-column: 2;
+      grid-row: 1;
       align-self: start;
+    }
+    article {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    /* Always open on desktop: the summary is just the card title. */
+    summary {
+      pointer-events: none;
+      list-style: none;
+    }
+    summary::-webkit-details-marker {
+      display: none;
     }
   }
 </style>

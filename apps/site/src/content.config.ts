@@ -24,20 +24,29 @@ const research = defineCollection({
     base: "./src/content/research",
     generateId: ({ entry }) => entry.replace(/\.md$/, ""),
   }),
-  schema: z.object({
-    title: z.string(),
-    subtitle: z.string(),
-    slug: z.string(),
-    /** ISO date; empty while the article is a draft. */
-    date: z.string(),
-    type: z.string(),
-    category: z.string(),
-    tags: z.array(z.string()),
-    author: z.string(),
-    draft: z.boolean(),
-    /** Research card key ("lidar"): pairs the translations of an article and links its card. */
-    card: z.string().optional(),
-  }),
+  schema: ({ image }) =>
+    z
+      .object({
+        title: z.string(),
+        subtitle: z.string(),
+        slug: z.string(),
+        /** ISO date; empty while the article is a draft. */
+        date: z.string(),
+        type: z.string(),
+        category: z.string(),
+        tags: z.array(z.string()),
+        author: z.string(),
+        draft: z.boolean(),
+        /** Research card key ("lidar"): pairs the translations of an article and links its card. */
+        card: z.string().optional(),
+        /** Header image; the article keeps its own copy in the body. Needs `coverAlt`. */
+        cover: image().optional(),
+        coverAlt: z.string().optional(),
+      })
+      .refine((data) => !data.cover || data.coverAlt, {
+        message: "cover needs coverAlt",
+        path: ["coverAlt"],
+      }),
 });
 
 export const collections = { legal, research };

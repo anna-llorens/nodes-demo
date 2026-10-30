@@ -9,6 +9,8 @@ tags: ["lidar", "perception", "pedestrian-flows", "technology", "public-spaces"]
 author: "Anna Llorens Roig"
 draft: false
 card: "lidar"
+cover: "../../../assets/research/lidar-point-cloud-plaza.jpg"
+coverAlt: "Point cloud of a square seen by a LiDAR sensor: people appear as silhouettes made of points"
 ---
 
 A LiDAR can count and track people without capturing faces or images, by day and by night, with position errors of a few centimetres. The best published results exceed 90 % tracking accuracy, but in very dense crowds, at long range or with dark clothing, performance drops. This article sums up what it measures, how the data is processed, what studies with real data show and where its limits are.

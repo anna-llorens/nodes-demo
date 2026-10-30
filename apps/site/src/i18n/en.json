@@ -193,6 +193,7 @@
   "article.toc.title": "In this article",
   "article.details.publicationDate": "Publication date",
   "article.details.contentType": "Content type",
+  "article.related.title": "Related articles",
   "article.details.topics": "Topics",
   "research.cards.lidar.category": "LiDAR",
   "research.cards.lidar.title": "LiDAR for pedestrian flow analysis",

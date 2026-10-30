@@ -193,6 +193,7 @@
   "article.toc.title": "Índice del artículo",
   "article.details.publicationDate": "Fecha de publicación",
   "article.details.contentType": "Tipo de contenido",
+  "article.related.title": "Artículos relacionados",
   "article.details.topics": "Temas",
   "research.cards.lidar.category": "LiDAR",
   "research.cards.lidar.title": "LiDAR para el análisis de flujos peatonales",

@@ -1,41 +1,49 @@
 ---
+import { Image } from "astro:assets";
 import Svg from "@nodes/ui/Svg.astro";
 import { t, type Locale } from "../../i18n";
-import { articleFor, articlePath, formatArticleDate } from "../../lib/research";
+import { articleFor, cardIcons, articlePath, formatArticleDate } from "../../lib/research";
 
 /**
- * Static topic chips and the six research cards. A card whose article is published in this
+ * Topic chips and the six research cards. The chips filter the cards by topic with a small
+ * script; without JS every card stays visible and the chips do nothing. A card whose article is published in this
  * locale links to it (the title link covers the whole card) and shows the publication date;
- * the others keep the "coming soon" label. Status note below.
+ * the others keep the "coming soon" label. A published article with a `cover` shows it instead of
+ * the icon panel. Status note below.
  */
 interface Props {
   locale: Locale;
 }
 const { locale } = Astro.props;
-const filters = (["all", "lidar", "crowd", "iot", "prediction", "useCases"] as const).map((key) =>
-  t(locale, `research.filters.${key}`),
-);
+const filters = (["all", "lidar", "crowd", "iot", "prediction", "useCases"] as const).map((key) => ({
+  key,
+  label: t(locale, `research.filters.${key}`),
+}));
+// Topic of each card while it has no article; a published article's own `category` wins.
+const cardTopics: Record<keyof typeof cardIcons, string> = {
+  lidar: "lidar",
+  prediction: "crowd",
+  edge: "iot",
+  events: "useCases",
+  decision: "prediction",
+  architecture: "iot",
+};
 const cards = await Promise.all(
   (
-  [
-    ["lidar", "icons/point-cloud"],
-    ["prediction", "icons/people-count"],
-    ["edge", "icons/lidar-sensor"],
-    ["events", "icons/runner"],
-    ["decision", "icons/lightbulb"],
-    ["architecture", "icons/chart"],
-  ] as const
+  Object.entries(cardIcons) as [keyof typeof cardIcons, (typeof cardIcons)[keyof typeof cardIcons]][]
 ).map(async ([key, icon]) => {
     const article = await articleFor(key, locale);
     return {
       key,
       icon,
+      topic: article?.data.category ?? cardTopics[key],
       category: t(locale, `research.cards.${key}.category`),
       title: t(locale, `research.cards.${key}.title`),
       description: t(locale, `research.cards.${key}.description`),
       type: t(locale, `research.cards.${key}.type`),
       href: article && articlePath(article),
       date: article?.data.date || undefined,
+      cover: article?.data.cover,
     };
   }),
 );
@@ -44,14 +52,26 @@ const cards = await Promise.all(
 <section class="section" aria-label={t(locale, "nav.research")}>
   <div class="container">
     <ul class="chips">
-      {filters.map((filter, index) => <li class:list={{ active: index === 0 }}>{filter}</li>)}
+      {
+        filters.map((filter) => (
+          <li>
+            <button type="button" data-filter={filter.key} aria-pressed={filter.key === "all" ? "true" : "false"}>
+              {filter.label}
+            </button>
+          </li>
+        ))
+      }
     </ul>
     <ul class="cards">
       {
         cards.map((card) => (
-          <li>
+          <li data-topic={card.topic}>
             <article class:list={{ linked: card.href }} aria-labelledby={`research-${card.key}`}>
-              <span class="panel"><Svg name={card.icon} /></span>
+              {card.cover ? (
+                <Image class="photo" src={card.cover} alt="" widths={[480, 800, 1200]} sizes="(min-width: 768px) 50vw, 100vw" />
+              ) : (
+                <span class="panel"><Svg name={card.icon} /></span>
+              )}
               <div class="body">
                 <p class="category">{card.category}</p>
                 <h2 id={`research-${card.key}`}>{card.href ? <a href={card.href}>{card.title}</a> : card.title}</h2>
@@ -76,6 +96,19 @@ const cards = await Promise.all(
   </div>
 </section>
 
+<script>
+  // Shows only the cards of the pressed topic; "all" shows every card.
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>("[data-filter]")];
+  const items = [...document.querySelectorAll<HTMLLIElement>("[data-topic]")];
+  buttons.forEach((button) =>
+    button.addEventListener("click", () => {
+      const filter = button.dataset["filter"];
+      buttons.forEach((other) => other.setAttribute("aria-pressed", String(other === button)));
+      items.forEach((item) => (item.hidden = filter !== "all" && item.dataset["topic"] !== filter));
+    }),
+  );
+</script>
+
 <style>
   ul {
     list-style: none;
@@ -88,14 +121,20 @@ const cards = await Promise.all(
     gap: var(--space-2);
     margin-bottom: var(--space-8);
   }
-  .chips li {
+  .chips button {
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
     padding: var(--space-2) var(--space-4);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-pill);
     background: var(--color-surface);
     font-size: var(--text-small);
   }
-  .chips .active {
+  .chips button:hover {
+    border-color: var(--color-primary);
+  }
+  .chips [aria-pressed="true"] {
     border-color: var(--color-primary);
     background: var(--color-primary);
     color: var(--color-text-inverse);
@@ -144,6 +183,14 @@ const cards = await Promise.all(
     aspect-ratio: 16 / 8;
     background: var(--color-primary-soft);
     color: var(--color-primary);
+  }
+  /* Same frame as the icon panel, so photo and icon cards line up. */
+  .photo {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 8;
+    object-fit: cover;
   }
   .panel :global(svg) {
     width: 64px;
