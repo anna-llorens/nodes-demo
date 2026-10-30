@@ -5,7 +5,6 @@ import { isLocale, t } from "../../i18n";
 import Base from "../../layouts/Base.astro";
 import { pagePath } from "../../lib/routes";
 import { localePaths } from "../../lib/static-paths";
-import Notice from "../../sections/demo/Notice.astro";
 import Scenarios from "../../sections/demo/Scenarios.astro";
 
 export const getStaticPaths = localePaths;
@@ -21,9 +20,8 @@ if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
     title={t(locale, "demo.hero.title")}
     lead={t(locale, "demo.hero.lead")}
     plain
-  >
-    <Notice slot="aside" locale={locale} />
-  </PageHero>
+    centered
+  />
   <Scenarios locale={locale} />
   <CtaBand
     id="demo-after-title"

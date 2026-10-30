@@ -9,7 +9,7 @@ import Eyebrow from "./Eyebrow.astro";
  * The `aside` slot replaces the skyline (e.g. the demo's simulation notice); with an `image` or
  * `plain` it goes under the lead instead. An `image` also replaces the skyline: on desktop the photo bleeds to the right edge with its left side faded into the
  * page, like the home hero. `plain` drops the right column: a shorter, text-only hero in a
- * 48rem column, the width of the contact form below it.
+ * 48rem column, the width of the contact form below it; `centered` also centres its text.
  */
 interface Props {
   id: string;
@@ -19,11 +19,12 @@ interface Props {
   image?: ImageMetadata;
   imageAlt?: string;
   plain?: boolean;
+  centered?: boolean;
 }
-const { id, eyebrow, title, lead, image, imageAlt = "", plain = false } = Astro.props;
+const { id, eyebrow, title, lead, image, imageAlt = "", plain = false, centered = false } = Astro.props;
 ---
 
-<section class:list={["hero", { "has-photo": image, plain }]} aria-labelledby={id}>
+<section class:list={["hero", { "has-photo": image, plain, centered }]} aria-labelledby={id}>
   <div class="container layout">
     <div class="text">
       <Eyebrow badge>{eyebrow}</Eyebrow>
@@ -62,6 +63,10 @@ const { id, eyebrow, title, lead, image, imageAlt = "", plain = false } = Astro.
   .plain .text {
     max-width: 48rem;
     margin-inline: auto;
+  }
+  .centered .text {
+    align-items: center;
+    text-align: center;
   }
   .lead {
     margin: 0;

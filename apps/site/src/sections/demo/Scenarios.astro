@@ -1,14 +1,17 @@
 ---
 import maratonImage from "@nodes/ui/assets/png/maraton.jpg";
 import mascletaImage from "@nodes/ui/assets/png/mascleta.jpg";
-import Button from "../../components/Button.astro";
+import Svg from "@nodes/ui/Svg.astro";
+import { ArrowRight, Calendar, Map } from "@lucide/astro";
 import { t, type Locale } from "../../i18n";
 import { demoScenarioUrl, type DemoScenario } from "../../lib/demo";
 import { env } from "../../lib/env";
 
 /**
- * One card per demo scenario with a photo of the place; the button opens it in the demo app when
- * PUBLIC_DEMO_URL is set. Photos are decorative: the title names the scenario.
+ * One card per demo scenario: image of the place, title, schedule, place and node count, and an
+ * arrow. When PUBLIC_DEMO_URL is set the title link opens the scenario and covers the whole card.
+ * Schedule and node count mirror the scenarios in packages/core/src/scenarios (the site does not
+ * import core); keep them in sync. Images are decorative: the title names the scenario.
  */
 interface Props {
   locale: Locale;
@@ -16,15 +19,15 @@ interface Props {
 const { locale } = Astro.props;
 const scenarios = (
   [
-    ["maraton", "events", maratonImage],
-    ["mascleta", "mascleta", mascletaImage],
-  ] as const satisfies readonly (readonly [DemoScenario, string, ImageMetadata])[]
-).map(([scenario, key, image]) => ({
-  id: scenario,
-  image,
-  title: t(locale, `demo.${key}.title`),
-  text: t(locale, `demo.${key}.text`),
-  href: demoScenarioUrl(env.demoUrl, scenario, locale),
+    { id: "maraton", key: "events", image: maratonImage, schedule: "08:00–11:30", nodes: 8 },
+    { id: "mascleta", key: "mascleta", image: mascletaImage, schedule: "12:30–15:30", nodes: 4 },
+  ] as const satisfies readonly { id: DemoScenario; key: string; image: ImageMetadata; schedule: string; nodes: number }[]
+).map((scenario) => ({
+  ...scenario,
+  title: t(locale, `demo.${scenario.key}.title`),
+  place: t(locale, `demo.${scenario.key}.place`),
+  nodes: t(locale, "demo.scenario.nodes", { count: scenario.nodes }),
+  href: demoScenarioUrl(env.demoUrl, scenario.id, locale),
 }));
 ---
 
@@ -33,7 +36,7 @@ const scenarios = (
     {
       scenarios.map((scenario) => (
         <li>
-          <article aria-labelledby={`scenario-${scenario.id}`}>
+          <article class:list={{ linked: scenario.href }} aria-labelledby={`scenario-${scenario.id}`}>
             <img
               class="photo"
               src={scenario.image.src}
@@ -44,9 +47,36 @@ const scenarios = (
               decoding="async"
             />
             <div class="body">
-              <h2 id={`scenario-${scenario.id}`}>{scenario.title}</h2>
-              <p>{scenario.text}</p>
-              {scenario.href && <Button href={scenario.href} arrow>{t(locale, "demo.scenario.cta")}</Button>}
+              <div class="text">
+                <h2 id={`scenario-${scenario.id}`}>
+                  {scenario.href ? (
+                    <a href={scenario.href} title={t(locale, "demo.scenario.cta")}>
+                      {scenario.title}
+                    </a>
+                  ) : (
+                    scenario.title
+                  )}
+                </h2>
+                <ul class="meta">
+                  <li>
+                    <Calendar aria-hidden="true" size={16} />
+                    {scenario.schedule}
+                  </li>
+                  <li>
+                    <Map aria-hidden="true" size={16} />
+                    {scenario.place}
+                  </li>
+                  <li>
+                    <Svg name="icons/lidar-sensor" />
+                    {scenario.nodes}
+                  </li>
+                </ul>
+              </div>
+              {scenario.href && (
+                <span class="arrow" aria-hidden="true">
+                  <ArrowRight size={20} />
+                </span>
+              )}
             </div>
           </article>
         </li>
@@ -61,13 +91,41 @@ const scenarios = (
     margin-block: 0;
     display: grid;
     gap: var(--space-6);
+    max-width: 64rem;
   }
   article {
+    display: flex;
+    flex-direction: column;
     height: 100%;
     overflow: hidden;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-card);
     background: var(--color-surface);
+  }
+  /* Linked card: the title link stretches over the whole card. */
+  .linked {
+    position: relative;
+    transition: border-color 0.15s;
+  }
+  .linked:hover,
+  .linked:focus-within {
+    border-color: var(--color-primary);
+  }
+  .linked h2 a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .linked h2 a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+  .linked h2 a:focus-visible {
+    outline: none;
+  }
+  .linked:has(a:focus-visible) {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
   }
   .photo {
     display: block;
@@ -79,17 +137,55 @@ const scenarios = (
   }
   .body {
     display: flex;
+    flex: 1;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-6);
+  }
+  .text {
+    display: flex;
     flex-direction: column;
-    align-items: flex-start;
     gap: var(--space-3);
-    padding: var(--space-5);
   }
   h2 {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: 1.375rem;
   }
-  p {
-    margin: 0 0 var(--space-2);
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--color-text-muted);
+    font-size: var(--text-small);
+  }
+  .meta li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .meta :global(svg) {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    color: var(--color-primary);
+  }
+  .arrow {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+    transition: background 0.15s;
+  }
+  .linked:hover .arrow {
+    background: var(--color-primary-hover);
   }
 
   @media (min-width: 768px) {
