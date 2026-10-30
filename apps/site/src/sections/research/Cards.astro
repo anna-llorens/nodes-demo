@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import Svg from "@nodes/ui/Svg.astro";
+import eventsImage from "../../assets/research/events-race-start.webp";
 import { t, type Locale } from "../../i18n";
 import { articleFor, cardIcons, articlePath, formatArticleDate } from "../../lib/research";
 
@@ -8,8 +9,8 @@ import { articleFor, cardIcons, articlePath, formatArticleDate } from "../../lib
  * Topic chips and the six research cards. The chips filter the cards by topic with a small
  * script; without JS every card stays visible and the chips do nothing. A card whose article is published in this
  * locale links to it (the title link covers the whole card) and shows the publication date;
- * the others keep the "coming soon" label. A published article with a `cover` shows it instead of
- * the icon panel. Status note below.
+ * the others keep the "coming soon" label. A published article's `cover` replaces the icon panel;
+ * a card without an article can have its own image in `cardImages`. Status note below.
  */
 interface Props {
   locale: Locale;
@@ -19,6 +20,8 @@ const filters = (["all", "lidar", "crowd", "iot", "prediction", "useCases"] as c
   key,
   label: t(locale, `research.filters.${key}`),
 }));
+// Card images for topics that have no article yet; a published article's `cover` wins.
+const cardImages: Partial<Record<keyof typeof cardIcons, ImageMetadata>> = { events: eventsImage };
 // Topic of each card while it has no article; a published article's own `category` wins.
 const cardTopics: Record<keyof typeof cardIcons, string> = {
   lidar: "lidar",
@@ -44,7 +47,7 @@ const cards = await Promise.all(
       type: t(locale, `research.cards.${key}.type`),
       href: article && articlePath(article),
       date: article?.data.date || undefined,
-      cover: article?.data.cover,
+      cover: article?.data.cover ?? cardImages[key],
     };
   }),
 );

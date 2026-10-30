@@ -9,6 +9,7 @@ Add a row before publishing a new one (see CLAUDE.md, UI content rules).
 | `applications/transport-station.webp` | Applications · transport card | TODO: original source | TODO: rights confirmed by the team |
 | `applications/spaces-stadium.webp` | Applications · venues and public spaces card | Generated illustration (AI, supplied by the team) | Own |
 | `research/decision-venue-flows.webp` | Decision-support article cover, Research card | Generated illustration (AI, supplied by the team) | Own |
+| `research/events-race-start.webp` | Research · sports events card | Generated illustration (AI, supplied by the team) | Own |
 | `research/research-hero.jpg` | Research · page hero | Generated illustration (NODES) | Own |
 | `technology/technology-hero.jpg` | Technology · page hero | Generated illustration (NODES) | Own |
 | `research/lidar-point-cloud-plaza.jpg` | LiDAR article and its cover, home and Research cards | Generated illustration (NODES) | Own |
@@ -23,3 +24,6 @@ Add a row before publishing a new one (see CLAUDE.md, UI content rules).
 | `research/prediction-jamarat-timeline.png` | Predicting congestion article | Helbing, Johansson and Al-Abideen (2007), Phys. Rev. E 75, 046109, fig. 2 | TODO: confirm reuse (APS copyright; arXiv preprint) |
 | `research/prediction-love-parade-ramp.jpg` | Predicting congestion article | Arne Müseler, Wikimedia Commons (`Loveparade_2010_duisburg_tunnel_ramp.jpg`) | TODO: licence from the Commons page; add it to the caption |
 | `applications/applications-hero.jpg` | Applications · page hero | Generated illustration (NODES) | Own |
+| `research/architecture-reference.jpg` | Distributed architectures article | Generated diagram (NODES) | Own |
+| `research/architecture-lorawan-airtime-*.png` | Distributed architectures article | Own calculation and chart (NODES) | Own |
+| `research/architecture-vue-probes.jpg` | Distributed architectures article | Baena et al. (2021), Sensors 21(10):3404, fig. 14 | CC BY 4.0 |
