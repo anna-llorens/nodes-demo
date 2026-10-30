@@ -10,6 +10,8 @@ tags: ["lidar", "datos-abiertos", "datasets", "privacidad", "multitudes"]
 author: "Anna Llorens Roig"
 draft: false
 card: "openData"
+cover: "../../../assets/research/open-data-point-cloud-people.png"
+coverAlt: "Vista lateral de una nube de puntos LiDAR en verde: un sensor sobre un trípode y tres personas como siluetas de puntos dispersos de pie sobre el suelo"
 ---
 
 Los algoritmos para detectar personas en nubes de puntos han mejorado mucho, pero casi todos se han entrenado con datos grabados desde coches o robots, en calles con poca gente. Para medir multitudes reales con sensores fijos, los datos abiertos son escasos, y la mayoría no se pueden usar fuera de la investigación. Ese es hoy el principal cuello de botella del campo, y también una oportunidad para quien quiera contribuir.

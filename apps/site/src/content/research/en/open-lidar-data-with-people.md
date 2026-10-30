@@ -10,6 +10,8 @@ tags: ["lidar", "open-data", "datasets", "privacy", "crowds"]
 author: "Anna Llorens Roig"
 draft: false
 card: "openData"
+cover: "../../../assets/research/open-data-point-cloud-people.png"
+coverAlt: "Side view of a LiDAR point cloud in green: a sensor on a tripod and three people as sparse point silhouettes standing on the ground"
 ---
 
 Algorithms for detecting people in point clouds have improved a great deal, but almost all of them were trained on data recorded from cars or robots, on streets with few people. For measuring real crowds with fixed sensors, open data is scarce, and most of it cannot be used outside research. That is the main bottleneck in the field today, and also an opportunity for anyone who wants to contribute.

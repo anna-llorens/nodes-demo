@@ -20,6 +20,7 @@ Add a row before publishing a new one (see CLAUDE.md, UI content rules).
 | `research/edge-norce-detection.jpg` | Edge processing article | Belbachir et al. (2025), SN Computer Science | CC BY 4.0 |
 | `research/edge-city-network.webp` | Edge processing article cover, Research card | Generated illustration (AI, supplied by the team) | Own |
 | `research/edge-architecture-*.svg` | Edge processing article | Original diagram (NODES) | Own |
+| `research/open-data-point-cloud-people.png` | Open LiDAR data article cover, Research card | TODO: original source | TODO: rights confirmed by the team |
 | `research/open-data-crowdbot-distance.png` | Open LiDAR data article | CrowdBot v2, EPFL (Zenodo) | CC BY 4.0 |
 | `research/prediction-fundamental-diagram-jamarat.png` | Predicting congestion article | Helbing, Johansson and Al-Abideen (2007), Phys. Rev. E 75, 046109, fig. 1 | TODO: confirm reuse (APS copyright; arXiv preprint) |
 | `research/prediction-jamarat-timeline.png` | Predicting congestion article | Helbing, Johansson and Al-Abideen (2007), Phys. Rev. E 75, 046109, fig. 2 | TODO: confirm reuse (APS copyright; arXiv preprint) |
