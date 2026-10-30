@@ -1,0 +1,9 @@
+// Cloudflare Worker for the demo app. Nitro (cloudflare-module preset) merges this file into the
+// generated .output/server/wrangler.json and sets `main`, `assets` and `nodejs_compat` itself.
+// Wrangler reads that generated file through .wrangler/deploy/config.json, so run it from
+// apps/web after a build. Secrets go in the dashboard or .dev.vars, never here.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "nodes-web",
+  "compatibility_date": "2026-10-01"
+}
