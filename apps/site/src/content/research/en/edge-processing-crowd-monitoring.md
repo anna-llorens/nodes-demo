@@ -10,6 +10,8 @@ tags: ["edge-computing", "lidar", "architecture", "privacy", "iot"]
 author: "Anna Llorens Roig"
 draft: false
 card: "edge"
+cover: "../../../assets/research/edge-city-network.webp"
+coverAlt: "Night view of a city from above with people as point silhouettes, overlaid with a network of icons for sensors, router, phone, database, map and dashboard linked to a cloud"
 ---
 
 ![People in the concourse of Nagoya Station as seen by twenty LiDARs](../../../assets/research/edge-nagoya-concourse.jpg)

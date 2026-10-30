@@ -18,6 +18,7 @@ Add a row before publishing a new one (see CLAUDE.md, UI content rules).
 | `research/decision-itaewon-signals.png` | Decision-support article | Liang et al. (2024), PLOS ONE 19(7): e0306764 | CC BY 4.0 |
 | `research/edge-nagoya-*` | Edge processing article | Hishida et al. (2026), Int. J. ITS Research | CC BY 4.0 |
 | `research/edge-norce-detection.jpg` | Edge processing article | Belbachir et al. (2025), SN Computer Science | CC BY 4.0 |
+| `research/edge-city-network.webp` | Edge processing article cover, Research card | Generated illustration (AI, supplied by the team) | Own |
 | `research/edge-architecture-*.svg` | Edge processing article | Original diagram (NODES) | Own |
 | `research/open-data-crowdbot-distance.png` | Open LiDAR data article | CrowdBot v2, EPFL (Zenodo) | CC BY 4.0 |
 | `research/prediction-fundamental-diagram-jamarat.png` | Predicting congestion article | Helbing, Johansson and Al-Abideen (2007), Phys. Rev. E 75, 046109, fig. 1 | TODO: confirm reuse (APS copyright; arXiv preprint) |
