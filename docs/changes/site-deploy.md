@@ -41,3 +41,15 @@ Validation: site typecheck, tests (40) and build pass. Under `wrangler dev` with
 redirect 302, missing page 404, valid post saved, bad email 400, honeypot 200 and not saved, GET
 405, foreign origin 403. The remote database is not migrated yet.
 
+
+## D3 · First deploy
+
+- Deploys run in Cloudflare Workers Builds from GitHub (root `apps/site`, build from the
+  monorepo root, `npx wrangler deploy`), configured in the dashboard.
+- [`isPreviewHost`](../../apps/site/src/lib/env.ts): true when `PUBLIC_SITE_URL` contains
+  `workers.dev`; [Base](../../apps/site/src/layouts/Base.astro) and the root redirect page then add
+  `noindex` to every page. It disappears when `PUBLIC_SITE_URL` points to the real domain (D4).
+
+Validation: site typecheck and build pass; a build with a workers.dev `PUBLIC_SITE_URL` marks all
+20 pages `noindex`, a default build only the 404, legal drafts and redirect pages. The deploy itself
+is run from the dashboard.

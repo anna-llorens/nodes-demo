@@ -10,6 +10,12 @@ export const env = {
   contactEndpoint: read(import.meta.env.PUBLIC_CONTACT_ENDPOINT),
 };
 
+/**
+ * True while the site lives on its temporary workers.dev URL: every page gets `noindex` until the
+ * domain and legal texts are final (PUBLIC_SITE_URL then points to nodes-data.com).
+ */
+export const isPreviewHost = Boolean(env.siteUrl?.includes("workers.dev"));
+
 let warned = false;
 
 /**
