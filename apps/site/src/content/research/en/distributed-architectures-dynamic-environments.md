@@ -10,6 +10,8 @@ tags: ["architecture", "iot", "edge-computing", "networks", "events"]
 author: "Anna Llorens Roig"
 draft: false
 card: "architecture"
+cover: "../../../assets/research/architecture-lidar-street.webp"
+coverAlt: "Point cloud of a street with a monumental arch, seen by a LiDAR sensor: people appear as coloured point silhouettes inside bounding boxes"
 ---
 
 Most writing about smart-city sensing assumes a fixed installation: sensors on buildings, fibre in the street, mains power and months to tune the system. Street events, festivals, parades and marathons are the opposite. The equipment arrives on a truck, goes up in hours, runs for a day or a weekend and comes down again. And the moment the system matters most, when the crowd peaks, is the moment the shared mobile network is least able to carry its data. This article looks at what that means for the architecture as a whole: networks, power, deployment, data sources, standards and security.

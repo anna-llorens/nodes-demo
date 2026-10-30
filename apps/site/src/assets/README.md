@@ -24,6 +24,7 @@ Add a row before publishing a new one (see CLAUDE.md, UI content rules).
 | `research/prediction-jamarat-timeline.png` | Predicting congestion article | Helbing, Johansson and Al-Abideen (2007), Phys. Rev. E 75, 046109, fig. 2 | TODO: confirm reuse (APS copyright; arXiv preprint) |
 | `research/prediction-love-parade-ramp.jpg` | Predicting congestion article | Arne Müseler, Wikimedia Commons (`Loveparade_2010_duisburg_tunnel_ramp.jpg`) | TODO: licence from the Commons page; add it to the caption |
 | `applications/applications-hero.jpg` | Applications · page hero | Generated illustration (NODES) | Own |
+| `research/architecture-lidar-street.webp` | Distributed architectures article cover, Research card | Generated illustration (AI, supplied by the team) | Own |
 | `research/architecture-reference.jpg` | Distributed architectures article | Generated diagram (NODES) | Own |
 | `research/architecture-lorawan-airtime-*.png` | Distributed architectures article | Own calculation and chart (NODES) | Own |
 | `research/architecture-vue-probes.jpg` | Distributed architectures article | Baena et al. (2021), Sensors 21(10):3404, fig. 14 | CC BY 4.0 |

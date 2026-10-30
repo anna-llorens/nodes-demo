@@ -10,6 +10,8 @@ tags: ["arquitectura", "iot", "edge-computing", "redes", "eventos"]
 author: "Anna Llorens Roig"
 draft: false
 card: "architecture"
+cover: "../../../assets/research/architecture-lidar-street.webp"
+coverAlt: "Nube de puntos de una calle con un arco monumental vista por un sensor LiDAR: las personas aparecen como siluetas de puntos de colores dentro de cajas de detección"
 ---
 
 Casi todo lo que se escribe sobre sensores en la ciudad inteligente supone una instalación fija: sensores en edificios, fibra en la calle, corriente de red y meses para ajustar el sistema. Los eventos en la calle, festivales, desfiles y maratones son lo contrario. El equipo llega en un camión, se monta en horas, funciona un día o un fin de semana y se desmonta. Y justo cuando el sistema más importa, en el pico de gente, la red móvil compartida es menos capaz de transportar sus datos. Este artículo analiza qué implica eso para la arquitectura completa: redes, energía, despliegue, fuentes de datos, estándares y seguridad.
