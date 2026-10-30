@@ -14,7 +14,7 @@ Add a row before publishing a new one (see CLAUDE.md, UI content rules).
 | `research/area-*.png` | Research · research areas (four illustrations) | Generated illustration (AI, supplied by the team) | Own |
 | `technology/technology-hero.jpg` | Technology · page hero | Generated illustration (AI, supplied by the team, 30 Oct 2026) | Own |
 | `research/lidar-point-cloud-plaza.jpg` | LiDAR article and its cover, home card, Research featured section | Generated illustration (NODES) | Own |
-| `research/prediction-city-map.webp` | Congestion prediction article cover, home and Research cards | Generated illustration (AI, supplied by the team) | Own |
+| `research/prediction-city-map.webp` | Congestion prediction article cover, home and Research cards, Applications · smart cities card | Generated illustration (AI, supplied by the team) | Own |
 | `research/decision-loop-*.jpg` | Decision-support article | Generated illustration (NODES) | Own |
 | `research/decision-itaewon-signals.png` | Decision-support article | Liang et al. (2024), PLOS ONE 19(7): e0306764 | CC BY 4.0 |
 | `research/edge-nagoya-*` | Edge processing article | Hishida et al. (2026), Int. J. ITS Research | CC BY 4.0 |

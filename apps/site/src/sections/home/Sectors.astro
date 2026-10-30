@@ -4,7 +4,7 @@ import { sectors } from "../../config/sectors";
 import { t, type Locale } from "../../i18n";
 import { pagePath } from "../../lib/routes";
 
-/** Three sector tiles under the hero, each linking to its card on the Applications page. */
+/** Four sector tiles under the hero, each linking to its card on the Applications page. */
 interface Props {
   locale: Locale;
 }
@@ -71,7 +71,12 @@ const applications = pagePath(locale, "applications");
 
   @media (min-width: 768px) {
     .tiles {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .tiles {
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 </style>

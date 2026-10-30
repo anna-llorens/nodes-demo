@@ -22,7 +22,7 @@ const items = ["item1", "item2", "item3"] as const;
         <li id={sector.id} class="card">
           <article aria-labelledby={`${sector.id}-title`}>
             <span class="panel">
-              <Image src={sector.photo} alt="" widths={[480, 800, 1200]} sizes="(min-width: 1024px) 33vw, 100vw" />
+              <Image src={sector.photo} alt="" widths={[480, 800, 1200]} sizes="(min-width: 768px) 50vw, 100vw" />
             </span>
             <div class="body">
               <span class="icon">
@@ -105,9 +105,10 @@ const items = ["item1", "item2", "item3"] as const;
     color: var(--color-text-body);
   }
 
-  @media (min-width: 1024px) {
+  /* Four sectors: a 2×2 grid, so no card is left alone on a row. */
+  @media (min-width: 768px) {
     .cards {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 </style>
