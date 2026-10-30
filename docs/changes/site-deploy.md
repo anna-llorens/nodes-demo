@@ -53,3 +53,37 @@ redirect 302, missing page 404, valid post saved, bad email 400, honeypot 200 an
 Validation: site typecheck and build pass; a build with a workers.dev `PUBLIC_SITE_URL` marks all
 20 pages `noindex`, a default build only the 404, legal drafts and redirect pages. The deploy itself
 is run from the dashboard.
+
+## D5 · Email notification
+
+- [`wrangler.jsonc`](../../apps/site/wrangler.jsonc) adds a `send_email` binding `EMAIL` limited
+  to `nodes.data.contact@gmail.com`, plus the vars `CONTACT_INBOX` and `CONTACT_SENDER`
+  (`web@nodes-data.com`). The inbox lives in the Worker config, never in a `PUBLIC_*` variable.
+- After the D1 insert, [`POST /api/contact`](../../apps/site/worker/index.ts) sends a plain-text
+  copy: subject `NODES · contacto · {interest} · {name}`, body with every field plus the locale,
+  `Reply-To` set to the sender. The MIME is built by hand (no dependency): header values lose
+  line breaks, the subject is an RFC 2047 encoded word and the body is base64 UTF-8.
+- A failed send is logged with `console.error` and the endpoint still returns `{ ok: true }`,
+  because the message is already saved.
+- Free on Workers Free only because the destination is a verified Email Routing address; Email
+  Sending (Workers Paid) is not used. Until Email Routing is enabled on `nodes-data.com` and the
+  Gmail address is verified, sends fail and are only logged.
+
+Validation: site typecheck and build pass. No email was sent; delivery needs the dashboard setup.
+
+## Database command instructions
+
+The [README](../../README.md#site-database-contact-messages) uses the site's installed Wrangler
+through `pnpm --filter @nodes/site exec` for login, reading messages and applying migrations.
+Each example names the repository root as its working directory; the filter selects the site
+workspace and its Wrangler configuration. When already in `apps/site`, the equivalent prefix
+is `pnpm exec wrangler`. This avoids relying on `npx` or a root-level Wrangler installation.
+Local preview instructions also select the site workspace. Setup and check instructions state
+their working directory explicitly.
+
+Validation: Wrangler `--version` resolves to 4.155.0 using both documented workspace prefixes;
+`d1 execute --help` confirms the query and local/remote flags. Repository typecheck, lint,
+tests (179) and both app builds pass; lint reports five warnings in generated Worker types and
+existing web components. `git diff --check` passes. The site build uses the email fallback when
+`PUBLIC_CONTACT_ENDPOINT` is unset. Remote login, database queries and migrations were not run
+as part of this documentation update.

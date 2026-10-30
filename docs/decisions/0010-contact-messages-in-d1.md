@@ -21,7 +21,8 @@ into the D1 table `contact_messages` (database `nodes-contact`, binding `DB`, mi
 ## Consequences
 
 - Messages stay in our Cloudflare account; they are read with `wrangler d1 execute`.
-- Nobody is notified yet: the email copy to the project inbox comes with D5, after the domain.
+- Each saved message is also emailed to the project inbox (D5, Email Routing); a failed send is
+  only logged, D1 stays the source of truth.
 - The endpoint only exists under the Worker (`preview`, deploy), not under `astro dev`.
 
 ## Alternatives

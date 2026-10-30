@@ -1,5 +1,6 @@
+import { EmailMessage } from "cloudflare:email";
 import { LOCALE_COOKIE, pickLocale } from "../src/i18n/pick-locale";
-import { parseContactRequest } from "../src/lib/contact";
+import { parseContactRequest, type ContactPayload } from "../src/lib/contact";
 
 /**
  * Site Worker. `/` redirects to `/es/` or `/en/` at the edge (ADR 0004: saved choice, browser
@@ -33,7 +34,8 @@ export default {
 
 /**
  * Same-origin JSON endpoint, so no CORS headers. 400 for an invalid body; a filled honeypot gets
- * `{ ok: true }` without saving. The insert is a prepared statement.
+ * `{ ok: true }` without saving. The insert is a prepared statement. After saving, a plain-text
+ * copy goes to the project inbox (plan D5); a failed send is only logged, the row is already in D1.
  */
 async function handleContact(request: Request, url: URL, env: Env): Promise<Response> {
   if (request.method !== "POST") return json({ ok: false, error: "method_not_allowed" }, 405, { Allow: "POST" });
@@ -57,7 +59,56 @@ async function handleContact(request: Request, url: URL, env: Env): Promise<Resp
   )
     .bind(name, email, organization || null, interest, message, locale)
     .run();
+  try {
+    const raw = contactEmail(env.CONTACT_SENDER, env.CONTACT_INBOX, parsed.payload);
+    await env.EMAIL.send(new EmailMessage(env.CONTACT_SENDER, env.CONTACT_INBOX, raw));
+  } catch (error) {
+    console.error("contact email failed", error);
+  }
   return json({ ok: true });
+}
+
+/** Raw MIME for the inbox copy. Reply-To is the sender, so a reply from Gmail goes straight back. */
+function contactEmail(from: string, to: string, payload: ContactPayload): string {
+  const { name, email, organization, interest, message, locale } = payload;
+  const body = [
+    `Name: ${name}`,
+    `Email: ${email}`,
+    `Organization: ${organization || "-"}`,
+    `Interest: ${interest}`,
+    `Locale: ${locale}`,
+    "",
+    message,
+  ].join("\r\n");
+  return [
+    `From: NODES web <${from}>`,
+    `To: ${to}`,
+    `Reply-To: ${headerValue(email)}`,
+    `Subject: ${encodeHeader(`NODES · contacto · ${interest} · ${name}`)}`,
+    `Date: ${new Date().toUTCString()}`,
+    `Message-ID: <${crypto.randomUUID()}@${from.split("@")[1]}>`,
+    "MIME-Version: 1.0",
+    "Content-Type: text/plain; charset=utf-8",
+    "Content-Transfer-Encoding: base64",
+    "",
+    base64Utf8(body).replace(/.{76}/g, "$&\r\n"),
+  ].join("\r\n");
+}
+
+/** Strips line breaks so user input cannot add headers. */
+function headerValue(value: string): string {
+  return value.replace(/[\r\n]+/g, " ").trim();
+}
+
+/** RFC 2047 encoded word, so accents and "·" survive in the subject. */
+function encodeHeader(value: string): string {
+  return `=?UTF-8?B?${base64Utf8(headerValue(value))}?=`;
+}
+
+function base64Utf8(value: string): string {
+  let binary = "";
+  for (const byte of new TextEncoder().encode(value)) binary += String.fromCharCode(byte);
+  return btoa(binary);
 }
 
 function json(data: unknown, status = 200, headers: Record<string, string> = {}): Response {

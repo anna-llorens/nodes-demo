@@ -20,5 +20,17 @@
       "database_id": "d327db8d-30da-4c2d-8796-fd2a0cad79cf",
       "migrations_dir": "worker/migrations"
     }
-  ]
+  ],
+  // Copy of every contact message by email (plan D5). Free only to an address verified in the
+  // zone's Email Routing; the inbox lives here, never in a PUBLIC_* variable.
+  "send_email": [
+    {
+      "name": "EMAIL",
+      "allowed_destination_addresses": ["nodes.data.contact@gmail.com"]
+    }
+  ],
+  "vars": {
+    "CONTACT_INBOX": "nodes.data.contact@gmail.com",
+    "CONTACT_SENDER": "web@nodes-data.com"
+  }
 }
