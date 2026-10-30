@@ -10,6 +10,8 @@ tags: ["crowd-dynamics", "density", "pedestrian-flow", "safety", "prediction"]
 author: "Anna Llorens Roig"
 draft: false
 card: "prediction"
+cover: "../../../assets/research/prediction-city-map.webp"
+coverAlt: "People walking over a city map drawn on the paving of a square"
 ---
 
 Knowing how many people are in a venue is not enough to anticipate dangerous congestion. What anticipates it is measuring, zone by zone and minute by minute, local density (people per m²), flow per metre of width and how much speeds vary. An occupancy figure that looks fine overall can hide a spot where nobody can move any more.
@@ -70,6 +72,10 @@ Some reference figures:
 
 The diagrams do not agree with each other. According to a review by Seyfried and colleagues, the density of maximum flow ranges from 1.75 to 7 people/m² depending on the study, and the density at which everything stops from 3.8 to 10 people/m² ([review](https://www.researchgate.net/publication/336286296_An_overview_of_fundamental_diagrams_of_pedestrian_dynamics)). Population, culture, geometry and the direction of flows all play a part.
 
+![Local speed and local flow against local density at Jamarat and in other studies](../../../assets/research/prediction-fundamental-diagram-jamarat.png)
+
+*a) Average local speed and b) local flow as a function of local density. The Jamarat data (red) appears alongside measurements by Fruin (black), Mori and Tsukaguchi (green), Polus et al. (purple) and Seyfried et al. (blue); the solid line is Weidmann's curve. Flow rises, reaches a maximum and falls, and at Jamarat a second maximum appears at around 9 people/m². Source: Helbing, Johansson and Al-Abideen, Phys. Rev. E 75, 046109 (2007), figure 1 ([arXiv](https://arxiv.org/abs/physics/0701203)).*
+
 A practical consequence: in bottleneck experiments, **congestion appears before theoretical capacity is reached**. That is why the German guideline recommends sizing passages at the limit of still-stable flow, not at the maximum, and assessing the busiest 2 minutes rather than the hourly average ([Gerlach and Seyfried](https://svpt.uni-wuppertal.de/fileadmin/bauing/svpt/Publikationen/LoPa_EVC_Beitrag_english.pdf)).
 
 ## Crowd pressure and turbulence
@@ -92,6 +98,10 @@ Helbing and his team analysed video of a 27.7 × 22.5 m area in front of the bri
 2. **At 12:19**, with even higher densities, **turbulence** appeared: crowd pressure exceeded 0.02/s².
 3. **About 10 minutes later** the disaster began, more than 30 minutes after the flow had dropped below the critical threshold.
 
+![Density, average flow and crowd pressure in front of the Jamarat Bridge on 12 January 2006](../../../assets/research/prediction-jamarat-timeline.png)
+
+*a) Density of pilgrims in front of the bridge entrance: after an orderly phase, stop-and-go waves appear around 11:53 (blue, low density; yellow and orange, high). b) Average flow drops below 0.8 people/(m·s) just as those waves begin. c) Speeds (arrows) and "crowd pressure" (colour) between 11:45 and 12:30: the dark red area is where people stumbled and the disaster began. Source: Helbing, Johansson and Al-Abideen, Phys. Rev. E 75, 046109 (2007), figure 2 ([arXiv](https://arxiv.org/abs/physics/0701203)).*
+
 Other findings: local densities exceeded 10 people/m²; above 6, local flow dropped to a third or less, so far fewer people were leaving than arriving; and the disaster happened in a flat, open area without significant counterflows.
 
 The authors conclude that these signs can be detected live with automatic video analysis. At the following Hajj, automatic counting with the cameras, one-way circulation, removal of accumulation points and group schedules were introduced; according to the authors themselves, it was a safe Hajj.
@@ -99,6 +109,10 @@ The authors conclude that these signs can be detected live with automatic video 
 ## What the disasters teach
 
 In almost all these cases, data or warnings were available. What was missing was turning them into timely decisions.
+
+![Crowd on the access ramp of the Love Parade in Duisburg, with the tunnels in the background](../../../assets/research/prediction-love-parade-ramp.jpg)
+
+*Entry and exit ramp of the Love Parade in Duisburg, 24 July 2010, around 15:30, with the tunnels in the background: the same passage was used to enter and leave the grounds. Photo: Arne Müseler ([arne-mueseler.com](http://www.arne-mueseler.com)), [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Loveparade_2010_duisburg_tunnel_ramp.jpg).*
 
 | Date | Place | What happened | Lesson for measurement |
 | --- | --- | --- | --- |

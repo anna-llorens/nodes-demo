@@ -1,7 +1,6 @@
 ---
 import Svg from "@nodes/ui/Svg.astro";
 import { Image } from "astro:assets";
-import lidarImage from "../../assets/research/lidar-point-cloud-plaza.jpg";
 import Button from "../../components/Button.astro";
 import Eyebrow from "../../components/Eyebrow.astro";
 import { t, type Locale } from "../../i18n";
@@ -9,8 +8,9 @@ import { articleFor, articlePath } from "../../lib/research";
 import { pagePath } from "../../lib/routes";
 
 /**
- * "What we are researching": two topic cards with an image (or an icon panel) and a button to Research. A topic
- * whose article is published in this locale links to it; the title link covers the whole card.
+ * "What we are researching": two topic cards and a button to Research. A topic whose article is
+ * published in this locale links to it (the title link covers the whole card) and shows the
+ * article's `cover`; otherwise the card shows an icon panel.
  */
 interface Props {
   locale: Locale;
@@ -19,12 +19,12 @@ const { locale } = Astro.props;
 const topics = await Promise.all(
   (
     [
-      { key: "lidar", icon: "icons/point-cloud", image: lidarImage },
-      { key: "prediction", icon: "icons/chart", image: undefined },
+      { key: "lidar", icon: "icons/point-cloud" },
+      { key: "prediction", icon: "icons/chart" },
     ] as const
   ).map(async (topic) => {
     const article = await articleFor(topic.key, locale);
-    return { ...topic, href: article && articlePath(article) };
+    return { ...topic, href: article && articlePath(article), image: article?.data.cover };
   }),
 );
 ---

@@ -20,6 +20,7 @@ if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
     eyebrow={t(locale, "demo.hero.eyebrow")}
     title={t(locale, "demo.hero.title")}
     lead={t(locale, "demo.hero.lead")}
+    plain
   >
     <Notice slot="aside" locale={locale} />
   </PageHero>

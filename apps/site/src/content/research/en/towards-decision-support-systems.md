@@ -10,6 +10,8 @@ tags: ["prediction", "alerts", "decision-making", "safety", "crowd-dynamics"]
 author: "Anna Llorens Roig"
 draft: false
 card: "decision"
+cover: "../../../assets/research/decision-venue-flows.webp"
+coverAlt: "Illustration of a venue seen from above: people as featureless figures and green flow lines, with a denser area in orange"
 ---
 
 In the major crowd disasters of the last two decades, warning signs appeared minutes or hours in advance. What was missing was not information but a short, clear path from warning to decision. Decision-support systems aim to shorten that path, although evidence of their real-world effect is still limited.

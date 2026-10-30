@@ -10,6 +10,8 @@ tags: ["dinamica-de-multitudes", "densidad", "flujo-peatonal", "seguridad", "pre
 author: "Anna Llorens Roig"
 draft: false
 card: "prediction"
+cover: "../../../assets/research/prediction-city-map.webp"
+coverAlt: "Personas caminando sobre un mapa de ciudad dibujado en el suelo de una plaza"
 ---
 
 Saber cuántas personas hay en un recinto no basta para anticipar una congestión peligrosa. Lo que la anticipa es medir, zona por zona y minuto a minuto, la densidad local (personas por m²), el flujo por metro de anchura y la variación de las velocidades. Un aforo correcto en el conjunto puede esconder un punto donde ya nadie puede moverse.
@@ -70,6 +72,10 @@ Algunas cifras de referencia:
 
 Los diagramas no coinciden entre sí. Según una revisión de Seyfried y colaboradores, la densidad de flujo máximo varía entre 1,75 y 7 pers/m² según el estudio, y la densidad a la que todo se detiene entre 3,8 y 10 pers/m² ([revisión](https://www.researchgate.net/publication/336286296_An_overview_of_fundamental_diagrams_of_pedestrian_dynamics)). Influyen la población, la cultura, la geometría y la dirección de los flujos.
 
+![Velocidad y flujo local frente a la densidad local en Jamarat y en otros estudios](../../../assets/research/prediction-fundamental-diagram-jamarat.png)
+
+*a) Velocidad media local y b) flujo local según la densidad local. Los datos de Jamarat (rojo) aparecen junto a mediciones de Fruin (negro), Mori y Tsukaguchi (verde), Polus et al. (morado) y Seyfried et al. (azul); la línea continua es la curva de Weidmann. El flujo sube, llega a un máximo y cae, y en Jamarat aparece un segundo máximo hacia 9 p/m². Figura original en inglés. Fuente: Helbing, Johansson y Al-Abideen, Phys. Rev. E 75, 046109 (2007), figura 1 ([arXiv](https://arxiv.org/abs/physics/0701203)).*
+
 Una consecuencia práctica: en experimentos con cuellos de botella, **la congestión aparece antes de llegar a la capacidad teórica**. Por eso la guía alemana recomienda dimensionar los pasos en el límite del flujo todavía estable, no en el máximo, y evaluar los 2 minutos más cargados en vez de la media horaria ([Gerlach y Seyfried](https://svpt.uni-wuppertal.de/fileadmin/bauing/svpt/Publikationen/LoPa_EVC_Beitrag_english.pdf)).
 
 ## Presión de multitud y turbulencia
@@ -92,6 +98,10 @@ Helbing y su equipo analizaron los vídeos de una zona de 27,7 × 22,5 m ante la
 2. **A las 12:19**, con densidades aún mayores, apareció la **turbulencia**: la presión de multitud superó 0,02/s².
 3. **Unos 10 minutos después** empezó el accidente, más de 30 minutos después de que el flujo bajara del umbral crítico.
 
+![Densidad, flujo medio y presión de multitud ante el puente de Jamarat el 12 de enero de 2006](../../../assets/research/prediction-jamarat-timeline.png)
+
+*a) Densidad de peregrinos ante la entrada del puente: tras una fase ordenada, hacia las 11:53 aparecen ondas de parada y arranque (azul, densidad baja; amarillo y naranja, alta). b) El flujo medio cae por debajo de 0,8 personas/(m·s) justo cuando empiezan esas ondas. c) Velocidades (flechas) y «presión de multitud» (color) entre las 11:45 y las 12:30: la zona roja oscura es donde la gente tropezó y empezó el accidente. Figura original en inglés. Fuente: Helbing, Johansson y Al-Abideen, Phys. Rev. E 75, 046109 (2007), figura 2 ([arXiv](https://arxiv.org/abs/physics/0701203)).*
+
 Otros hallazgos: las densidades locales superaron 10 pers/m²; por encima de 6, el flujo local cayó a un tercio o menos, de modo que salía mucha menos gente de la que entraba; y el accidente ocurrió en una zona llana y abierta, sin contraflujos importantes.
 
 Los autores concluyen que estas señales pueden detectarse en directo con análisis automático de vídeo. En el Hajj siguiente se introdujeron conteo automático con las cámaras, circulación en un solo sentido, eliminación de puntos de acumulación y horarios por grupos; según los propios autores, fue un Hajj seguro.
@@ -99,6 +109,10 @@ Los autores concluyen que estas señales pueden detectarse en directo con análi
 ## Lo que enseñan los accidentes
 
 En casi todos estos casos había datos o avisos disponibles. Lo que faltó fue convertirlos en decisiones a tiempo.
+
+![Multitud en la rampa de acceso de la Love Parade de Duisburgo, con los túneles al fondo](../../../assets/research/prediction-love-parade-ramp.jpg)
+
+*Rampa de entrada y salida de la Love Parade en Duisburgo, el 24 de julio de 2010 hacia las 15:30, con los túneles al fondo: el mismo paso servía para entrar y salir del recinto. Foto: Arne Müseler ([arne-mueseler.com](http://www.arne-mueseler.com)), [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Loveparade_2010_duisburg_tunnel_ramp.jpg).*
 
 | Fecha | Lugar | Qué pasó | Lección para la medición |
 | --- | --- | --- | --- |

@@ -21,12 +21,8 @@ const items = ["item1", "item2", "item3"] as const;
       sectors.map((sector) => (
         <li id={sector.id} class="card">
           <article aria-labelledby={`${sector.id}-title`}>
-            <span class:list={["panel", { "panel-photo": "photo" in sector }]}>
-              {"photo" in sector ? (
-                <Image src={sector.photo} alt="" widths={[480, 800, 1200]} sizes="(min-width: 1024px) 33vw, 100vw" />
-              ) : (
-                <Svg name={sector.illustration} />
-              )}
+            <span class="panel">
+              <Image src={sector.photo} alt="" widths={[480, 800, 1200]} sizes="(min-width: 1024px) 33vw, 100vw" />
             </span>
             <div class="body">
               <span class="icon">
@@ -65,23 +61,13 @@ const items = ["item1", "item2", "item3"] as const;
     border-radius: var(--radius-card);
     background: var(--color-surface);
   }
+  /* Decorative photo filling the panel; the card title says what it shows. */
   .panel {
-    display: grid;
-    place-items: center;
+    display: block;
     aspect-ratio: 16 / 9;
-    padding: var(--space-6);
     background: var(--color-primary-soft);
-    color: var(--color-primary);
   }
-  .panel :global(svg) {
-    width: 100%;
-    height: 100%;
-  }
-  /* Decorative photo: fills the panel, no padding; the card title says what it shows. */
-  .panel-photo {
-    padding: 0;
-  }
-  .panel-photo :global(img) {
+  .panel :global(img) {
     display: block;
     width: 100%;
     height: 100%;

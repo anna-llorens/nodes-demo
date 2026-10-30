@@ -6,9 +6,10 @@ import Eyebrow from "./Eyebrow.astro";
 
 /**
  * Page hero: eyebrow pill, the page's h1 and lead; skyline on the right (below on mobile).
- * The `aside` slot replaces the skyline (e.g. the demo's simulation notice). An `image` also
- * replaces it: on desktop the photo bleeds to the right edge with its left side faded into the
- * page, like the home hero.
+ * The `aside` slot replaces the skyline (e.g. the demo's simulation notice); with an `image` or
+ * `plain` it goes under the lead instead. An `image` also replaces the skyline: on desktop the photo bleeds to the right edge with its left side faded into the
+ * page, like the home hero. `plain` drops the right column: a shorter, text-only hero in a
+ * 48rem column, the width of the contact form below it.
  */
 interface Props {
   id: string;
@@ -17,22 +18,24 @@ interface Props {
   lead: string;
   image?: ImageMetadata;
   imageAlt?: string;
+  plain?: boolean;
 }
-const { id, eyebrow, title, lead, image, imageAlt = "" } = Astro.props;
+const { id, eyebrow, title, lead, image, imageAlt = "", plain = false } = Astro.props;
 ---
 
-<section class:list={["hero", { "has-photo": image }]} aria-labelledby={id}>
+<section class:list={["hero", { "has-photo": image, plain }]} aria-labelledby={id}>
   <div class="container layout">
     <div class="text">
       <Eyebrow badge>{eyebrow}</Eyebrow>
       <h1 id={id}>{title}</h1>
       <p class="lead">{lead}</p>
+      {(image || plain) && Astro.slots.has("aside") && <slot name="aside" />}
     </div>
     {
-      Astro.slots.has("aside") ? (
+      !image && !plain && Astro.slots.has("aside") ? (
         <div class="aside"><slot name="aside" /></div>
       ) : (
-        !image && <span class="art"><Svg name="illustrations/skyline-header" /></span>
+        !image && !plain && <span class="art"><Svg name="illustrations/skyline-header" /></span>
       )
     }
   </div>
@@ -55,6 +58,10 @@ const { id, eyebrow, title, lead, image, imageAlt = "" } = Astro.props;
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-5);
+  }
+  .plain .text {
+    max-width: 48rem;
+    margin-inline: auto;
   }
   .lead {
     margin: 0;
@@ -101,6 +108,12 @@ const { id, eyebrow, title, lead, image, imageAlt = "" } = Astro.props;
     }
     .aside {
       align-self: center;
+    }
+    .plain .layout {
+      display: block;
+    }
+    .plain .text {
+      padding-bottom: 0;
     }
     /* With a photo: text on the left half, photo bleeding off the right edge (as on the home). */
     .has-photo {

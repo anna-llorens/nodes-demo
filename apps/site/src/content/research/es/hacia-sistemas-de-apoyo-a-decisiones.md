@@ -10,6 +10,8 @@ tags: ["prediccion", "alertas", "toma-de-decisiones", "seguridad", "dinamica-de-
 author: "Anna Llorens Roig"
 draft: false
 card: "decision"
+cover: "../../../assets/research/decision-venue-flows.webp"
+coverAlt: "Ilustración de un recinto visto desde arriba: personas como figuras sin rasgos y líneas de flujo verdes, con una zona más densa en naranja"
 ---
 
 En las grandes catástrofes por aglomeración de las dos últimas décadas, las señales de peligro aparecieron con minutos u horas de antelación. Lo que faltó no fue información, sino un camino corto y claro entre el aviso y la decisión. Los sistemas de apoyo a decisiones buscan acortar ese camino, aunque la evidencia sobre su eficacia real todavía es limitada.
