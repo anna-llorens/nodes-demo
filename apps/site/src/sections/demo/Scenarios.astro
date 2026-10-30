@@ -1,23 +1,27 @@
 ---
-import Svg from "@nodes/ui/Svg.astro";
+import maratonImage from "@nodes/ui/assets/png/maraton.jpg";
+import mascletaImage from "@nodes/ui/assets/png/mascleta.jpg";
 import Button from "../../components/Button.astro";
 import { t, type Locale } from "../../i18n";
 import { demoScenarioUrl, type DemoScenario } from "../../lib/demo";
 import { env } from "../../lib/env";
 
-/** One card per demo scenario; the button opens it in the demo app when PUBLIC_DEMO_URL is set. */
+/**
+ * One card per demo scenario with a photo of the place; the button opens it in the demo app when
+ * PUBLIC_DEMO_URL is set. Photos are decorative: the title names the scenario.
+ */
 interface Props {
   locale: Locale;
 }
 const { locale } = Astro.props;
 const scenarios = (
   [
-    ["maraton", "events", "illustrations/scene-half-marathon"],
-    ["mascleta", "mascleta", "illustrations/scene-mascleta"],
-  ] as const satisfies readonly (readonly [DemoScenario, string, string])[]
-).map(([scenario, key, illustration]) => ({
+    ["maraton", "events", maratonImage],
+    ["mascleta", "mascleta", mascletaImage],
+  ] as const satisfies readonly (readonly [DemoScenario, string, ImageMetadata])[]
+).map(([scenario, key, image]) => ({
   id: scenario,
-  illustration,
+  image,
   title: t(locale, `demo.${key}.title`),
   text: t(locale, `demo.${key}.text`),
   href: demoScenarioUrl(env.demoUrl, scenario, locale),
@@ -30,7 +34,15 @@ const scenarios = (
       scenarios.map((scenario) => (
         <li>
           <article aria-labelledby={`scenario-${scenario.id}`}>
-            <span class="panel"><Svg name={scenario.illustration} /></span>
+            <img
+              class="photo"
+              src={scenario.image.src}
+              alt=""
+              width={scenario.image.width}
+              height={scenario.image.height}
+              loading="lazy"
+              decoding="async"
+            />
             <div class="body">
               <h2 id={`scenario-${scenario.id}`}>{scenario.title}</h2>
               <p>{scenario.text}</p>
@@ -57,17 +69,13 @@ const scenarios = (
     border-radius: var(--radius-card);
     background: var(--color-surface);
   }
-  .panel {
-    display: grid;
-    place-items: center;
-    aspect-ratio: 16 / 8;
-    padding: var(--space-6);
-    background: var(--color-primary-soft);
-    color: var(--color-primary);
-  }
-  .panel :global(svg) {
+  .photo {
+    display: block;
     width: 100%;
-    height: 100%;
+    height: auto;
+    aspect-ratio: 16 / 8;
+    object-fit: cover;
+    background: var(--color-primary-soft);
   }
   .body {
     display: flex;

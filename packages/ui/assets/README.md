@@ -37,7 +37,8 @@ The site favicons (`apps/site/public/`) are the "O" of the light file in `--colo
 | `icons/linkedin.svg`, `icons/clock.svg` | Not used (no LinkedIn row or response-time promise on Colabora) |
 | `social/linkedin.svg`, `social/x.svg` | Footer (only when the URL env variable is set) |
 | `illustrations/use-case-runner.svg`, `use-case-town-hall.svg` | Home · use-case cards |
-| `illustrations/scene-half-marathon.svg`, `scene-mascleta.svg` | Demo entry cards (instead of photos) |
+| `illustrations/scene-half-marathon.svg`, `scene-mascleta.svg` | Demo app entry cards (instead of photos) |
+| `png/maraton.jpg`, `png/mascleta.jpg` | Site · Demo page scenario cards (decorative photos) |
 | `illustrations/hero-lidar-valencia.svg` | Tecnología · hero; Home · hero until its own illustration exists |
 | `illustrations/skyline-header.svg` | Colabora · hero; Home · collaborate band |
 | `illustrations/skyline-footer.svg` | Home · use cases (small); bottom of demo entry |
