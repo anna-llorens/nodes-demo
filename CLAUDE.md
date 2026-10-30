@@ -84,6 +84,10 @@ Before finishing any task: `pnpm typecheck && pnpm lint && pnpm test && pnpm bui
 
 - A "simulation / data not measured" label is visible on every screen while data is simulated.
 - No cameras, no photos of people with detection overlays, no "live" labels on simulated data.
+- Real photos of people (including recognisable faces) are allowed on the public site only when
+  the team has the right to use them. Record source, author and licence for every photo in
+  `apps/site/src/assets/README.md` before it is published. Faces from the mockups are fictional:
+  never use them.
 - No city-wide attendance totals or official capacities presented as facts.
 - Alert and value copy: "helps decide in time". Never "prevents incidents", "danger", "evacuate".
 - Figures from the real world must have a source in `docs/sources.md` (e.g. Medio Maratón 2025:

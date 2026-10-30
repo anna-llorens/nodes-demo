@@ -17,6 +17,8 @@ Approved mockups (desktop and mobile). Source of truth for layout, order, compon
   `packages/ui/assets/png/homePage.png` on large screens; it is intentionally hidden on small
   screens.
 - The faces in the mockups are fictional. Never use them.
+- Real photos, including people with recognisable faces, may be used when the team has the
+  rights to them. List each one with source, author and licence in `apps/site/src/assets/README.md`.
 - The photos in the demo entry mockup are generated images: use them only if the team provides
   the original files with rights to use them.
 

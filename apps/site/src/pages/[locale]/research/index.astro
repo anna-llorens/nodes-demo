@@ -1,4 +1,5 @@
 ---
+import heroImage from "../../../assets/research/research-hero.jpg";
 import PageHero from "../../../components/PageHero.astro";
 import { isLocale, t } from "../../../i18n";
 import Base from "../../../layouts/Base.astro";
@@ -17,6 +18,8 @@ if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
     eyebrow={t(locale, "research.hero.eyebrow")}
     title={t(locale, "research.hero.title")}
     lead={t(locale, "research.hero.lead")}
+    image={heroImage}
+    imageAlt={t(locale, "research.hero.imageAlt")}
   />
   <Cards locale={locale} />
 </Base>

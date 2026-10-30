@@ -1,77 +1,20 @@
 ---
-import Svg from "@nodes/ui/Svg.astro";
-import Eyebrow from "../../components/Eyebrow.astro";
+import heroImage from "../../assets/technology/technology-hero.jpg";
+import PageHero from "../../components/PageHero.astro";
 import { t, type Locale } from "../../i18n";
 
-/** Technology hero: eyebrow, the page's h1 and lead; illustration bleeding to the right edge. */
+/** Technology hero: the shared page hero with a photo bleeding to the right edge (as on Research). */
 interface Props {
   locale: Locale;
 }
 const { locale } = Astro.props;
 ---
 
-<section class="hero" aria-labelledby="tech-hero-title">
-  <div class="container text">
-    <Eyebrow>{t(locale, "tech.hero.eyebrow")}</Eyebrow>
-    <h1 id="tech-hero-title">{t(locale, "tech.hero.title")}</h1>
-    <p class="lead">{t(locale, "tech.hero.lead")}</p>
-  </div>
-  <div class="art">
-    <Svg name="illustrations/hero-lidar-valencia" label={t(locale, "tech.hero.imageAlt")} />
-  </div>
-</section>
-
-<style>
-  .hero {
-    position: relative;
-    padding-top: var(--section-padding);
-    overflow: hidden;
-  }
-  .text {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-5);
-  }
-  .lead {
-    margin: 0;
-    max-width: 40ch;
-    font-size: 1.125rem;
-  }
-  .art {
-    margin-top: var(--space-8);
-    color: var(--color-primary-decor);
-  }
-  .art :global(svg) {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-
-  @media (min-width: 1024px) {
-    .hero {
-      display: flex;
-      align-items: center;
-      min-height: 26rem;
-      padding-block: var(--space-12);
-    }
-    .text {
-      position: relative;
-      z-index: 1;
-    }
-    .text > * {
-      max-width: 50%;
-    }
-    /* Starts at the text column's end and runs past the right edge of the viewport. */
-    .art {
-      position: absolute;
-      top: 50%;
-      left: max(48%, calc(50% - var(--container-max) / 2 + var(--container-max) * 0.5));
-      width: 58vw;
-      margin: 0;
-      transform: translateY(-50%);
-      /* The illustration has its own tinted background: fade its left edge into the page. */
-      mask-image: linear-gradient(to right, transparent, black 20%);
-    }
-  }
-</style>
+<PageHero
+  id="tech-hero-title"
+  eyebrow={t(locale, "tech.hero.eyebrow")}
+  title={t(locale, "tech.hero.title")}
+  lead={t(locale, "tech.hero.lead")}
+  image={heroImage}
+  imageAlt={t(locale, "tech.hero.imageAlt")}
+/>

@@ -1,10 +1,11 @@
 ---
 import Svg from "@nodes/ui/Svg.astro";
+import { Image } from "astro:assets";
 import { sectors } from "../../config/sectors";
 import { t, type Locale } from "../../i18n";
 
 /**
- * One card per sector: illustration panel (the sector icon when there is no illustration), icon,
+ * One card per sector: photo or illustration panel (the sector icon when there is neither), icon,
  * title, text and three examples. Each card's id is the anchor the home tiles link to.
  */
 interface Props {
@@ -20,8 +21,10 @@ const items = ["item1", "item2", "item3"] as const;
       sectors.map((sector) => (
         <li id={sector.id} class="card">
           <article aria-labelledby={`${sector.id}-title`}>
-            <span class:list={["panel", { "panel-icon": !("illustration" in sector) }]}>
-              {"illustration" in sector ? (
+            <span class:list={["panel", { "panel-icon": !("illustration" in sector), "panel-photo": "photo" in sector }]}>
+              {"photo" in sector ? (
+                <Image src={sector.photo} alt="" widths={[480, 800, 1200]} sizes="(min-width: 1024px) 33vw, 100vw" />
+              ) : "illustration" in sector ? (
                 <Svg name={sector.illustration} />
               ) : (
                 <sector.lucide aria-hidden="true" stroke-width={1.5} />
@@ -75,6 +78,16 @@ const items = ["item1", "item2", "item3"] as const;
   .panel :global(svg) {
     width: 100%;
     height: 100%;
+  }
+  /* Decorative photo: fills the panel, no padding; the card title says what it shows. */
+  .panel-photo {
+    padding: 0;
+  }
+  .panel-photo :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   .panel-icon :global(svg) {
     width: 72px;
