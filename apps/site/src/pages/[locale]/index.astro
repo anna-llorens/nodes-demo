@@ -1,6 +1,7 @@
 ---
-import { isLocale } from "../../i18n";
+import { isLocale, t } from "../../i18n";
 import Base from "../../layouts/Base.astro";
+import { absoluteUrl, env } from "../../lib/env";
 import { localePaths } from "../../lib/static-paths";
 import Hero from "../../sections/home/Hero.astro";
 import Project from "../../sections/home/Project.astro";
@@ -11,9 +12,22 @@ export const getStaticPaths = localePaths;
 
 const { locale } = Astro.params;
 if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
+
+// Organization structured data; email and LinkedIn only when their variables are set.
+const organization = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "NODES",
+  url: absoluteUrl(`/${locale}/`),
+  logo: absoluteUrl("/apple-touch-icon.png"),
+  description: t(locale, "meta.description"),
+  ...(env.contactEmail && { email: env.contactEmail }),
+  ...(env.linkedinUrl && { sameAs: [env.linkedinUrl] }),
+};
 ---
 
 <Base locale={locale} page="home">
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(organization).replace(/</g, "\\u003c")} />
   <Hero locale={locale} />
   <Sectors locale={locale} />
   <Project locale={locale} />

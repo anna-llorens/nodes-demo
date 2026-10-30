@@ -26,7 +26,7 @@ const toc = headings.filter((heading) => heading.depth === 2);
 const published = date ? new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(new Date(date)) : undefined;
 ---
 
-<Base locale={locale} title={title} noindex={draft}>
+<Base locale={locale} title={title} description={subtitle} noindex={draft}>
   <section class="section article-page">
     <!-- Page header: back link, title and subtitle; the future cover image goes here. -->
     <header class="container header">

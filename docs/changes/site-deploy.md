@@ -71,6 +71,31 @@ is run from the dashboard.
 
 Validation: site typecheck and build pass. No email was sent; delivery needs the dashboard setup.
 
+## D7 · SEO basics
+
+- [`@astrojs/sitemap`](../../apps/site/astro.config.mjs) (dev dependency, named by the plan) with
+  `site` = `PUBLIC_SITE_URL`, read through Vite's `loadEnv` so `.env` works locally. es/en
+  alternates. Leaves out `/`, the 404, the old `/collaborate` redirect and `/legal/*` (still
+  drafts; add them back when the final texts land). URLs are serialized without a trailing slash
+  to match the canonical links. No `PUBLIC_SITE_URL`, no sitemap.
+- [`robots.txt`](../../apps/site/src/pages/robots.txt.ts) is built: `Disallow: /` on workers.dev,
+  otherwise `Allow: /` plus the sitemap URL.
+- Each catalog page has a `descriptionKey` in [`routes.ts`](../../apps/site/src/lib/routes.ts).
+  Existing hero leads are reused as descriptions; only the three legal pages got new copy
+  (`legal.*.description` in es/en). Research articles use their `subtitle`.
+- [Base](../../apps/site/src/layouts/Base.astro) adds `og:site_name`, `og:image` (+ size) and
+  Twitter `summary_large_image` tags, and a `head` slot. The default share image
+  `public/og-default.jpg` (1200×630, 250 KB) is cropped once with `sips` from
+  `packages/ui/assets/png/homePage.png`.
+- The home page adds `Organization` JSON-LD: name, url, logo (`apple-touch-icon.png`), description,
+  and email/LinkedIn only when their variables are set.
+
+Trade-off: titles were already unique; the root redirect page keeps the generic description.
+
+Validation: site typecheck and lint pass (only existing warnings); builds with a real domain, a
+workers.dev URL and the local `.env` produce the expected sitemap, `robots.txt`, descriptions,
+OG/Twitter tags and JSON-LD.
+
 ## Database command instructions
 
 The [README](../../README.md#site-database-contact-messages) uses the site's installed Wrangler

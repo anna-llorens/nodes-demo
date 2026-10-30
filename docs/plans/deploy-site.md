@@ -6,7 +6,7 @@ Branch: `feat/move-from-lovable`. Only `apps/site` is deployed. The demo stays o
 
 ## Status
 
-D1–D3 done (see `docs/changes/site-deploy.md`). Domain `nodes-data.com` bought on Cloudflare (D4 in progress). Next: D5, then D6, then D7.
+D1–D3 done (see `docs/changes/site-deploy.md`). Domain `nodes-data.com` live on the Worker (D4 done). Next: D5, D7, D6.
 
 ## Working rules
 
@@ -114,5 +114,8 @@ No cookies or local storage, so no consent banner is needed.
   them), Open Graph and Twitter tags, and one default OG image (1200×630, from existing assets).
 - JSON-LD `Organization` on the home page (name, url, logo, email, LinkedIn).
 - No new copy beyond the missing meta descriptions; list any you add so I can review them.
+- One canonical host: in the Worker, 301-redirect `www.nodes-data.com` and the `*.workers.dev` host
+  to `https://nodes-data.com` with the same path and query (before the `/` language redirect).
+- Report: the sitemap URL to submit in Google Search Console.
 
 Out of scope: deploying `apps/web`, Supabase, Google Analytics, final legal texts.

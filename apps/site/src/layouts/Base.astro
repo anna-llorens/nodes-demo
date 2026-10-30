@@ -19,15 +19,19 @@ interface Props {
   noindex?: boolean;
   /** Document title for pages outside the catalog (articles); "· NODES" is appended. */
   title?: string | undefined;
+  /** Meta description for pages outside the catalog (articles); catalog pages use their own key. */
+  description?: string | undefined;
 }
-const { locale, page, noindex = false, title: pageTitle } = Astro.props;
+const { locale, page, noindex = false, title: pageTitle, description: pageDescription } = Astro.props;
 
 const title = pageTitle
   ? `${pageTitle} · NODES`
   : !page || page === "home"
     ? t(locale, "meta.title")
     : `${t(locale, pages[page].titleKey)} · NODES`;
-const description = t(locale, "meta.description");
+const description = pageDescription ?? t(locale, page ? pages[page].descriptionKey : "meta.description");
+// One default share image for every page (1200×630, cropped from the home page asset).
+const ogImage = absoluteUrl("/og-default.jpg");
 const alternates = page ? locales.map((item) => ({ locale: item, href: absoluteUrl(pagePath(item, page)) })) : [];
 const canonical = page ? absoluteUrl(pagePath(locale, page)) : undefined;
 const xDefault = page ? absoluteUrl(pagePath("en", page)) : undefined;
@@ -50,6 +54,15 @@ const xDefault = page ? absoluteUrl(pagePath("en", page)) : undefined;
     <meta property="og:description" content={description} />
     <meta property="og:locale" content={locale === "es" ? "es_ES" : "en_GB"} />
     {canonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:site_name" content="NODES" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <slot name="head" />
   </head>
   <body>
     <Header locale={locale} page={page} />

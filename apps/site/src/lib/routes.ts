@@ -1,18 +1,18 @@
 import type { Key, Locale } from "../i18n";
 
-/** Pages of the site. Slugs are English in every locale (ADR 0006). */
+/** Pages of the site. Slugs are English in every locale (ADR 0006); each has its own meta description. */
 export const pages = {
-  home: { path: "", titleKey: "nav.home" },
-  applications: { path: "applications", titleKey: "nav.applications" },
-  technology: { path: "technology", titleKey: "nav.technology" },
-  demo: { path: "demo", titleKey: "nav.demo" },
-  research: { path: "research", titleKey: "nav.research" },
-  contact: { path: "contact", titleKey: "nav.contact" },
-  about: { path: "about", titleKey: "nav.about" },
-  legalNotice: { path: "legal/legal-notice", titleKey: "legal.legalNotice.title" },
-  privacy: { path: "legal/privacy", titleKey: "legal.privacy.title" },
-  cookies: { path: "legal/cookies", titleKey: "legal.cookies.title" },
-} as const satisfies Record<string, { path: string; titleKey: Key }>;
+  home: { path: "", titleKey: "nav.home", descriptionKey: "meta.description" },
+  applications: { path: "applications", titleKey: "nav.applications", descriptionKey: "applications.hero.lead" },
+  technology: { path: "technology", titleKey: "nav.technology", descriptionKey: "tech.hero.lead" },
+  demo: { path: "demo", titleKey: "nav.demo", descriptionKey: "demo.hero.lead" },
+  research: { path: "research", titleKey: "nav.research", descriptionKey: "research.hero.lead" },
+  contact: { path: "contact", titleKey: "nav.contact", descriptionKey: "contact.hero.lead" },
+  about: { path: "about", titleKey: "nav.about", descriptionKey: "about.lead" },
+  legalNotice: { path: "legal/legal-notice", titleKey: "legal.legalNotice.title", descriptionKey: "legal.legalNotice.description" },
+  privacy: { path: "legal/privacy", titleKey: "legal.privacy.title", descriptionKey: "legal.privacy.description" },
+  cookies: { path: "legal/cookies", titleKey: "legal.cookies.title", descriptionKey: "legal.cookies.description" },
+} as const satisfies Record<string, { path: string; titleKey: Key; descriptionKey: Key }>;
 
 export type PageId = keyof typeof pages;
 
