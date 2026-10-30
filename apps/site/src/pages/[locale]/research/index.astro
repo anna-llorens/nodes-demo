@@ -20,6 +20,7 @@ if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
     lead={t(locale, "research.hero.lead")}
     image={heroImage}
     imageAlt={t(locale, "research.hero.imageAlt")}
+    backdrop
   />
   <Cards locale={locale} />
 </Base>

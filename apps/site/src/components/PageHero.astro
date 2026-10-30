@@ -10,6 +10,8 @@ import Eyebrow from "./Eyebrow.astro";
  * `plain` it goes under the lead instead. An `image` also replaces the skyline: on desktop the photo bleeds to the right edge with its left side faded into the
  * page, like the home hero. `plain` drops the right column: a shorter, text-only hero in a
  * 48rem column, the width of the contact form below it; `centered` also centres its text.
+ * `backdrop` (with an `image`) fills the whole hero with the photo behind white text on a dark
+ * band, like the article header; the title is not width-limited.
  */
 interface Props {
   id: string;
@@ -20,11 +22,15 @@ interface Props {
   imageAlt?: string;
   plain?: boolean;
   centered?: boolean;
+  backdrop?: boolean;
 }
-const { id, eyebrow, title, lead, image, imageAlt = "", plain = false, centered = false } = Astro.props;
+const { id, eyebrow, title, lead, image, imageAlt = "", plain = false, centered = false, backdrop = false } = Astro.props;
 ---
 
-<section class:list={["hero", { "has-photo": image, plain, centered }]} aria-labelledby={id}>
+<section
+  class:list={["hero", { "has-photo": image && !backdrop, backdrop: image && backdrop, plain, centered }]}
+  aria-labelledby={id}
+>
   <div class="container layout">
     <div class="text">
       <Eyebrow badge>{eyebrow}</Eyebrow>
@@ -93,6 +99,56 @@ const { id, eyebrow, title, lead, image, imageAlt = "", plain = false, centered 
     display: block;
     width: 100%;
     height: auto;
+  }
+  /* Backdrop: the photo fills the hero; a dark gradient on the left keeps the white text legible. */
+  .hero.backdrop {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 60svh;
+    padding-block: var(--space-12);
+    background: var(--color-surface-inverse);
+    color: var(--color-text-inverse);
+  }
+  .backdrop .layout {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+  }
+  .backdrop .text {
+    width: auto;
+    padding-bottom: 0;
+  }
+  .backdrop h1,
+  .backdrop .lead {
+    color: var(--color-text-inverse);
+  }
+  .backdrop h1 {
+    max-width: none;
+  }
+  .backdrop .photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    margin: 0;
+    mask-image: none;
+  }
+  .backdrop .photo :global(img) {
+    height: 100%;
+    object-fit: cover;
+    object-position: right center;
+  }
+  .backdrop .photo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      var(--color-surface-inverse) 0%,
+      color-mix(in srgb, var(--color-surface-inverse) 70%, transparent) 50%,
+      transparent 100%
+    );
   }
   @media (min-width: 1024px) {
     .hero {

@@ -154,7 +154,7 @@
   "research.hero.eyebrow": "Research",
   "research.hero.title": "Knowledge for new applications.",
   "research.hero.lead": "We share analysis, experiments and lessons learned on perception technologies, data analysis and crowd dynamics.",
-  "research.hero.imageAlt": "Point cloud of a pedestrian street seen by a LiDAR sensor: people appear as coloured silhouettes made of points, with no recognisable features",
+  "research.hero.imageAlt": "A pedestrian square with trees: some people walk past while others appear as green LiDAR outlines over a grid on the paving",
   "research.filters.all": "All",
   "research.filters.lidar": "LiDAR",
   "research.filters.crowd": "Crowd dynamics",
