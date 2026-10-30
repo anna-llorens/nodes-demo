@@ -19,8 +19,11 @@ export type PageId = keyof typeof pages;
 /** Site-relative URL of a page in a locale, e.g. `/en/contact`. */
 export const pagePath = (locale: Locale, page: PageId) => `/${locale}/${pages[page].path}`;
 
-/** Main navigation, in order. */
-export const mainNav: PageId[] = ["home", "applications", "technology", "demo", "research", "contact"];
+/**
+ * Main navigation, in order. Technology is hidden for now (its page is not built); restore it
+ * between "applications" and "demo" together with its `getStaticPaths`.
+ */
+export const mainNav: PageId[] = ["home", "applications", /* "technology", */ "demo", "research", "contact"];
 
 /** Footer navigation: the main links plus About, which is not in the header. */
 export const footerNav: PageId[] = [...mainNav, "about"];

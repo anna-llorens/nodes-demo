@@ -1,5 +1,4 @@
 ---
-import heroImage from "../../assets/applications/applications-hero.jpg";
 import CtaBand from "../../components/CtaBand.astro";
 import PageHero from "../../components/PageHero.astro";
 import { isLocale, t } from "../../i18n";
@@ -20,8 +19,8 @@ if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
     eyebrow={t(locale, "applications.hero.eyebrow")}
     title={t(locale, "applications.hero.title")}
     lead={t(locale, "applications.hero.lead")}
-    image={heroImage}
-    imageAlt={t(locale, "applications.hero.imageAlt")}
+    plain
+    centered
   />
   <Cards locale={locale} />
   <CtaBand

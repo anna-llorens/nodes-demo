@@ -18,6 +18,9 @@ export const cardIcons = {
   lidarFaq: "icons/lidar-sensor",
 } as const;
 
+/** Card shown in "Featured research" on the Research page; it leaves the card list while published. */
+export const featuredCard = "lidar" satisfies keyof typeof cardIcons;
+
 /** Site-relative URL of an article, e.g. `/en/research/lidar-pedestrian-flows`. */
 export const articlePath = (entry: Article) =>
   `/${articleLocale(entry)}/research/${entry.data.slug}`;

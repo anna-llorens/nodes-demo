@@ -1,0 +1,101 @@
+---
+import { Image } from "astro:assets";
+import Eyebrow from "../../components/Eyebrow.astro";
+import { t, type Locale } from "../../i18n";
+import { articleFor, articlePath, featuredCard } from "../../lib/research";
+import { ArrowRight } from "@lucide/astro";
+
+/**
+ * "Featured research": the article of `featuredCard`, with its title, a short pitch, a link and
+ * its cover on the right (below on mobile). Renders nothing while that article is not published
+ * in this locale; the card list then keeps showing it instead.
+ */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const article = await articleFor(featuredCard, locale);
+---
+
+{
+  article && (
+    <section class="section featured" aria-labelledby="research-featured-title">
+      <div class="container layout">
+        <div class="text">
+          <Eyebrow>{t(locale, "research.featured.eyebrow")}</Eyebrow>
+          <h2 id="research-featured-title">{article.data.title}</h2>
+          <p class="lead">{t(locale, "research.featured.text")}</p>
+          <a class="more" href={articlePath(article)}>
+            {t(locale, "research.featured.cta")}
+            <ArrowRight aria-hidden="true" size={18} />
+          </a>
+        </div>
+        {article.data.cover && (
+          <Image
+            class="cover"
+            src={article.data.cover}
+            alt={article.data.coverAlt ?? ""}
+            widths={[640, 960, 1440]}
+            sizes="(min-width: 1024px) 55vw, 100vw"
+          />
+        )}
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .featured {
+    background: var(--color-surface);
+  }
+  .layout {
+    display: grid;
+    gap: var(--space-8);
+  }
+  .text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+  h2,
+  .lead {
+    margin: 0;
+  }
+  h2 {
+    font-size: var(--text-h2);
+  }
+  .lead {
+    max-width: 48ch;
+    color: var(--color-text-muted);
+    font-size: 1.125rem;
+  }
+  .more {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .more:hover {
+    text-decoration: underline;
+  }
+  .cover {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border-radius: var(--radius-card);
+  }
+
+  @media (min-width: 1024px) {
+    .layout {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      align-items: center;
+      gap: var(--space-12);
+    }
+  }
+</style>

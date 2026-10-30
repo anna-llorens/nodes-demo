@@ -4,7 +4,9 @@ import PageHero from "../../../components/PageHero.astro";
 import { isLocale, t } from "../../../i18n";
 import Base from "../../../layouts/Base.astro";
 import { localePaths } from "../../../lib/static-paths";
+import Areas from "../../../sections/research/Areas.astro";
 import Cards from "../../../sections/research/Cards.astro";
+import Featured from "../../../sections/research/Featured.astro";
 
 export const getStaticPaths = localePaths;
 
@@ -22,5 +24,7 @@ if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
     imageAlt={t(locale, "research.hero.imageAlt")}
     backdrop
   />
+  <Areas locale={locale} />
+  <Featured locale={locale} />
   <Cards locale={locale} />
 </Base>

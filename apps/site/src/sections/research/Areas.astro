@@ -1,0 +1,124 @@
+---
+import { Image } from "astro:assets";
+import appliedImage from "../../assets/research/area-applied.png";
+import crowdImage from "../../assets/research/area-crowd.png";
+import edgeImage from "../../assets/research/area-edge.png";
+import lidarImage from "../../assets/research/area-lidar.png";
+import Eyebrow from "../../components/Eyebrow.astro";
+import { t, type Locale } from "../../i18n";
+
+/**
+ * "Research areas": heading and lead, then four numbered area cards with a decorative
+ * illustration each. The cards do not link anywhere; the article list below has the filters.
+ */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const areas = [
+  { key: "lidar", image: lidarImage },
+  { key: "crowd", image: crowdImage },
+  { key: "edge", image: edgeImage },
+  { key: "applied", image: appliedImage },
+] as const;
+---
+
+<section class="section" aria-labelledby="research-areas-title">
+  <div class="container">
+    <div class="head">
+      <div>
+        <Eyebrow>{t(locale, "research.areas.eyebrow")}</Eyebrow>
+        <h2 id="research-areas-title">{t(locale, "research.areas.title")}</h2>
+      </div>
+      <p class="lead">{t(locale, "research.areas.lead")}</p>
+    </div>
+    <ol class="areas">
+      {
+        areas.map((area, index) => (
+          <li>
+            <Image class="art" src={area.image} alt="" widths={[384, 768]} sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw" />
+            <div class="body">
+              <p class="num">{String(index + 1).padStart(2, "0")} /</p>
+              <h3>{t(locale, `research.areas.${area.key}.title`)}</h3>
+              <p>{t(locale, `research.areas.${area.key}.text`)}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .head {
+    display: grid;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+  }
+  h2,
+  p {
+    margin: 0;
+  }
+  h2 {
+    margin-top: var(--space-3);
+    font-size: var(--text-h2);
+  }
+  .lead {
+    max-width: 48ch;
+    color: var(--color-text-muted);
+  }
+  .areas {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-6);
+  }
+  li {
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+  }
+  /* The illustrations sit on white, so they blend into the card surface. */
+  .art {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+  }
+  .body {
+    display: grid;
+    gap: var(--space-2);
+    padding: 0 var(--space-5) var(--space-6);
+  }
+  .num {
+    color: var(--color-primary);
+    font-size: var(--text-small);
+    font-weight: 600;
+  }
+  h3 {
+    margin: 0;
+    font-size: 1.125rem;
+  }
+  .body p:last-child {
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 768px) {
+    .areas {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (min-width: 1024px) {
+    .head {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: end;
+      gap: var(--space-12);
+    }
+    .areas {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>

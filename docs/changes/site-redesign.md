@@ -41,6 +41,9 @@ Validation: site typecheck and build pass.
 
 ## S3 · Applications
 
+- Hero matches Demo: `PageHero` with `plain` and `centered`, so eyebrow, title and lead are
+  centred and there is no header image. `applications-hero.jpg`, its `applications.hero.imageAlt`
+  key and its asset README row are removed.
 - [config/sectors.ts](../../apps/site/src/config/sectors.ts): the three sectors (id = anchor, icon,
   illustration), shared by the home tiles and the Applications cards.
 - [Cards](../../apps/site/src/sections/applications/Cards.astro): one card per sector with an
@@ -54,6 +57,10 @@ Validation: site typecheck and build pass.
 
 ## S4 · Technology
 
+- Hidden for now: the page is out of `mainNav` (header and footer) and its `getStaticPaths`
+  returns no locales, so `/es/technology` and `/en/technology` are not built and not in the
+  sitemap. All sections, i18n keys and the hero image stay in the code; restoring it means
+  returning `localePaths()` again and re-adding `"technology"` to `mainNav`.
 - Hero unchanged (`hero-lidar-valencia.svg`).
 - [Workflow](../../apps/site/src/sections/technology/Workflow.astro): four numbered steps, a joined
   row on desktop and a list on mobile.
@@ -156,6 +163,27 @@ The LiDAR article is published in es and en. Decisions:
 Validation: site typecheck and build pass. With `PUBLIC_SITE_URL=https://nodes-data.com`, both
 articles have canonical, es/en and x-default alternates, the switcher links to the other article,
 the cards link with the date, and the sitemap lists both articles with their alternates.
+
+## Research page: areas and featured article
+
+Between the hero and the card list, the Research page now has two sections from the
+"Research areas / Featured research" mockup:
+
+- [Areas](../../apps/site/src/sections/research/Areas.astro): heading, lead and four numbered area
+  cards (LiDAR and perception, crowd dynamics, edge intelligence, applied research), each with a
+  decorative AI illustration (`assets/research/area-*.png`). The cards do not link; the chips in the
+  list below already filter by topic. "Real-time processing" from the mockup became "local
+  processing" to avoid implying live data.
+- [Featured](../../apps/site/src/sections/research/Featured.astro): the article of `featuredCard`
+  in [research.ts](../../apps/site/src/lib/research.ts) (currently `lidar`), with its own title and
+  cover, a short pitch from i18n and a link. The mockup's stats overlay (pedestrians, flow, density)
+  and carousel arrows are left out: the figures would be invented and there is one featured article.
+- [Cards](../../apps/site/src/sections/research/Cards.astro) drops the featured card only while it
+  links to a published article in that locale, so the topic never disappears from the page.
+- Section titles use `--text-h2`; there is no global `h2` size.
+
+Validation: typecheck, lint, test and build pass; checked in the browser at 1440 px and 375 px, and
+the list no longer contains "LiDAR for pedestrian flow analysis" in either locale.
 
 ## Remaining
 

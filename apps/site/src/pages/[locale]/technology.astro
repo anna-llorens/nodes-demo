@@ -1,13 +1,15 @@
 ---
 import { isLocale } from "../../i18n";
 import Base from "../../layouts/Base.astro";
-import { localePaths } from "../../lib/static-paths";
 import Benefits from "../../sections/technology/Benefits.astro";
 import Hero from "../../sections/technology/Hero.astro";
 import PointCloud from "../../sections/technology/PointCloud.astro";
 import Workflow from "../../sections/technology/Workflow.astro";
 
-export const getStaticPaths = localePaths;
+// Hidden for now: no locale is built, so the page and its sections stay in the code but are not
+// published. To restore it, return `localePaths()` (from lib/static-paths) and add "technology"
+// back to `mainNav` in lib/routes.ts.
+export const getStaticPaths = () => [];
 
 const { locale } = Astro.params;
 if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);

@@ -3,14 +3,15 @@ import { Image } from "astro:assets";
 import Svg from "@nodes/ui/Svg.astro";
 import eventsImage from "../../assets/research/events-race-start.webp";
 import { t, type Locale } from "../../i18n";
-import { articleFor, cardIcons, articlePath, formatArticleDate } from "../../lib/research";
+import { articleFor, cardIcons, articlePath, featuredCard, formatArticleDate } from "../../lib/research";
 
 /**
- * Topic chips and the six research cards. The chips filter the cards by topic with a small
+ * Topic chips and the research cards. The chips filter the cards by topic with a small
  * script; without JS every card stays visible and the chips do nothing. A card whose article is published in this
  * locale links to it (the title link covers the whole card) and shows the publication date;
  * the others keep the "coming soon" label. A published article's `cover` replaces the icon panel;
- * a card without an article can have its own image in `cardImages`. Status note below.
+ * a card without an article can have its own image in `cardImages`. The featured article (see
+ * `Featured.astro`) is left out while it is published in this locale. Status note below.
  */
 interface Props {
   locale: Locale;
@@ -52,8 +53,10 @@ const cards = await Promise.all(
     };
   }),
 );
+// The featured article has its own section above, so its card is dropped once it links somewhere.
+const listed = cards.filter((card) => !(card.key === featuredCard && card.href));
 // Published articles first, "coming soon" cards last; the sort is stable, so each group keeps its order.
-cards.sort((a, b) => Number(!a.href) - Number(!b.href));
+listed.sort((a, b) => Number(!a.href) - Number(!b.href));
 ---
 
 <section class="section" aria-label={t(locale, "nav.research")}>
@@ -71,7 +74,7 @@ cards.sort((a, b) => Number(!a.href) - Number(!b.href));
     </ul>
     <ul class="cards">
       {
-        cards.map((card) => (
+        listed.map((card) => (
           <li data-topic={card.topic}>
             <article class:list={{ linked: card.href }} aria-labelledby={`research-${card.key}`}>
               {card.cover ? (
