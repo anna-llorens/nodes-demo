@@ -11,7 +11,7 @@ Add a row before publishing a new one (see CLAUDE.md, UI content rules).
 | `research/decision-venue-flows.webp` | Decision-support article cover, Research card | Generated illustration (AI, supplied by the team) | Own |
 | `research/events-race-start.webp` | Research · sports events card | Generated illustration (AI, supplied by the team) | Own |
 | `research/research-hero.webp` | Research · page hero | Generated illustration (AI, supplied by the team) | Own |
-| `technology/technology-hero.jpg` | Technology · page hero | Generated illustration (NODES) | Own |
+| `technology/technology-hero.jpg` | Technology · page hero | Generated illustration (AI, supplied by the team, 30 Oct 2026) | Own |
 | `research/lidar-point-cloud-plaza.jpg` | LiDAR article and its cover, home and Research cards | Generated illustration (NODES) | Own |
 | `research/prediction-city-map.webp` | Congestion prediction article cover, home and Research cards | Generated illustration (AI, supplied by the team) | Own |
 | `research/decision-loop-*.jpg` | Decision-support article | Generated illustration (NODES) | Own |
@@ -30,3 +30,5 @@ Add a row before publishing a new one (see CLAUDE.md, UI content rules).
 | `research/architecture-reference.jpg` | Distributed architectures article | Generated diagram (NODES) | Own |
 | `research/architecture-lorawan-airtime-*.png` | Distributed architectures article | Own calculation and chart (NODES) | Own |
 | `research/architecture-vue-probes.jpg` | Distributed architectures article | Baena et al. (2021), Sensors 21(10):3404, fig. 14 | CC BY 4.0 |
+| `research/lidar-faq-cover.jpg` | LiDAR in 10 questions article cover, Research card | Generated illustration (AI, supplied by the team) | Own |
+| `research/lidar-mounting-*.svg` | LiDAR in 10 questions article | Original diagram (NODES), own calculation from the Livox Mid-360 datasheet | Own |

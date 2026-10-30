@@ -15,6 +15,7 @@ export const cardIcons = {
   decision: "icons/lightbulb",
   architecture: "icons/chart",
   openData: "icons/report",
+  lidarFaq: "icons/lidar-sensor",
 } as const;
 
 /** Site-relative URL of an article, e.g. `/en/research/lidar-pedestrian-flows`. */

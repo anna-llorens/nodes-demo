@@ -31,6 +31,7 @@ const cardTopics: Record<keyof typeof cardIcons, string> = {
   decision: "prediction",
   architecture: "iot",
   openData: "lidar",
+  lidarFaq: "lidar",
 };
 const cards = await Promise.all(
   (
@@ -51,6 +52,8 @@ const cards = await Promise.all(
     };
   }),
 );
+// Published articles first, "coming soon" cards last; the sort is stable, so each group keeps its order.
+cards.sort((a, b) => Number(!a.href) - Number(!b.href));
 ---
 
 <section class="section" aria-label={t(locale, "nav.research")}>
