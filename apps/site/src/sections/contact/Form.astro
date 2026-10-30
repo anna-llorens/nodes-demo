@@ -1,6 +1,6 @@
 ---
 import Svg from "@nodes/ui/Svg.astro";
-import { ArrowRight } from "@lucide/astro";
+import { ArrowRight, X } from "@lucide/astro";
 import Checkbox from "../../components/form/Checkbox.astro";
 import Field from "../../components/form/Field.astro";
 import { t, type Locale } from "../../i18n";
@@ -123,6 +123,9 @@ const interests = (
       </form>
 
       <div class="sent" data-sent tabindex="-1" role="status" hidden>
+        <button type="button" class="sent-close" data-sent-close aria-label={t(locale, "contact.form.successClose")}>
+          <X aria-hidden="true" size={18} />
+        </button>
         <p class="state-title">{t(locale, "contact.form.successTitle")}</p>
         <p>{t(locale, "contact.form.successText")}</p>
       </div>
@@ -195,6 +198,16 @@ const interests = (
       sent.hidden = false;
       sent.focus();
     };
+
+    // Closing the confirmation brings back an empty form for another message.
+    sent.querySelector<HTMLButtonElement>("[data-sent-close]")!.addEventListener("click", () => {
+      form.reset();
+      form.querySelector<HTMLInputElement>(`[name="interest"][value="${preselected}"]`)!.checked = true;
+      for (const field of fields) setError(field, false);
+      sent.hidden = true;
+      form.hidden = false;
+      control("name").focus();
+    });
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -376,8 +389,28 @@ const interests = (
     color: var(--color-error);
   }
   .sent {
+    position: relative;
+    padding-right: var(--space-12);
     border-color: var(--color-primary-line);
     background: var(--color-primary-soft);
+  }
+  .sent-close {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-card);
+    background: transparent;
+    color: var(--color-text);
+    cursor: pointer;
+  }
+  .sent-close:hover {
+    background: var(--color-surface);
   }
   .direct {
     display: flex;

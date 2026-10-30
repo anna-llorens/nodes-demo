@@ -183,6 +183,7 @@
   "contact.status.text": "We are in development and validation, open to pilots, research and collaborations.",
   "contact.form.successTitle": "Message sent",
   "contact.form.successText": "Thank you for contacting NODES. We will reply to your enquiry.",
+  "contact.form.successClose": "Close and return to the form",
   "contact.form.errorTitle": "The message could not be sent",
   "contact.form.errorText": "Please try again or write to us directly.",
   "article.back": "Back to research",
