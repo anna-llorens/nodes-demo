@@ -21,13 +21,11 @@ const items = ["item1", "item2", "item3"] as const;
       sectors.map((sector) => (
         <li id={sector.id} class="card">
           <article aria-labelledby={`${sector.id}-title`}>
-            <span class:list={["panel", { "panel-icon": !("illustration" in sector), "panel-photo": "photo" in sector }]}>
+            <span class:list={["panel", { "panel-photo": "photo" in sector }]}>
               {"photo" in sector ? (
                 <Image src={sector.photo} alt="" widths={[480, 800, 1200]} sizes="(min-width: 1024px) 33vw, 100vw" />
-              ) : "illustration" in sector ? (
-                <Svg name={sector.illustration} />
               ) : (
-                <sector.lucide aria-hidden="true" stroke-width={1.5} />
+                <Svg name={sector.illustration} />
               )}
             </span>
             <div class="body">
@@ -88,10 +86,6 @@ const items = ["item1", "item2", "item3"] as const;
     width: 100%;
     height: 100%;
     object-fit: cover;
-  }
-  .panel-icon :global(svg) {
-    width: 72px;
-    height: 72px;
   }
   .body {
     display: flex;

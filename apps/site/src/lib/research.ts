@@ -14,6 +14,7 @@ export const cardIcons = {
   events: "icons/runner",
   decision: "icons/lightbulb",
   architecture: "icons/chart",
+  openData: "icons/report",
 } as const;
 
 /** Site-relative URL of an article, e.g. `/en/research/lidar-pedestrian-flows`. */

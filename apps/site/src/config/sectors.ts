@@ -1,5 +1,6 @@
 import { Building, TrainFront } from "@lucide/astro";
 import eventsPhoto from "../assets/applications/events-crowd.jpg";
+import transportPhoto from "../assets/applications/transport-station.webp";
 
 /**
  * The three application sectors: the home tiles and the Applications cards. Texts come from
@@ -10,6 +11,6 @@ import eventsPhoto from "../assets/applications/events-crowd.jpg";
  */
 export const sectors = [
   { id: "events", icon: "icons/people-group", illustration: "illustrations/use-case-runner", photo: eventsPhoto },
-  { id: "transport", lucide: TrainFront },
+  { id: "transport", lucide: TrainFront, photo: transportPhoto },
   { id: "spaces", lucide: Building, illustration: "illustrations/use-case-town-hall" },
 ] as const;
