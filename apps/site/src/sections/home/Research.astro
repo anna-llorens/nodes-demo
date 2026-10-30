@@ -3,17 +3,28 @@ import Svg from "@nodes/ui/Svg.astro";
 import Button from "../../components/Button.astro";
 import Eyebrow from "../../components/Eyebrow.astro";
 import { t, type Locale } from "../../i18n";
+import { articleFor, articlePath } from "../../lib/research";
 import { pagePath } from "../../lib/routes";
 
-/** "What we are researching": two topic cards with an icon panel (not article links) and a button to Research. */
+/**
+ * "What we are researching": two topic cards with an icon panel and a button to Research. A topic
+ * whose article is published in this locale links to it; the title link covers the whole card.
+ */
 interface Props {
   locale: Locale;
 }
 const { locale } = Astro.props;
-const topics = [
-  { key: "lidar", icon: "icons/point-cloud" },
-  { key: "prediction", icon: "icons/chart" },
-] as const;
+const topics = await Promise.all(
+  (
+    [
+      { key: "lidar", icon: "icons/point-cloud" },
+      { key: "prediction", icon: "icons/chart" },
+    ] as const
+  ).map(async (topic) => {
+    const article = await articleFor(topic.key, locale);
+    return { ...topic, href: article && articlePath(article) };
+  }),
+);
 ---
 
 <section class="section" aria-labelledby="home-research-title">
@@ -29,9 +40,15 @@ const topics = [
       {
         topics.map((topic) => (
           <li>
-            <article>
+            <article class:list={{ linked: topic.href }}>
               <span class="panel"><Svg name={topic.icon} /></span>
-              <h3>{t(locale, `home.research.${topic.key}.title`)}</h3>
+              <h3>
+                {topic.href ? (
+                  <a href={topic.href}>{t(locale, `home.research.${topic.key}.title`)}</a>
+                ) : (
+                  t(locale, `home.research.${topic.key}.title`)
+                )}
+              </h3>
               <p>{t(locale, `home.research.${topic.key}.text`)}</p>
             </article>
           </li>
@@ -66,6 +83,28 @@ const topics = [
     border-radius: var(--radius-card);
     background: var(--color-surface);
     box-shadow: var(--shadow-card);
+  }
+  /* Linked card: the title link stretches over the whole card. */
+  .linked {
+    position: relative;
+    outline: 2px solid transparent;
+    transition: outline-color 0.15s;
+  }
+  .linked:hover,
+  .linked:has(a:focus-visible) {
+    outline-color: var(--color-primary);
+  }
+  .linked h3 a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .linked h3 a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+  .linked h3 a:focus-visible {
+    outline: none;
   }
   .panel {
     display: grid;

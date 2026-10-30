@@ -142,6 +142,9 @@ The LiDAR article is published in es and en. Decisions:
 - [Cards](../../apps/site/src/sections/research/Cards.astro): a card with a published article in
   the current locale links to it. The title link stretches over the card, so the markup and look
   stay; hover and keyboard focus outline the card. The date replaces "coming soon" in the same pill.
+- The home page's [Research](../../apps/site/src/sections/home/Research.astro) topics use the same
+  lookup: "LiDAR and spatial perception" links to the article in the current locale. Those cards
+  have no border, so hover and focus show an outline instead.
 - Article pages pass their translations to [Base](../../apps/site/src/layouts/Base.astro):
   canonical, `hreflang` es/en and `x-default` (English). The language switcher goes to the other
   translation, or to that locale's Research index when there is none.
