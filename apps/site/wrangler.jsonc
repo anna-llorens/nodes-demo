@@ -2,7 +2,7 @@
 // root language redirect (and, later, the contact endpoint). Astro stays fully static.
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "nodes-site",
+  "name": "nodes-demo",
   "main": "worker/index.ts",
   "compatibility_date": "2026-10-01",
   "assets": {
