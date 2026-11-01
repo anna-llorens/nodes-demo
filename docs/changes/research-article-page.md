@@ -111,3 +111,8 @@ without JS the links still work. The menu sticks under the site header while scr
 `scroll-padding-top` grows so section headings clear both bars) and scrolls sideways on narrow
 screens. The Featured link is left out while that article is unpublished in the locale, because the
 section then renders nothing.
+
+## Navigation order
+
+Research now sits right after Home in the header and footer (`mainNav` in
+`apps/site/src/lib/routes.ts`): Home, Research, Applications, Demo, About NODES, Contact.

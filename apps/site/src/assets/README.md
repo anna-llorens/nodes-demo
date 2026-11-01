@@ -33,4 +33,5 @@ Add a row before publishing a new one (see CLAUDE.md, UI content rules).
 | `research/lidar-faq-cover.jpg` | LiDAR in 10 questions article cover, Research card | Generated illustration (AI, supplied by the team) | Own |
 | `research/lidar-mounting-*.svg` | LiDAR in 10 questions article | Original diagram (NODES), own calculation from the Livox Mid-360 datasheet | Own |
 | `about/about-hero.webp` | About · page hero | Generated illustration (AI, supplied by the team). Shows realistic people with detection boxes: an explicit team-approved exception to the CLAUDE.md content rule | Own |
+| `home/home-hero.webp` | Home · hero | Illustration supplied by the team (1 Nov 2026); TODO: confirm source | TODO: rights confirmed by the team |
 | `about/about-context.webp` | About · context section | Generated illustration (AI, supplied by the team) | Own |

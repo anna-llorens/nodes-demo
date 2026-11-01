@@ -17,11 +17,13 @@ const { locale } = Astro.props;
   <div class="container hero-grid">
     <div class="hero-text">
       <Eyebrow badge>{t(locale, "hero.eyebrow")}</Eyebrow>
-      <h1 id="hero-title">{t(locale, "hero.title")}</h1>
+      <h1 id="hero-title">
+        {t(locale, "hero.title")} <span class="highlight">{t(locale, "hero.titleHighlight")}</span>
+      </h1>
       <p class="lead">{t(locale, "hero.lead")}</p>
       <div class="actions">
-        <Button href={pagePath(locale, "demo")} arrow>{t(locale, "hero.ctaDemo")}</Button>
-        <Button href={pagePath(locale, "contact")} variant="outline">{t(locale, "hero.ctaContact")}</Button>
+        <Button href={pagePath(locale, "research")} arrow>{t(locale, "hero.ctaResearch")}</Button>
+        <Button href={pagePath(locale, "applications")} variant="outline">{t(locale, "hero.ctaApplications")}</Button>
       </div>
       <p class="status">{t(locale, "hero.status")}</p>
     </div>
@@ -53,8 +55,11 @@ const { locale } = Astro.props;
     align-items: flex-start;
     gap: var(--space-5);
   }
+  .highlight {
+    color: var(--color-primary);
+  }
   h1 {
-    max-width: 14ch;
+    max-width: 20ch;
   }
   .lead {
     margin: 0;
