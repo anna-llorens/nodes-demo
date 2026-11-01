@@ -118,4 +118,3 @@ Las referencias internacionales van en la misma dirección. La norma **ISO 22353
 - Gerlach y Seyfried, [Universidad de Wuppertal](https://svpt.uni-wuppertal.de/fileadmin/bauing/svpt/Publikationen/LoPa_EVC_Beitrag_english.pdf): umbrales de densidad en flujos peatonales
 - [Conteo de flujos de personas con distintos sensores](https://arxiv.org/pdf/2401.09014) (arXiv 2401.09014)
 
-*Borrador del 1 de noviembre de 2026. Pendiente de fecha de publicación.*

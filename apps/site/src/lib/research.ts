@@ -17,6 +17,7 @@ export const cardIcons = {
   openData: "icons/report",
   lidarFaq: "icons/lidar-sensor",
   sensors: "icons/people-group",
+  selfProtection: "icons/shield",
 } as const;
 
 /** Article shown in "Featured research" on the home page; Research lists it like any other. */

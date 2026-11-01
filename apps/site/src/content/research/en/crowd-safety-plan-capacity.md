@@ -123,4 +123,3 @@ International guidance points the same way. **ISO 22353:2026**, published in Aug
 - Gerlach and Seyfried, [University of Wuppertal](https://svpt.uni-wuppertal.de/fileadmin/bauing/svpt/Publikationen/LoPa_EVC_Beitrag_english.pdf): density thresholds in pedestrian flows
 - [Counting pedestrian flows with different sensors](https://arxiv.org/pdf/2401.09014) (arXiv 2401.09014)
 
-*Draft of 1 November 2026. Publication date pending.*

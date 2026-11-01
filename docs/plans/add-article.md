@@ -28,9 +28,12 @@ operations: leave changes uncommitted and propose a commit message.
      same alt text (the article keeps its own copy in the body).
    - Add a row to `apps/site/src/assets/README.md` (file, where used, source, licence). If the
      source or licence is unknown, write "to confirm" and tell the author.
-4. **Card and listing.** If `card` is a new key, check whether the Research cards / home
-   featured section need i18n strings in `apps/site/src/i18n/es.json` and `en.json` (same keys),
-   and add them.
+4. **Card and listing.** The Research list only shows cards registered in code. For a new
+   `card` key: add it to `cardIcons` in `apps/site/src/lib/research.ts` (icon from
+   `packages/ui/assets/icons/`), to `cardTopics` in `apps/site/src/sections/research/Cards.astro`,
+   and add `research.cards.<key>.{category,title,description,type}` to both
+   `apps/site/src/i18n/en.json` and `es.json` (reuse an existing category label). Then check the
+   built `/en/research/` and `/es/research/` list it.
 5. **Content rules** (CLAUDE.md): figures from the real world need a source in
    `docs/sources.md`; no "prevents incidents", "danger", "evacuate" framing for product claims;
    no faces from mockups. Report problems; do not rewrite the author's text silently.
