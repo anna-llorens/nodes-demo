@@ -9,14 +9,12 @@ import Cards from "../../../sections/research/Cards.astro";
 import Overview from "../../../sections/research/Overview.astro";
 import Questions from "../../../sections/research/Questions.astro";
 import SectionNav from "../../../sections/research/SectionNav.astro";
-import Tools from "../../../sections/research/Tools.astro";
 
 export const getStaticPaths = localePaths;
 
 const { locale } = Astro.params;
 if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
 const sections = [
-  { id: "tools", label: "research.tools.nav" },
   { id: "overview", label: "research.overview.nav" },
   { id: "publications", label: "research.list.eyebrow" },
   { id: "open-questions", label: "research.questions.eyebrow" },
@@ -34,7 +32,6 @@ const sections = [
     backdrop
   />
   <SectionNav locale={locale} sections={sections} />
-  <Tools locale={locale} />
   <Overview locale={locale} />
   <Cards locale={locale} />
   <Questions locale={locale} />

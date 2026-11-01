@@ -2,7 +2,7 @@
 
 Public, client-only calculator for the capacity of a space (CTE DB-SI 3) and crowd density at an
 event. It has its own page at `/es/capacity-calculator` and `/en/capacity-calculator`, and a
-compact version on the Research page. Plan: [docs/plans/capacity-calculator.md](../plans/capacity-calculator.md).
+compact version at the end of the home page. Plan: [docs/plans/capacity-calculator.md](../plans/capacity-calculator.md).
 Decision: [ADR 0011](../decisions/0011-site-uses-core-capacity.md).
 
 ## Decisions
@@ -20,7 +20,7 @@ Decision: [ADR 0011](../decisions/0011-site-uses-core-capacity.md).
   The client script is [`capacity-calculator.ts`](../../apps/site/src/components/capacity/capacity-calculator.ts).
   The server HTML already shows the example result, so the page works before JS runs.
 - **URL state.** Only the page writes the query string (`?m2=&zona=`, `?personas=&m2=&modo=parado|movimiento`)
-  with `replaceState`. The block keeps the Research URL clean. Instead, it updates its "Abrir
+  with `replaceState`. The block keeps the home URL clean. Instead, it updates its "Abrir
   calculadora" link with the current values. Zone ids and `modo` values are Spanish, as in the
   prompt, because they are shared link ids.
 - **Illustration.** An inline SVG of the 5 × 5 m floor in perspective, with `round(density × 25)`
@@ -30,14 +30,12 @@ Decision: [ADR 0011](../decisions/0011-site-uses-core-capacity.md).
   closing band can link to Applications (button) and Contact (link).
 - **Entry points.** «Calculadora de aforo» / «Crowd calculator» is a main navigation item after
   Applications, so the footer, which reuses the main navigation, lists it too. The compact block
-  (`Tools.astro`) appears on Research and also closes the home page.
+  (`Tools.astro`) closes the home page; it is not on Research.
 - **Featured research on the page.** The home `Featured` section takes an optional `card`. The
   calculator page passes `selfProtection` («Plan de autoprotección: cómo comprobar el aforo» /
   «Crowd safety plans: checking capacity on the day»). For any card other than the home one, the
   pitch is the article's own subtitle, so it needs no new keys. The Spanish article was a draft; it is now published (`draft: false`, `date: "2026-11-01"`) so the
   Spanish page shows it too.
-- The Research section menu gains a "Herramientas / Tools" entry for the new block, which sits
-  right after the menu.
 
 ## Copy decided during implementation (please review)
 
@@ -69,7 +67,7 @@ Decision: [ADR 0011](../decisions/0011-site-uses-core-capacity.md).
 `capacity.method.{title,privacy,disclaimer,sources}`,
 `capacity.method.{capacity,exits,levels}.{label,text}`,
 `capacity.source.{cte,exits,eiai,hse}`, `capacity.cta.{title,applications,contact}`,
-`research.tools.{nav,eyebrow,title,lead,info,open,method,notice}`. No existing keys changed.
+`research.tools.{eyebrow,title,lead,info,open,method,notice}`. No existing keys changed.
 
 ## Validation
 
