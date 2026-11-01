@@ -13,6 +13,7 @@ Add a row before publishing a new one (see CLAUDE.md, UI content rules).
 | `research/research-hero.webp` | Research · page hero, About · collaborate band | Generated illustration (AI, supplied by the team) | Own |
 | `research/area-*.png` | Home · research areas (four illustrations) | Generated illustration (AI, supplied by the team) | Own |
 | `technology/technology-hero.jpg` | Technology · page hero | Generated illustration (AI, supplied by the team, 30 Oct 2026) | Own |
+| `research/crowd-management-control-safety.webp` | Crowd safety plan article and its cover, Research card | Supplied by the team (original source to confirm before publishing) | To confirm |
 | `research/lidar-point-cloud-plaza.jpg` | LiDAR article and its cover, Research featured section and open questions | Generated illustration (NODES) | Own |
 | `research/prediction-city-map.webp` | Congestion prediction article cover, Research card, Applications · smart cities card | Generated illustration (AI, supplied by the team) | Own |
 | `research/decision-loop-*.jpg` | Decision-support article | Generated illustration (NODES) | Own |

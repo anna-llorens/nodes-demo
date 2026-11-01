@@ -6,9 +6,10 @@ import { pagePath } from "../lib/routes";
 import Button from "./Button.astro";
 
 /**
- * Closing "Collaborate" band (About and Research): dark, with the Research hero image behind a
- * left gradient, white text and a button to Contact. The image is decorative here (the Research
- * hero describes it). Callers pass the already translated copy; the eyebrow is optional.
+ * Closing band of About, Research, Applications and Demo: dark, with the Research hero image
+ * behind a left gradient, white text and a button, to Contact with the About label unless the
+ * caller passes its own. The image is decorative here (the Research hero describes it). Callers
+ * pass the already translated copy; the eyebrow is optional.
  */
 interface Props {
   locale: Locale;
@@ -17,8 +18,18 @@ interface Props {
   eyebrow?: string;
   title: string;
   text: string;
+  href?: string;
+  label?: string;
 }
-const { locale, id, eyebrow, title, text } = Astro.props;
+const {
+  locale,
+  id,
+  eyebrow,
+  title,
+  text,
+  href = pagePath(locale, "contact"),
+  label = t(locale, "about.collab.cta"),
+} = Astro.props;
 ---
 
 <section class="collab" aria-labelledby={id}>
@@ -27,7 +38,7 @@ const { locale, id, eyebrow, title, text } = Astro.props;
     {eyebrow && <p class="eyebrow">{eyebrow}</p>}
     <h2 id={id}>{title}</h2>
     <p class="lead">{text}</p>
-    <Button href={pagePath(locale, "contact")} variant="outline" arrow>{t(locale, "about.collab.cta")}</Button>
+    <Button href={href} variant="outline" arrow>{label}</Button>
   </div>
 </section>
 

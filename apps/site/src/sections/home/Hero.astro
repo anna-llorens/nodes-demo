@@ -22,7 +22,7 @@ const { locale } = Astro.props;
       </h1>
       <p class="lead">{t(locale, "hero.lead")}</p>
       <div class="actions">
-        <Button href={pagePath(locale, "research")} arrow>{t(locale, "hero.ctaResearch")}</Button>
+        <Button href={`${pagePath(locale, "research")}#publications`} arrow>{t(locale, "hero.ctaResearch")}</Button>
         <Button href={pagePath(locale, "applications")} variant="outline">{t(locale, "hero.ctaApplications")}</Button>
       </div>
       <p class="status">{t(locale, "hero.status")}</p>

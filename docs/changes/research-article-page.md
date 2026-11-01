@@ -170,6 +170,21 @@ pass the heading id and translated copy, and About passes its existing `about.co
 it looks as before. The section menu has no link to the band. The image now appears twice on
 `/research` (hero and band), as the request asked.
 
+## Same closing band on Applications and Demo
+
+The closing sections "Do you have a use case you would like to explore?" (Applications) and
+"After the demo..." (Demo) now use [`CollaborateBand`](../../apps/site/src/components/CollaborateBand.astro)
+instead of the soft-green `CtaBand` with an icon, which had no other user and was removed. Their
+texts, buttons and links are unchanged ("Propose a pilot" to `/contact?interest=pilot`, "Contact
+NODES" to `/contact`): the band takes optional `href` and `label`, defaulting to Contact and the
+About label. No eyebrow, as on Research.
+
+## "Explore our research" goes to the publications
+
+The home hero button "Explore our research" now links to `/{locale}/research#publications`, the
+"Latest publications" list, instead of the top of Research
+([`Hero.astro`](../../apps/site/src/sections/home/Hero.astro)).
+
 ## Research section menu
 
 Under the hero, `/research` has a section menu

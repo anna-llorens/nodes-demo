@@ -74,8 +74,8 @@ Validation: site typecheck and build pass.
 
 ## S5 · Demo and Research
 
-- Shared pieces: [CtaBand](../../apps/site/src/components/CtaBand.astro) (former pilot band, now
-  props-driven, used by Applications and Demo); [PageHero](../../apps/site/src/components/PageHero.astro)
+- Shared pieces: CtaBand (former pilot band, props-driven, used by Applications and Demo; since
+  replaced by [CollaborateBand](../../apps/site/src/components/CollaborateBand.astro) and removed); [PageHero](../../apps/site/src/components/PageHero.astro)
   takes an `aside` slot that replaces the skyline; [Base](../../apps/site/src/layouts/Base.astro)
   takes an optional `title` for pages outside the route catalog.
 - Demo: hero with the simulation notice, two scenario cards (`maraton` with

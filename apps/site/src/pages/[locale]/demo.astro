@@ -1,5 +1,5 @@
 ---
-import CtaBand from "../../components/CtaBand.astro";
+import CollaborateBand from "../../components/CollaborateBand.astro";
 import PageHero from "../../components/PageHero.astro";
 import { isLocale, t } from "../../i18n";
 import Base from "../../layouts/Base.astro";
@@ -23,9 +23,9 @@ if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
     centered
   />
   <Scenarios locale={locale} />
-  <CtaBand
+  <CollaborateBand
+    locale={locale}
     id="demo-after-title"
-    icon="icons/handshake"
     title={t(locale, "demo.after.title")}
     text={t(locale, "demo.after.text")}
     href={pagePath(locale, "contact")}
