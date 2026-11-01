@@ -1,0 +1,41 @@
+---
+import CollaborateBand from "../../components/CollaborateBand.astro";
+import PageHero from "../../components/PageHero.astro";
+import CapacityCalculator from "../../components/capacity/CapacityCalculator.astro";
+import { isLocale, t } from "../../i18n";
+import Base from "../../layouts/Base.astro";
+import { pagePath } from "../../lib/routes";
+import { localePaths } from "../../lib/static-paths";
+import Method from "../../sections/capacity/Method.astro";
+import Featured from "../../sections/home/Featured.astro";
+
+export const getStaticPaths = localePaths;
+
+const { locale } = Astro.params;
+if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
+---
+
+<Base locale={locale} page="capacityCalculator">
+  <PageHero
+    id="capacity-hero-title"
+    eyebrow={t(locale, "capacity.hero.eyebrow")}
+    title={t(locale, "capacity.hero.title")}
+    lead={t(locale, "capacity.hero.lead")}
+    plain
+  />
+  <section class="section" aria-labelledby="capacity-hero-title">
+    <div class="container">
+      <CapacityCalculator locale={locale} id="calc" syncUrl />
+    </div>
+  </section>
+  <Method locale={locale} />
+  <Featured locale={locale} card="selfProtection" />
+  <CollaborateBand
+    locale={locale}
+    id="capacity-cta-title"
+    title={t(locale, "capacity.cta.title")}
+    href={pagePath(locale, "applications")}
+    label={t(locale, "capacity.cta.applications")}
+    secondary={{ href: pagePath(locale, "contact"), label: t(locale, "capacity.cta.contact") }}
+  />
+</Base>

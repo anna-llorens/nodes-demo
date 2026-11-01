@@ -63,7 +63,8 @@ export default tseslint.config(
     languageOptions: { globals: globals.browser },
     rules: {
       "no-restricted-imports": ["error", { patterns: [
-        { group: ["@nodes/core", "@nodes/data-source", "@nodes/web"], message: "The site depends only on @nodes/ui." },
+        // The capacity calculator is the one exception: pure functions through @nodes/core/capacity (ADR 0011).
+        { regex: "^@nodes/(data-source|web)|^@nodes/core(?!/capacity$)", message: "The site depends only on @nodes/ui and @nodes/core/capacity." },
         { group: ["@nodes/*/src/*", "!@nodes/ui/*"], message: "Import packages through their public entry point." },
       ] }],
     },

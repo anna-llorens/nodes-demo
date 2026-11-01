@@ -8,13 +8,16 @@ import { ArrowRight } from "@lucide/astro";
 /**
  * Home "Featured research": the article of `featuredCard`, with its title, a short pitch, a link
  * and its cover on the right (below on mobile). Renders nothing while that article is not
- * published in this locale. The article is also listed on Research like any other.
+ * published in this locale. The article is also listed on Research like any other. Other pages
+ * pass their own `card`; their pitch is that article's subtitle.
  */
 interface Props {
   locale: Locale;
+  card?: string;
 }
-const { locale } = Astro.props;
-const article = await articleFor(featuredCard, locale);
+const { locale, card = featuredCard } = Astro.props;
+const article = await articleFor(card, locale);
+const pitch = card === featuredCard ? t(locale, "research.featured.text") : article?.data.subtitle;
 ---
 
 {
@@ -24,7 +27,7 @@ const article = await articleFor(featuredCard, locale);
         <div class="text">
           <Eyebrow>{t(locale, "research.featured.eyebrow")}</Eyebrow>
           <h2 id="home-featured-title">{article.data.title}</h2>
-          <p class="lead">{t(locale, "research.featured.text")}</p>
+          <p class="lead">{pitch}</p>
           <a class="more" href={articlePath(article)}>
             {t(locale, "research.featured.cta")}
             <ArrowRight aria-hidden="true" size={18} />

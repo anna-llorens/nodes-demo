@@ -17,9 +17,11 @@ interface Props {
   id: string;
   eyebrow?: string;
   title: string;
-  text: string;
+  text?: string;
   href?: string;
   label?: string;
+  /** Optional second link, shown as a text link next to the button. */
+  secondary?: { href: string; label: string };
 }
 const {
   locale,
@@ -29,6 +31,7 @@ const {
   text,
   href = pagePath(locale, "contact"),
   label = t(locale, "about.collab.cta"),
+  secondary,
 } = Astro.props;
 ---
 
@@ -37,8 +40,11 @@ const {
   <div class="container text">
     {eyebrow && <p class="eyebrow">{eyebrow}</p>}
     <h2 id={id}>{title}</h2>
-    <p class="lead">{text}</p>
-    <Button href={href} variant="outline" arrow>{label}</Button>
+    {text && <p class="lead">{text}</p>}
+    <div class="actions">
+      <Button href={href} variant="outline" arrow>{label}</Button>
+      {secondary && <a class="secondary" href={secondary.href}>{secondary.label}</a>}
+    </div>
   </div>
 </section>
 
@@ -88,6 +94,16 @@ const {
   h2 {
     font-size: var(--text-h2);
     color: var(--color-text-inverse);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-6);
+  }
+  .secondary {
+    color: var(--color-text-inverse);
+    font-weight: 600;
   }
   .lead {
     margin: 0 0 var(--space-2);

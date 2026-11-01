@@ -88,7 +88,7 @@ Depende mucho del escenario y de lo que se mida:
 - En **Nagoya**, con 20 sensores, el seguimiento superó el 90 % en la métrica HOTA. Los autores advierten que su variante de la métrica no es comparable con otros estudios y que el resultado procede de un procesado a posteriori, no en tiempo real ([Hishida et al.](https://link.springer.com/article/10.1007/s13177-025-00610-9)).
 - Con **peatones muy apretados**, un estudio de 2025 con LiDAR y cámaras en un vehículo obtuvo solo 0,17–0,35 en la métrica MOTA ([Li et al.](https://arxiv.org/abs/2505.16029)).
 
-La lectura práctica: **contar personas por zona es mucho más robusto que seguir a cada individuo.** Por eso NODES mide densidad y flujo por zona, y debe validar su margen de error en cada tipo de evento.
+La lectura práctica: **contar personas por zona es mucho más robusto que seguir a cada individuo.** Por eso NODES mide densidad y flujo por zona, y debe validar su margen de error en cada tipo de evento. Si quieres hacerte una idea previa del aforo y la densidad de tu espacio, prueba la [calculadora de aforo y densidad](/es/capacity-calculator).
 
 ## 9. ¿Qué hace falta para montarlo en un evento?
 

@@ -47,7 +47,7 @@ No existe una cifra universal de densidad peligrosa. Los valores de referencia c
 | Puente de Jamarat, densidad local | > 6 pers/m² | El flujo local cae a un tercio o menos | [Helbing et al., 2007](https://arxiv.org/pdf/physics/0701203) |
 | Itaewon, callejón, 22:25 | 9,07–10,74 pers/m² | Estimación de la investigación policial coreana | [Hankyung](https://www.hankyung.com/article/2023011313587), [Korea Times](https://www.koreatimes.co.kr/southkorea/society/20230113/police-wrap-up-monthslong-probe-into-itaewon-crush-23-officials-referred-to-prosecution) |
 
-Algunas cifras parecen contradecirse: Fruin sitúa la ruptura del flujo hacia 2,2 pers/m² y Still acepta 5 para público de pie. No es una contradicción: la primera cifra es para gente que camina y la segunda para gente parada. Por eso no tiene sentido una única cifra de alarma.
+Algunas cifras parecen contradecirse: Fruin sitúa la ruptura del flujo hacia 2,2 pers/m² y Still acepta 5 para público de pie. No es una contradicción: la primera cifra es para gente que camina y la segunda para gente parada. Por eso no tiene sentido una única cifra de alarma. Para ver en qué nivel queda una densidad concreta, con público parado o en movimiento, puedes usar nuestra [calculadora de aforo y densidad](/es/capacity-calculator).
 
 Los niveles de Fruin siguen en uso: el estudio de nivel de servicio peatonal del Departamento de Planificación de Nueva York los aplica a aceras, pasillos y escaleras del metro ([NYC Planning](https://www.nyc.gov/assets/planning/download/pdf/plans/transportation/td_fullpedlosb.pdf)).
 

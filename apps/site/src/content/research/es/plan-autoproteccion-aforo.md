@@ -3,12 +3,12 @@ title: "Plan de autoprotección: cómo comprobar el aforo"
 subtitle: "Qué pide la norma sobre aforo y evacuación, por qué una cifra fija no basta y cómo medir la ocupación durante un evento."
 description: "Qué exige el plan de autoprotección sobre aforo y evacuación, por qué la cifra del plan no basta y cómo medir la ocupación real durante un evento."
 slug: "plan-autoproteccion-aforo"
-date: ""
+date: "2026-11-01"
 type: "Guía"
 category: "crowd"
 tags: ["plan-de-autoproteccion", "control-de-aforo", "eventos", "seguridad", "guia"]
 author: "Anna Llorens Roig"
-draft: true
+draft: false
 card: "selfProtection"
 cover: "../../../assets/research/crowd-management-control-safety.webp"
 coverAlt: "Diagrama de Venn con tres círculos que se solapan: gestión de multitudes, control de multitudes y seguridad de multitudes"

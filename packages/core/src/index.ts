@@ -12,4 +12,5 @@ export { simulateRunnerHeat, type RunnerHeatSample } from "./runner-heat";
 export { trafficAt, trafficTimesAt, type CrossingWait, type TrafficLevel, type TrafficTimes } from "./traffic";
 export { aggregateReport, buildReport, type Report, type ReportSample, type ReportSeries, type ReportZone } from "./reports";
 export { circlePolygon, move, offset, pointAt, rect, routeBearing, routeDistances, scenarioBounds } from "./geometry";
+export { CAPACITY_SOURCES, CAPACITY_ZONES, CROWD_LEVELS, CROWD_THRESHOLDS, PEOPLE_PER_EXIT_METRE, capacity, capacityUntil, crowdLevel, density, exitWidth, findCapacityZone, type CapacityZone, type CrowdLevel, type CrowdLevelBand, type CrowdMode } from "./capacity";
 export { findNode, getScenario, maraton, mascleta, scenarios } from "./scenarios";

@@ -14,6 +14,7 @@ export const pages = {
   research: { path: "research", navKey: "nav.research", titleKey: "meta.research.title", descriptionKey: "meta.research.description" },
   contact: { path: "contact", navKey: "nav.contact", titleKey: "meta.contact.title", descriptionKey: "meta.contact.description" },
   about: { path: "about", navKey: "nav.about", titleKey: "meta.about.title", descriptionKey: "meta.about.description" },
+  capacityCalculator: { path: "capacity-calculator", navKey: "nav.capacityCalculator", titleKey: "meta.capacityCalculator.title", descriptionKey: "meta.capacityCalculator.description" },
   legalNotice: { path: "legal/legal-notice", navKey: "legal.legalNotice.title", titleKey: "legal.legalNotice.title", descriptionKey: "legal.legalNotice.description" },
   privacy: { path: "legal/privacy", navKey: "legal.privacy.title", titleKey: "legal.privacy.title", descriptionKey: "legal.privacy.description" },
   cookies: { path: "legal/cookies", navKey: "legal.cookies.title", titleKey: "legal.cookies.title", descriptionKey: "legal.cookies.description" },
@@ -28,7 +29,7 @@ export const pagePath = (locale: Locale, page: PageId) => `/${locale}/${pages[pa
  * Main navigation, in order; the footer reuses it. Technology is hidden for now (its page is not
  * built); restore it at the commented position together with its `getStaticPaths`.
  */
-export const mainNav: PageId[] = ["home", "research", "applications", /* "technology", */ "demo", "about", "contact"];
+export const mainNav: PageId[] = ["home", "research", "applications", "capacityCalculator", /* "technology", */ "demo", "about", "contact"];
 
 /** Footer navigation: the same links as the header. */
 export const footerNav: PageId[] = mainNav;

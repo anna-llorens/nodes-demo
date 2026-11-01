@@ -8,6 +8,7 @@ import Hero from "../../sections/home/Hero.astro";
 import Project from "../../sections/home/Project.astro";
 import Research from "../../sections/home/Research.astro";
 import Sectors from "../../sections/home/Sectors.astro";
+import Tools from "../../sections/research/Tools.astro";
 
 export const getStaticPaths = localePaths;
 
@@ -24,4 +25,5 @@ const structuredData = { "@context": "https://schema.org", ...organization(local
   <Featured locale={locale} />
   <Project locale={locale} />
   <Research locale={locale} />
+  <Tools locale={locale} />
 </Base>

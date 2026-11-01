@@ -1,0 +1,76 @@
+---
+import { CAPACITY_SOURCES } from "@nodes/core/capacity";
+import SectionHeading from "../../components/SectionHeading.astro";
+import { t, type Locale } from "../../i18n";
+
+/** "How it is calculated" on the calculator page (`#metodologia`): rules, notice and sources. */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const rules = ["capacity", "exits", "levels"] as const;
+const sources = [
+  { href: CAPACITY_SOURCES["cte-db-si-3-table-2-1"], label: t(locale, "capacity.source.cte") },
+  { href: CAPACITY_SOURCES["cte-exit-width"], label: t(locale, "capacity.source.exits") },
+  { href: CAPACITY_SOURCES["eiai-crowd-risk"], label: t(locale, "capacity.source.eiai") },
+  { href: CAPACITY_SOURCES["hse-blog-crowd-crush"], label: t(locale, "capacity.source.hse") },
+];
+---
+
+<section id="metodologia" class="section" aria-labelledby="capacity-method-title">
+  <div class="container method">
+    <SectionHeading id="capacity-method-title" title={t(locale, "capacity.method.title")} />
+    <div class="body">
+      <ul>
+        {rules.map((rule) => <li><strong>{t(locale, `capacity.method.${rule}.label`)}</strong> {t(locale, `capacity.method.${rule}.text`)}</li>)}
+      </ul>
+      <p>{t(locale, "capacity.method.privacy")}</p>
+      <p class="disclaimer">{t(locale, "capacity.method.disclaimer")}</p>
+      <h3>{t(locale, "capacity.method.sources")}</h3>
+      <ul class="sources">
+        {sources.map((source) => <li><a href={source.href} rel="noopener" target="_blank">{source.label}</a></li>)}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .method {
+    display: grid;
+    gap: var(--space-6);
+  }
+  .body {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 72ch;
+  }
+  ul {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding-left: var(--space-5);
+  }
+  p {
+    margin: 0;
+  }
+  strong,
+  h3 {
+    color: var(--color-text);
+  }
+  h3 {
+    font-size: 1.125rem;
+  }
+  .disclaimer {
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-button);
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+  @media (min-width: 1024px) {
+    .method {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+      gap: var(--space-12);
+    }
+  }
+</style>

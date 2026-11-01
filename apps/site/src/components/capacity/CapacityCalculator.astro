@@ -1,0 +1,570 @@
+---
+import { ChevronDown } from "@lucide/astro";
+import { CAPACITY_ZONES, CROWD_LEVELS, CROWD_THRESHOLDS } from "@nodes/core/capacity";
+import { t, type Key, type Locale } from "../../i18n";
+import "../form/form.css";
+import { CROWD_SCALE_MAX, capacityCalculatorText } from "./text";
+
+/**
+ * Capacity and crowd density calculator: "capacity of a space" and "density at an event" tabs,
+ * result figures, risk level, density scale and a 5 × 5 m illustration. The page renders it in
+ * full; the Research block renders it `compact` (no exit width, level, warning or hints) and
+ * passes `infoText` for the note under the fields. Server HTML shows the prototype's example; the
+ * client script (capacity-calculator.ts) recalculates on input and, with `syncUrl`, keeps the
+ * values in the query string so a calculation can be shared. Nothing leaves the browser.
+ */
+interface Props {
+  locale: Locale;
+  /** Prefix for element ids, unique on the page. */
+  id: string;
+  compact?: boolean;
+  syncUrl?: boolean;
+  infoText?: string;
+}
+const { locale, id, compact = false, syncUrl = false, infoText } = Astro.props;
+const nf = (value: number, digits = 0) =>
+  value.toLocaleString(locale === "es" ? "es-ES" : "en-GB", { minimumFractionDigits: digits, maximumFractionDigits: digits, useGrouping: "always" });
+const zoneOptions = CAPACITY_ZONES.map((zone) => ({
+  value: zone.id,
+  label: t(locale, "capacity.zone.option", {
+    zone: t(locale, `capacity.zone.${zone.id}` as Key),
+    m2: nf(zone.m2PerPerson, zone.m2PerPerson % 1 ? 2 : 0),
+  }),
+}));
+const text = capacityCalculatorText(locale);
+const levels = (mode: "standing" | "moving") => {
+  let from = 0;
+  return CROWD_LEVELS[mode].map((band) => {
+    const to = Math.min(band.below ?? CROWD_SCALE_MAX, CROWD_SCALE_MAX);
+    const item = { id: band.id, from, to };
+    from = to;
+    return item;
+  });
+};
+const tabId = (name: string) => `${id}-tab-${name}`;
+const panelId = (name: string) => `${id}-panel-${name}`;
+---
+
+<div
+  class:list={["calculator", { compact }]}
+  data-capacity-calculator
+  data-locale={locale}
+  data-sync-url={syncUrl ? "" : undefined}
+  data-text={JSON.stringify(text)}
+  data-levels={JSON.stringify({ standing: levels("standing"), moving: levels("moving") })}
+  data-thresholds={JSON.stringify(CROWD_THRESHOLDS)}
+>
+  <div class="tabs" role="tablist" aria-label={t(locale, "capacity.tabs.label")}>
+    <button class="tab" type="button" role="tab" id={tabId("capacity")} aria-controls={panelId("capacity")} aria-selected="true" data-tab="capacity">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20a6.5 6.5 0 0 1 13 0" /><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6" /></svg>
+      {t(locale, "capacity.tabs.capacity")}
+    </button>
+    <button class="tab" type="button" role="tab" id={tabId("density")} aria-controls={panelId("density")} aria-selected="false" tabindex="-1" data-tab="density">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20v-5M10 20v-9M16 20V7M22 20V4" /></svg>
+      {t(locale, "capacity.tabs.density")}
+    </button>
+  </div>
+
+  <!-- Capacity of a space -->
+  <div class="panel" role="tabpanel" id={panelId("capacity")} aria-labelledby={tabId("capacity")} data-panel="capacity">
+    <form class="inputs" novalidate>
+      <div class="field">
+        <label class="field-label" for={`${id}-area`}>{t(locale, "capacity.area.label")}</label>
+        <div class="unit">
+          <input class="field-control" id={`${id}-area`} name="m2" type="number" min="1" step="any" inputmode="decimal" value="1200" aria-describedby={compact ? undefined : `${id}-area-hint`} />
+          <span aria-hidden="true">{t(locale, "capacity.unit.m2")}</span>
+        </div>
+        {!compact && <p class="hint" id={`${id}-area-hint`}>{t(locale, "capacity.area.hint")}</p>}
+      </div>
+      <div class="field">
+        <label class="field-label" for={`${id}-zone`}>{t(locale, "capacity.zone.label")}</label>
+        <div class="select">
+          <select class="field-control" id={`${id}-zone`} name="zona" aria-describedby={compact ? undefined : `${id}-zone-hint`}>
+            {zoneOptions.map((option) => <option value={option.value} selected={option.value === "pie"}>{option.label}</option>)}
+          </select>
+          <ChevronDown class="chevron" aria-hidden="true" size={18} />
+        </div>
+        {!compact && <p class="hint" id={`${id}-zone-hint`}>{t(locale, "capacity.zone.hint")}</p>}
+      </div>
+      {
+        infoText ? (
+          <p class="info">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" /><path d="M12 11v6M12 7.5v.01" /></svg>
+            {infoText}
+          </p>
+        ) : (
+          <p class="example" data-example>{t(locale, "capacity.example.capacity")}</p>
+        )
+      }
+    </form>
+
+    <div class="result">
+      <div class="live" aria-live="polite" aria-atomic="true">
+        <p class="kicker">{t(locale, compact ? "capacity.result.compactCapacity" : "capacity.result.capacity")}</p>
+        <p class="figure"><span data-out="capacity">{nf(4800)}</span> <small data-out="capacity-unit">{t(locale, "capacity.unit.peopleLong")}</small></p>
+        <dl class="facts">
+          <div><dt>{t(locale, "capacity.result.appliedDensity")}</dt><dd><b data-out="applied-density">{nf(4, 2)}</b> {t(locale, "capacity.unit.perM2")}</dd></div>
+          <div><dt>{t(locale, "capacity.result.spacePerPerson")}</dt><dd><b data-out="zone-ratio">{nf(0.25, 2)}</b> {t(locale, "capacity.unit.m2PerPerson")}</dd></div>
+          {!compact && <div><dt>{t(locale, "capacity.result.exitWidth")}</dt><dd><b data-out="exit-width">{nf(24, 1)}</b> {t(locale, "capacity.unit.metres")}</dd></div>}
+        </dl>
+        {
+          !compact && (
+            <p class="level" data-level="serious" data-out="capacity-level">
+              <strong data-out="level-name">{t(locale, "capacity.level.serious")}</strong>
+              <span data-out="level-text">{t(locale, "capacity.level.standing.serious")}</span>
+            </p>
+          )
+        }
+      </div>
+      <figure class="viz">
+        <svg viewBox="0 0 400 210" role="img" data-viz aria-label={t(locale, "capacity.viz.label", { count: 100 })}></svg>
+        {!compact && <figcaption data-out="viz-caption">{t(locale, "capacity.viz.caption", { count: `${nf(100)} ${t(locale, "capacity.unit.peopleLong")}` })}</figcaption>}
+      </figure>
+      <div class="scale" data-scale="standing" data-value="4">
+        <p class="scale-label">{t(locale, "capacity.scale.label")}</p>
+        <div class="bar"></div>
+        <ol class="bands"></ol>
+      </div>
+      {
+        !compact && (
+          <div class="callout" data-out="callout">
+            <strong>{t(locale, "capacity.callout.title")}</strong>
+            <p>{t(locale, "capacity.callout.text")}</p>
+          </div>
+        )
+      }
+    </div>
+  </div>
+
+  <!-- Density at an event -->
+  <div class="panel" role="tabpanel" id={panelId("density")} aria-labelledby={tabId("density")} data-panel="density" hidden>
+    <form class="inputs" novalidate>
+      <div class="field">
+        <label class="field-label" for={`${id}-people`}>{t(locale, "capacity.people.label")}</label>
+        <div class="unit">
+          <input class="field-control" id={`${id}-people`} name="personas" type="number" min="0" step="1" inputmode="numeric" value="12000" />
+          <span aria-hidden="true">{t(locale, "capacity.unit.people")}</span>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label" for={`${id}-occupied`}>{t(locale, "capacity.occupied.label")}</label>
+        <div class="unit">
+          <input class="field-control" id={`${id}-occupied`} name="m2" type="number" min="1" step="any" inputmode="decimal" value="4000" aria-describedby={compact ? undefined : `${id}-occupied-hint`} />
+          <span aria-hidden="true">{t(locale, "capacity.unit.m2")}</span>
+        </div>
+        {!compact && <p class="hint" id={`${id}-occupied-hint`}>{t(locale, "capacity.occupied.hint")}</p>}
+      </div>
+      <fieldset class="field">
+        <legend class="field-label">{t(locale, "capacity.mode.label")}</legend>
+        <div class="segmented">
+          <label><input type="radio" name="modo" value="parado" checked /><span>{t(locale, "capacity.mode.standing")}</span></label>
+          <label><input type="radio" name="modo" value="movimiento" /><span>{t(locale, "capacity.mode.moving")}</span></label>
+        </div>
+        {!compact && <p class="hint">{t(locale, "capacity.mode.hint")}</p>}
+      </fieldset>
+      {infoText ? null : <p class="example" data-example>{t(locale, "capacity.example.density")}</p>}
+    </form>
+
+    <div class="result">
+      <div class="live" aria-live="polite" aria-atomic="true">
+        <p class="kicker">{t(locale, "capacity.result.density")}</p>
+        <p class="figure"><span data-out="density">{nf(3, 2)}</span> <small data-out="density-unit">{t(locale, "capacity.unit.perM2")}</small></p>
+        <p class="level" data-level="attention" data-out="density-level">
+          <strong data-out="level-name">{t(locale, "capacity.level.attention")}</strong>
+          <span data-out="level-text">{t(locale, "capacity.level.standing.attention")}</span>
+        </p>
+        <dl class="facts">
+          <div><dt>{t(locale, "capacity.result.spacePerPerson")}</dt><dd><b data-out="density-ratio">{nf(1 / 3, 2)}</b> {t(locale, "capacity.unit.m2PerPerson")}</dd></div>
+          <div><dt data-out="until-label">{t(locale, "capacity.result.untilStanding")}</dt><dd><b data-out="until">{nf(16000)}</b></dd></div>
+        </dl>
+      </div>
+      <div class="scale" data-scale="standing" data-value="3">
+        <p class="scale-label">{t(locale, "capacity.scale.label")}</p>
+        <div class="bar"></div>
+        <ol class="bands"></ol>
+      </div>
+      <figure class="viz">
+        <svg viewBox="0 0 400 210" role="img" data-viz aria-label={t(locale, "capacity.viz.label", { count: 75 })}></svg>
+        {!compact && <figcaption data-out="viz-caption">{t(locale, "capacity.viz.caption", { count: `${nf(75)} ${t(locale, "capacity.unit.peopleLong")}` })}</figcaption>}
+      </figure>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { initCapacityCalculators } from "./capacity-calculator";
+  initCapacityCalculators();
+</script>
+
+<style>
+  .calculator {
+    display: grid;
+    gap: var(--space-6);
+    color: var(--color-text-body);
+  }
+  .tabs {
+    display: flex;
+    gap: var(--space-1);
+    padding: var(--space-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-button);
+    background: var(--color-surface);
+    justify-self: start;
+    max-width: 100%;
+  }
+  .tab {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    padding: var(--space-2) var(--space-4);
+    border: 0;
+    border-radius: calc(var(--radius-button) - 4px);
+    background: transparent;
+    color: var(--color-text-body);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .tab svg,
+  .info svg {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+  .tab[aria-selected="true"] {
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+  }
+  .panel {
+    display: grid;
+    gap: var(--space-6);
+  }
+  .panel[hidden] {
+    display: none;
+  }
+  .inputs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    align-self: start;
+    padding: var(--space-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface-muted);
+  }
+  fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+  legend {
+    padding: 0;
+    margin-bottom: var(--space-2);
+  }
+  .unit,
+  .select {
+    position: relative;
+  }
+  .unit input {
+    padding-right: 4rem;
+    font-size: 1.125rem;
+  }
+  .unit span {
+    position: absolute;
+    top: 50%;
+    right: var(--space-4);
+    transform: translateY(-50%);
+    color: var(--color-text-muted);
+    pointer-events: none;
+  }
+  select {
+    appearance: none;
+    padding-right: 2.75rem;
+  }
+  .select :global(.chevron) {
+    position: absolute;
+    top: 50%;
+    right: var(--space-4);
+    transform: translateY(-50%);
+    color: var(--color-text-body);
+    pointer-events: none;
+  }
+  .hint,
+  .example {
+    margin: 0;
+    font-size: var(--text-small);
+    color: var(--color-text-muted);
+  }
+  .example {
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+  }
+  .example[hidden] {
+    display: none;
+  }
+  .info {
+    display: flex;
+    gap: var(--space-3);
+    margin: 0;
+    padding: var(--space-4);
+    border-radius: var(--radius-button);
+    background: var(--color-primary-soft);
+    color: var(--color-text);
+    font-size: var(--text-small);
+  }
+  .info svg {
+    color: var(--color-primary);
+  }
+  .segmented {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+  }
+  .segmented label {
+    position: relative;
+  }
+  .segmented input {
+    position: absolute;
+    opacity: 0;
+  }
+  .segmented span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: var(--space-2);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-button);
+    background: var(--color-surface);
+    color: var(--color-text-body);
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .segmented input:checked + span {
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
+  .segmented input:focus-visible + span {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+  .result,
+  .live {
+    display: grid;
+    gap: var(--space-5);
+    min-width: 0;
+    align-content: start;
+  }
+  .kicker {
+    margin: 0 0 calc(-1 * var(--space-4));
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+  }
+  .figure {
+    margin: 0;
+    color: var(--color-primary);
+    font-size: clamp(3rem, 9vw, 4.5rem);
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+  .figure small {
+    color: var(--color-text-body);
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    margin: 0;
+    border-top: 1px solid var(--color-border);
+  }
+  .facts div {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-4) 0 0;
+  }
+  .facts div + div {
+    padding-left: var(--space-4);
+    border-left: 1px solid var(--color-border);
+  }
+  dt {
+    font-size: var(--text-small);
+    color: var(--color-text-muted);
+  }
+  dd {
+    margin: 0;
+    color: var(--color-text-body);
+  }
+  dd b {
+    color: var(--color-text);
+    font-size: 1.375rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .level {
+    display: grid;
+    gap: var(--space-1);
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-border);
+    border-left: 5px solid var(--level);
+    border-radius: var(--radius-button);
+    background: var(--color-surface);
+  }
+  .level strong {
+    color: var(--level);
+    font-size: var(--text-small);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .calculator :global([data-level="normal"]) {
+    --level: var(--color-status-ok);
+  }
+  .calculator :global([data-level="attention"]) {
+    --level: var(--color-status-warn);
+  }
+  .calculator :global([data-level="serious"]) {
+    --level: var(--color-status-risk);
+  }
+  .calculator :global([data-level="critical"]) {
+    --level: var(--color-status-critical);
+  }
+  .viz {
+    margin: 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .viz svg {
+    width: 100%;
+    height: auto;
+    max-height: 15rem;
+  }
+  .viz :global(.floor) {
+    fill: var(--color-primary-soft);
+    stroke: var(--color-primary-line);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 4;
+  }
+  .viz :global(.grid) {
+    stroke: var(--color-primary-line);
+    stroke-width: 0.75;
+  }
+  .viz :global(.person) {
+    fill: var(--color-primary);
+  }
+  figcaption {
+    font-size: var(--text-small);
+    color: var(--color-text-muted);
+  }
+  .scale {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .scale-label {
+    margin: 0;
+    font-size: var(--text-small);
+    font-weight: 600;
+    color: var(--color-text);
+  }
+  .bar {
+    position: relative;
+    display: flex;
+    height: 12px;
+    border-radius: var(--radius-pill);
+  }
+  .bar :global(i) {
+    height: 100%;
+    background: var(--level);
+  }
+  .bar :global(i:first-child) {
+    border-radius: var(--radius-pill) 0 0 var(--radius-pill);
+  }
+  .bar :global(i:last-of-type) {
+    border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
+  }
+  .bar :global(.marker) {
+    position: absolute;
+    top: -6px;
+    width: 4px;
+    height: 24px;
+    border-radius: 2px;
+    background: var(--color-text);
+    box-shadow: 0 0 0 2px var(--color-surface);
+    transform: translateX(-50%);
+    transition: left 0.25s ease;
+  }
+  .bands {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.75rem;
+    text-align: center;
+    color: var(--color-text-muted);
+  }
+  .bands :global(li) {
+    display: grid;
+    min-width: 0;
+    padding-inline: 2px;
+  }
+  .bands :global(li + li) {
+    border-left: 1px solid var(--color-border);
+  }
+  .bands :global(li[aria-current="true"]) {
+    color: var(--color-text);
+    font-weight: 700;
+  }
+  .callout {
+    padding: var(--space-4);
+    border-radius: var(--radius-button);
+    background: var(--color-primary-soft);
+    color: var(--color-text);
+  }
+  .callout p {
+    margin: var(--space-1) 0 0;
+  }
+  .callout[hidden] {
+    display: none;
+  }
+
+  @media (max-width: 479px) {
+    .tab {
+      padding-inline: var(--space-2);
+      font-size: var(--text-small);
+    }
+    .facts div + div {
+      padding-left: 0;
+      border-left: 0;
+      border-top: 1px solid var(--color-border);
+      padding-bottom: var(--space-3);
+    }
+  }
+  @media (min-width: 900px) {
+    .panel {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: var(--space-8);
+    }
+    .compact .panel {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+    .compact .result {
+      padding-left: var(--space-8);
+      border-left: 1px solid var(--color-border);
+    }
+  }
+</style>

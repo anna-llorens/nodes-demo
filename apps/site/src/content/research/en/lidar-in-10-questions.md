@@ -88,7 +88,7 @@ It depends a lot on the scenario and on what is measured:
 - At **Nagoya**, with 20 sensors, tracking exceeded 90 % on the HOTA metric. The authors warn that their variant of the metric is not comparable with other studies and that the result comes from after-the-fact processing, not real time ([Hishida et al.](https://link.springer.com/article/10.1007/s13177-025-00610-9)).
 - With **tightly packed pedestrians**, a 2025 study with LiDAR and cameras on a vehicle achieved only 0.17–0.35 on the MOTA metric ([Li et al.](https://arxiv.org/abs/2505.16029)).
 
-The practical reading: **counting people per zone is far more robust than tracking each individual.** That is why NODES measures density and flow per zone, and must validate its error margin for each type of event.
+The practical reading: **counting people per zone is far more robust than tracking each individual.** That is why NODES measures density and flow per zone, and must validate its error margin for each type of event. For a first idea of the capacity and density of your space, try the [crowd capacity and density calculator](/en/capacity-calculator).
 
 ## 9. What does it take to install it at an event?
 

@@ -1,0 +1,36 @@
+{
+  "zones": [
+    { "id": "pie", "m2PerPerson": 0.25, "source": "cte-db-si-3-table-2-1" },
+    { "id": "discoteca", "m2PerPerson": 0.5, "source": "cte-db-si-3-table-2-1" },
+    { "id": "sentados", "m2PerPerson": 0.5, "source": "cte-db-si-3-table-2-1" },
+    { "id": "multiple", "m2PerPerson": 1, "source": "cte-db-si-3-table-2-1" },
+    { "id": "bar-pie", "m2PerPerson": 1, "source": "cte-db-si-3-table-2-1" },
+    { "id": "bar-sentado", "m2PerPerson": 1.5, "source": "cte-db-si-3-table-2-1" },
+    { "id": "gim-libre", "m2PerPerson": 1.5, "source": "cte-db-si-3-table-2-1" },
+    { "id": "ferias", "m2PerPerson": 2, "source": "cte-db-si-3-table-2-1" },
+    { "id": "piscina-estancia", "m2PerPerson": 4, "source": "cte-db-si-3-table-2-1" },
+    { "id": "gim-aparatos", "m2PerPerson": 5, "source": "cte-db-si-3-table-2-1" },
+    { "id": "transporte", "m2PerPerson": 10, "source": "cte-db-si-3-table-2-1" }
+  ],
+  "levels": {
+    "standing": [
+      { "id": "normal", "below": 2, "source": "nodes-proposal" },
+      { "id": "attention", "below": 4, "source": "hse-blog-crowd-crush" },
+      { "id": "serious", "below": 5, "source": "eiai-crowd-risk" },
+      { "id": "critical", "below": null, "source": "eiai-crowd-risk" }
+    ],
+    "moving": [
+      { "id": "normal", "below": 2, "source": "nodes-proposal" },
+      { "id": "attention", "below": 3, "source": "eiai-crowd-risk" },
+      { "id": "critical", "below": null, "source": "eiai-crowd-risk" }
+    ]
+  },
+  "thresholds": { "standing": 4, "moving": 3 },
+  "sources": {
+    "cte-db-si-3-table-2-1": "https://normatia.com/es/normativa/cte-db-si/2025/seccion-si-3-evacuacion-de-ocupantes",
+    "cte-exit-width": "https://normatia.com/es/blog/calculo-aforo-locales-comerciales-db-si-3/",
+    "eiai-crowd-risk": "https://eiai.ie/crowd-risk-analysis-and-crowd-safety/",
+    "hse-blog-crowd-crush": "https://www.hseblog.com/crowd-crush-prevention/",
+    "nodes-proposal": null
+  }
+}

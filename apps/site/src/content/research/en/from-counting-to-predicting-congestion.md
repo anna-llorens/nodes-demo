@@ -47,7 +47,7 @@ There is no universal figure for dangerous density. Reference values change with
 | Jamarat Bridge, local density | > 6 people/m² | Local flow drops to a third or less | [Helbing et al., 2007](https://arxiv.org/pdf/physics/0701203) |
 | Itaewon, alley, 22:25 | 9.07–10.74 people/m² | Estimate from the Korean police investigation | [Hankyung](https://www.hankyung.com/article/2023011313587), [Korea Times](https://www.koreatimes.co.kr/southkorea/society/20230113/police-wrap-up-monthslong-probe-into-itaewon-crush-23-officials-referred-to-prosecution) |
 
-Some figures seem to contradict each other: Fruin places flow breakdown around 2.2 people/m², while Still accepts 5 for a standing crowd. It is not a contradiction: the first figure is for people walking and the second for people standing still. That is why a single alarm figure makes no sense.
+Some figures seem to contradict each other: Fruin places flow breakdown around 2.2 people/m², while Still accepts 5 for a standing crowd. It is not a contradiction: the first figure is for people walking and the second for people standing still. That is why a single alarm figure makes no sense. To see which level a given density falls into, for a standing or a moving crowd, you can use our [crowd capacity and density calculator](/en/capacity-calculator).
 
 Fruin's levels are still in use: the New York City Department of City Planning's pedestrian level of service study applies them to sidewalks, corridors and subway stairs ([NYC Planning](https://www.nyc.gov/assets/planning/download/pdf/plans/transportation/td_fullpedlosb.pdf)).
 
