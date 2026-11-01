@@ -1,7 +1,7 @@
 ---
 title: "Towards decision-support systems"
 subtitle: "From monitoring to anticipating risk."
-description: "How to move from watching a crowd to anticipating risk: the measure, alert and decide loop, what can be predicted, what the evidence says and how to design alerts people use."
+description: "How to move from watching a crowd to anticipating risk: the measure, alert and decide loop, what can be predicted and how to design alerts people use."
 slug: "towards-decision-support-systems"
 date: "2026-10-30"
 type: "Research analysis"

@@ -20,10 +20,10 @@ export type PageId = keyof typeof pages;
 export const pagePath = (locale: Locale, page: PageId) => `/${locale}/${pages[page].path}`;
 
 /**
- * Main navigation, in order. Technology is hidden for now (its page is not built); restore it
- * after "research" together with its `getStaticPaths`.
+ * Main navigation, in order; the footer reuses it. Technology is hidden for now (its page is not
+ * built); restore it at the commented position together with its `getStaticPaths`.
  */
-export const mainNav: PageId[] = ["home", "applications", "research", /* "technology", */ "demo", "about", "contact"];
+export const mainNav: PageId[] = ["home", "research", "applications", /* "technology", */ "demo", "about", "contact"];
 
 /** Footer navigation: the same links as the header. */
 export const footerNav: PageId[] = mainNav;

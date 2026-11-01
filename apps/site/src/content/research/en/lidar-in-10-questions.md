@@ -1,6 +1,7 @@
 ---
 title: "LiDAR in 10 questions"
 subtitle: "What to know before measuring a crowd with LiDAR sensors: what they see, what they don't, whether they are safe and what it takes to install them."
+description: "What a LiDAR sensor sees, whether it is eye-safe and what it takes to install one at an event: a guide to using it as a people counter for crowd safety."
 slug: "lidar-in-10-questions"
 date: "2026-10-30"
 type: "Guide"
@@ -13,7 +14,7 @@ cover: "../../../assets/research/lidar-faq-cover.jpg"
 coverAlt: "Illustration of a LiDAR sensor on a pole above a square: each person appears inside a green volume, with no recognisable features"
 ---
 
-This guide is for people who organise events or manage public spaces, not for engineers. We answer with figures from manufacturers, standards and published studies, and we say what we could not verify.
+This guide is for people who organise events or manage public spaces and are considering a LiDAR sensor as a people counter for crowd safety, not for engineers. We answer with figures from manufacturers, standards and published studies, and we say what we could not verify.
 
 ## 1. What is a LiDAR and what does it "see"?
 

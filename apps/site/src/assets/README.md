@@ -8,13 +8,13 @@ Add a row before publishing a new one (see CLAUDE.md, UI content rules).
 | `applications/events-crowd.jpg` | Applications · events card | TODO: original source | TODO: rights confirmed by the team |
 | `applications/transport-station.webp` | Applications · transport card | TODO: original source | TODO: rights confirmed by the team |
 | `applications/spaces-stadium.webp` | Applications · venues and public spaces card | Generated illustration (AI, supplied by the team) | Own |
-| `research/decision-venue-flows.webp` | Decision-support article cover, Research card | Generated illustration (AI, supplied by the team) | Own |
-| `research/events-race-start.webp` | Research · sports events card | Generated illustration (AI, supplied by the team) | Own |
+| `research/decision-venue-flows.webp` | Decision-support article cover, Research card and open questions | Generated illustration (AI, supplied by the team) | Own |
+| `research/events-race-start.webp` | Research · sports events card and open questions | Generated illustration (AI, supplied by the team) | Own |
 | `research/research-hero.webp` | Research · page hero, About · collaborate band | Generated illustration (AI, supplied by the team) | Own |
-| `research/area-*.png` | Research · research areas (four illustrations) | Generated illustration (AI, supplied by the team) | Own |
+| `research/area-*.png` | Home · research areas (four illustrations) | Generated illustration (AI, supplied by the team) | Own |
 | `technology/technology-hero.jpg` | Technology · page hero | Generated illustration (AI, supplied by the team, 30 Oct 2026) | Own |
-| `research/lidar-point-cloud-plaza.jpg` | LiDAR article and its cover, home card, Research featured section | Generated illustration (NODES) | Own |
-| `research/prediction-city-map.webp` | Congestion prediction article cover, home and Research cards, Applications · smart cities card | Generated illustration (AI, supplied by the team) | Own |
+| `research/lidar-point-cloud-plaza.jpg` | LiDAR article and its cover, Research featured section and open questions | Generated illustration (NODES) | Own |
+| `research/prediction-city-map.webp` | Congestion prediction article cover, Research card, Applications · smart cities card | Generated illustration (AI, supplied by the team) | Own |
 | `research/decision-loop-*.jpg` | Decision-support article | Generated illustration (NODES) | Own |
 | `research/decision-itaewon-signals.png` | Decision-support article | Liang et al. (2024), PLOS ONE 19(7): e0306764 | CC BY 4.0 |
 | `research/edge-nagoya-*` | Edge processing article | Hishida et al. (2026), Int. J. ITS Research | CC BY 4.0 |
@@ -33,4 +33,5 @@ Add a row before publishing a new one (see CLAUDE.md, UI content rules).
 | `research/lidar-faq-cover.jpg` | LiDAR in 10 questions article cover, Research card | Generated illustration (AI, supplied by the team) | Own |
 | `research/lidar-mounting-*.svg` | LiDAR in 10 questions article | Original diagram (NODES), own calculation from the Livox Mid-360 datasheet | Own |
 | `about/about-hero.webp` | About · page hero | Generated illustration (AI, supplied by the team). Shows realistic people with detection boxes: an explicit team-approved exception to the CLAUDE.md content rule | Own |
+| `home/home-hero.webp` | Home · hero | Illustration supplied by the team (1 Nov 2026); TODO: confirm source | TODO: rights confirmed by the team |
 | `about/about-context.webp` | About · context section | Generated illustration (AI, supplied by the team) | Own |

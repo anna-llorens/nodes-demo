@@ -1,7 +1,7 @@
 ---
-title: "Procesamiento en el borde para sistemas de monitorización de multitudes"
+title: "Edge computing para la monitorización de multitudes"
 subtitle: "Hardware, software y decisiones de diseño para entornos reales."
-description: "Por qué un sistema de monitorización de multitudes debe procesar los datos LiDAR en el propio dispositivo: privacidad, latencia, ancho de banda y resiliencia, con casos reales y una arquitectura de referencia."
+description: "Por qué procesar los datos LiDAR en el nodo IoT con edge computing: privacidad, latencia, ancho de banda y resiliencia para la gestión de multitudes."
 slug: "procesamiento-en-el-borde-monitorizacion-multitudes"
 date: "2026-10-30"
 type: "Investigación técnica"
@@ -18,7 +18,7 @@ coverAlt: "Vista nocturna de una ciudad desde arriba con personas como siluetas 
 
 *Nubes de puntos de veinte LiDAR fusionadas en una sola escena del vestíbulo central de la estación de Nagoya, con las personas como columnas de puntos de colores. Fuente: [Hishida et al., 2026](https://link.springer.com/article/10.1007/s13177-025-00610-9), fig. 4, Int. J. ITS Research, CC BY 4.0.*
 
-Procesar los datos del sensor en el mismo dispositivo que los capta, y enviar fuera solo recuentos, densidades y trayectorias, es la opción por defecto correcta para monitorizar multitudes. Es la forma más sencilla de cumplir la protección de datos, saca la red del camino de las alertas, reduce el tráfico de subida en unos tres órdenes de magnitud y mantiene el sistema en marcha cuando las redes móviles se saturan, que es justo cuando hay más gente. Los sistemas LiDAR desplegados en el vestíbulo de una estación de tren japonesa, en farolas de una universidad y en un edificio con 70 sensores demuestran que el hardware embebido actual está a la altura. Los problemas difíciles ahora son la calibración, la sincronización de relojes, el traspaso entre sensores y el funcionamiento seguro de dispositivos en el espacio público.
+Procesar los datos del sensor en el mismo dispositivo que los capta (edge computing), y enviar fuera solo recuentos, densidades y trayectorias, es la opción por defecto correcta para la monitorización y la gestión de multitudes. Es la forma más sencilla de cumplir la protección de datos, saca la red del camino de las alertas, reduce el tráfico de subida en unos tres órdenes de magnitud y mantiene el sistema en marcha cuando las redes móviles se saturan, que es justo cuando hay más gente. Los sistemas LiDAR desplegados en el vestíbulo de una estación de tren japonesa, en farolas de una universidad y en un edificio con 70 sensores demuestran que el hardware embebido actual está a la altura. Los problemas difíciles ahora son la calibración, la sincronización de relojes, el traspaso entre sensores y el funcionamiento seguro de dispositivos IoT en el espacio público.
 
 ## Qué significa «borde» en la monitorización de multitudes
 

@@ -1,7 +1,7 @@
 ---
 title: "Distributed architectures for dynamic environments"
-subtitle: "Sensors, communications and local processing for crowd monitoring at temporary sites."
-description: "How to build crowd monitoring for temporary sites: networks that saturate at peak, two independent backhaul paths, power, fast deployment, data fusion, open standards and security."
+subtitle: "IoT sensors, communications and edge computing for crowd monitoring at temporary sites."
+description: "IoT and edge computing architectures for crowd monitoring at temporary smart city sites: saturated networks, dual backhaul, power and open standards."
 slug: "distributed-architectures-dynamic-environments"
 date: "2026-10-30"
 type: "Technical research"
@@ -14,7 +14,7 @@ cover: "../../../assets/research/architecture-lidar-street.webp"
 coverAlt: "Point cloud of a street with a monumental arch, seen by a LiDAR sensor: people appear as coloured point silhouettes inside bounding boxes"
 ---
 
-Most writing about smart-city sensing assumes a fixed installation: sensors on buildings, fibre in the street, mains power and months to tune the system. Street events, festivals, parades and marathons are the opposite. The equipment arrives on a truck, goes up in hours, runs for a day or a weekend and comes down again. And the moment the system matters most, when the crowd peaks, is the moment the shared mobile network is least able to carry its data. This article looks at what that means for the architecture as a whole: networks, power, deployment, data sources, standards and security.
+Most writing about IoT sensing in the smart city assumes a fixed installation: sensors on buildings, fibre in the street, mains power and months to tune the system. Street events, festivals, parades and marathons are the opposite. The equipment arrives on a truck, goes up in hours, runs for a day or a weekend and comes down again. And the moment the system matters most, when the crowd peaks, is the moment the shared mobile network is least able to carry its data. This article looks at what that means for an IoT architecture as a whole, with edge computing at the nodes: networks, power, deployment, data sources, standards and security.
 
 ![Reference architecture for crowd monitoring at temporary sites: sensors, edge nodes, local MQTT broker, primary and secondary backhaul, city platform](../../../assets/research/architecture-reference.jpg)
 

@@ -1,7 +1,7 @@
 ---
 title: "Open LiDAR data with people"
-subtitle: "What exists, what is missing, and why it matters for measuring crowds."
-description: "A review of open LiDAR datasets with people: none reaches the density of a serious crowd. What is missing, how the gap is filled today and what a good dataset should look like."
+subtitle: "What exists, what is missing, and why it matters for measuring crowd density."
+description: "A review of open LiDAR datasets with people: none reaches the crowd density of a serious crowd. What is missing and how researchers fill the gap today."
 slug: "open-lidar-data-with-people"
 date: "2026-10-30"
 type: "Data review"
@@ -14,7 +14,7 @@ cover: "../../../assets/research/open-data-point-cloud-people.png"
 coverAlt: "Side view of a LiDAR point cloud in green: a sensor on a tripod and three people as sparse point silhouettes standing on the ground"
 ---
 
-Algorithms for detecting people in point clouds have improved a great deal, but almost all of them were trained on data recorded from cars or robots, on streets with few people. For measuring real crowds with fixed sensors, open data is scarce, and most of it cannot be used outside research. That is the main bottleneck in the field today, and also an opportunity for anyone who wants to contribute.
+Algorithms for detecting people in point clouds have improved a great deal, but almost all of them were trained on data recorded from cars or robots, on streets with few people. For measuring real crowds and their crowd density with fixed LiDAR sensors, open data is scarce, and most of it cannot be used outside research. That is the main bottleneck in the field today, and also an opportunity for anyone who wants to contribute.
 
 ## What makes a dataset useful for studying crowds
 

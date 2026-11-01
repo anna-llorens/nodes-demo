@@ -1,17 +1,28 @@
 ---
 import heroImage from "../../../assets/research/research-hero.webp";
 import PageHero from "../../../components/PageHero.astro";
-import { isLocale, t } from "../../../i18n";
+import { isLocale, t, type Key } from "../../../i18n";
 import Base from "../../../layouts/Base.astro";
+import { articleFor, featuredCard } from "../../../lib/research";
 import { localePaths } from "../../../lib/static-paths";
-import Areas from "../../../sections/research/Areas.astro";
 import Cards from "../../../sections/research/Cards.astro";
 import Featured from "../../../sections/research/Featured.astro";
+import Questions from "../../../sections/research/Questions.astro";
+import SectionNav from "../../../sections/research/SectionNav.astro";
 
 export const getStaticPaths = localePaths;
 
 const { locale } = Astro.params;
 if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
+// The featured section renders nothing while its article is unpublished, so its menu item goes too.
+const hasFeatured = Boolean(await articleFor(featuredCard, locale));
+const sections = (
+  [
+    { id: "publications", label: "research.list.eyebrow" },
+    { id: "open-questions", label: "research.questions.eyebrow" },
+    { id: "featured", label: "research.featured.eyebrow" },
+  ] satisfies { id: string; label: Key }[]
+).filter((section) => hasFeatured || section.id !== "featured");
 ---
 
 <Base locale={locale} page="research">
@@ -24,7 +35,8 @@ if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
     imageAlt={t(locale, "research.hero.imageAlt")}
     backdrop
   />
-  <Areas locale={locale} />
-  <Featured locale={locale} />
+  <SectionNav locale={locale} sections={sections} />
   <Cards locale={locale} />
+  <Questions locale={locale} />
+  <Featured locale={locale} />
 </Base>

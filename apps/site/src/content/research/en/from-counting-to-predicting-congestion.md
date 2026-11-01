@@ -1,7 +1,7 @@
 ---
 title: "From counting to predicting congestion"
-subtitle: "Local density, flow and early warning signs in crowds."
-description: "Why counting people is not enough to anticipate a dangerous crowd: local density, flow per metre, crowd pressure and the lessons of Jamarat, Itaewon and Hillsborough."
+subtitle: "Local crowd density, flow and early warning signs for crowd safety."
+description: "Why counting people is not enough for crowd safety: local crowd density, flow per metre, crowd pressure and what Jamarat, Itaewon and Hillsborough teach."
 slug: "from-counting-to-predicting-congestion"
 date: "2026-10-30"
 type: "Research analysis"
@@ -14,7 +14,7 @@ cover: "../../../assets/research/prediction-city-map.webp"
 coverAlt: "People walking over a city map drawn on the paving of a square"
 ---
 
-Knowing how many people are in a venue is not enough to anticipate dangerous congestion. What anticipates it is measuring, zone by zone and minute by minute, local density (people per m²), flow per metre of width and how much speeds vary. An occupancy figure that looks fine overall can hide a spot where nobody can move any more.
+Knowing how many people are in a venue is not enough to anticipate dangerous congestion. What anticipates it is measuring, zone by zone and minute by minute, local density (people per m²), flow per metre of width and how much speeds vary. An occupancy figure that looks fine overall can hide a spot where nobody can move any more, so crowd management needs more than a headcount.
 
 ## Why counting is not enough
 

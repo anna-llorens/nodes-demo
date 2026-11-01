@@ -1,7 +1,7 @@
 ---
 title: "Edge processing for crowd monitoring systems"
 subtitle: "Hardware, software and design decisions for real-world environments."
-description: "Why crowd monitoring should process LiDAR data on the device: privacy, latency, bandwidth and resilience, with evidence from real deployments and a reference architecture."
+description: "Why crowd management systems should process LiDAR data on the IoT device with edge computing: privacy, latency, bandwidth and resilience."
 slug: "edge-processing-crowd-monitoring"
 date: "2026-10-30"
 type: "Technical research"
@@ -18,7 +18,7 @@ coverAlt: "Night view of a city from above with people as point silhouettes, ove
 
 *Point clouds from twenty LiDARs merged into one scene of the central concourse of Nagoya Station, with people as coloured columns of points. Source: [Hishida et al., 2026](https://link.springer.com/article/10.1007/s13177-025-00610-9), Fig. 4, Int. J. ITS Research, CC BY 4.0.*
 
-Processing sensor data on the device that captures it, and sending out only counts, densities and tracks, is the right default for crowd monitoring. It is the simplest way to meet data-protection duties, it takes the network out of the alert path, it cuts upstream traffic by roughly three orders of magnitude, and it keeps the system working when mobile networks saturate, which is exactly when crowds are largest. Deployed LiDAR systems in a Japanese railway concourse, on university light poles and across a 70-sensor building show that today's embedded hardware is up to the task. The hard problems now are calibration, time synchronisation, handover between sensors and running devices safely in public space.
+Processing sensor data on the device that captures it (edge computing), and sending out only counts, densities and tracks, is the right default for crowd monitoring and crowd management. It is the simplest way to meet data-protection duties, it takes the network out of the alert path, it cuts upstream traffic by roughly three orders of magnitude, and it keeps the system working when mobile networks saturate, which is exactly when crowds are largest. Deployed LiDAR systems in a Japanese railway concourse, on university light poles and across a 70-sensor building show that today's embedded hardware is up to the task. The hard problems now are calibration, time synchronisation, handover between sensors and running IoT devices safely in public space.
 
 ## What "edge" means in crowd monitoring
 

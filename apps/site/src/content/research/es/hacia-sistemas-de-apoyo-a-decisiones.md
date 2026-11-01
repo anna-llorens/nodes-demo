@@ -1,7 +1,7 @@
 ---
 title: "Hacia sistemas de apoyo a decisiones"
 subtitle: "De la monitorización a la anticipación de situaciones de riesgo."
-description: "Cómo pasar de vigilar una multitud a anticipar el riesgo: el ciclo medir, avisar y decidir, qué se puede predecir, qué dice la evidencia y cómo diseñar alertas que se usen."
+description: "Cómo pasar de vigilar una multitud a anticipar el riesgo: el ciclo medir, avisar y decidir, qué se puede predecir y cómo diseñar alertas que se usen."
 slug: "hacia-sistemas-de-apoyo-a-decisiones"
 date: "2026-10-30"
 type: "Análisis de investigación"
