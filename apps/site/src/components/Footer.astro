@@ -28,7 +28,7 @@ const year = new Date().getFullYear();
     <Logo locale={locale} />
     <nav>
       <ul>
-        {footerNav.map((id) => <li><a href={pagePath(locale, id)}>{t(locale, pages[id].titleKey)}</a></li>)}
+        {footerNav.map((id) => <li><a href={pagePath(locale, id)}>{t(locale, pages[id].navKey)}</a></li>)}
       </ul>
     </nav>
     {social.length > 0 && (

@@ -22,7 +22,7 @@ const items = ["item1", "item2", "item3"] as const;
         <li id={sector.id} class="card">
           <article aria-labelledby={`${sector.id}-title`}>
             <span class="panel">
-              <Image src={sector.photo} alt="" widths={[480, 800, 1200]} sizes="(min-width: 768px) 50vw, 100vw" />
+              <Image src={sector.photo} alt={t(locale, `applications.${sector.id}.imageAlt`)} widths={[480, 800, 1200]} sizes="(min-width: 768px) 50vw, 100vw" />
             </span>
             <div class="body">
               <span class="icon">
@@ -61,7 +61,7 @@ const items = ["item1", "item2", "item3"] as const;
     border-radius: var(--radius-card);
     background: var(--color-surface);
   }
-  /* Decorative photo filling the panel; the card title says what it shows. */
+  /* Photo filling the panel; its alt text describes the scene beyond the card title. */
   .panel {
     display: block;
     aspect-ratio: 16 / 9;

@@ -1,18 +1,23 @@
 import type { Key, Locale } from "../i18n";
 
-/** Pages of the site. Slugs are English in every locale (ADR 0006); each has its own meta description. */
+/**
+ * Pages of the site. Slugs are English in every locale (ADR 0006). `navKey` is the visible label
+ * (menu, footer, legal heading); `titleKey` and `descriptionKey` feed <title> and the meta
+ * description. Section pages have their own `meta.<page>.*` keys; the others reuse their label
+ * and lead.
+ */
 export const pages = {
-  home: { path: "", titleKey: "nav.home", descriptionKey: "meta.description" },
-  applications: { path: "applications", titleKey: "nav.applications", descriptionKey: "applications.hero.lead" },
-  technology: { path: "technology", titleKey: "nav.technology", descriptionKey: "tech.hero.lead" },
-  demo: { path: "demo", titleKey: "nav.demo", descriptionKey: "demo.hero.lead" },
-  research: { path: "research", titleKey: "nav.research", descriptionKey: "research.hero.lead" },
-  contact: { path: "contact", titleKey: "nav.contact", descriptionKey: "contact.hero.lead" },
-  about: { path: "about", titleKey: "nav.about", descriptionKey: "about.hero.lead" },
-  legalNotice: { path: "legal/legal-notice", titleKey: "legal.legalNotice.title", descriptionKey: "legal.legalNotice.description" },
-  privacy: { path: "legal/privacy", titleKey: "legal.privacy.title", descriptionKey: "legal.privacy.description" },
-  cookies: { path: "legal/cookies", titleKey: "legal.cookies.title", descriptionKey: "legal.cookies.description" },
-} as const satisfies Record<string, { path: string; titleKey: Key; descriptionKey: Key }>;
+  home: { path: "", navKey: "nav.home", titleKey: "nav.home", descriptionKey: "meta.description" },
+  applications: { path: "applications", navKey: "nav.applications", titleKey: "meta.applications.title", descriptionKey: "meta.applications.description" },
+  technology: { path: "technology", navKey: "nav.technology", titleKey: "nav.technology", descriptionKey: "tech.hero.lead" },
+  demo: { path: "demo", navKey: "nav.demo", titleKey: "meta.demo.title", descriptionKey: "meta.demo.description" },
+  research: { path: "research", navKey: "nav.research", titleKey: "meta.research.title", descriptionKey: "meta.research.description" },
+  contact: { path: "contact", navKey: "nav.contact", titleKey: "meta.contact.title", descriptionKey: "meta.contact.description" },
+  about: { path: "about", navKey: "nav.about", titleKey: "meta.about.title", descriptionKey: "meta.about.description" },
+  legalNotice: { path: "legal/legal-notice", navKey: "legal.legalNotice.title", titleKey: "legal.legalNotice.title", descriptionKey: "legal.legalNotice.description" },
+  privacy: { path: "legal/privacy", navKey: "legal.privacy.title", titleKey: "legal.privacy.title", descriptionKey: "legal.privacy.description" },
+  cookies: { path: "legal/cookies", navKey: "legal.cookies.title", titleKey: "legal.cookies.title", descriptionKey: "legal.cookies.description" },
+} as const satisfies Record<string, { path: string; navKey: Key; titleKey: Key; descriptionKey: Key }>;
 
 export type PageId = keyof typeof pages;
 

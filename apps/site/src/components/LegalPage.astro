@@ -20,7 +20,7 @@ const draft = entry.data.draft;
 <Base locale={locale} page={page} noindex={draft}>
   <section class="section">
     <article class="container legal">
-      <h1>{t(locale, pages[page].titleKey)}</h1>
+      <h1>{t(locale, pages[page].navKey)}</h1>
       {draft && <p class="draft" role="note">{t(locale, "legal.draftBanner")}</p>}
       <div class="prose"><Content /></div>
     </article>

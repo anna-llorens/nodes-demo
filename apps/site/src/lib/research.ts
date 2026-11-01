@@ -16,6 +16,7 @@ export const cardIcons = {
   architecture: "icons/chart",
   openData: "icons/report",
   lidarFaq: "icons/lidar-sensor",
+  sensors: "icons/people-group",
 } as const;
 
 /** Card shown in "Featured research" on the Research page; it leaves the card list while published. */

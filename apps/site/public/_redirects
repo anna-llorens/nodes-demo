@@ -1,0 +1,6 @@
+# Permanent redirects served by Workers static assets (see docs/changes/site-seo.md, S3).
+# The old Colabora page became Contact.
+/es/collaborate /es/contact 301
+/es/collaborate/ /es/contact 301
+/en/collaborate /en/contact 301
+/en/collaborate/ /en/contact 301

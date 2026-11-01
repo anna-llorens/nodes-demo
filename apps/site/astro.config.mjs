@@ -49,13 +49,11 @@ export default defineConfig({
     // Needs `site`; without PUBLIC_SITE_URL no sitemap is written (plan D7).
     sitemap({
       i18n: { defaultLocale: "es", locales: { es: "es", en: "en" } },
-      // Leaves out the root language redirect, the 404, the old /collaborate redirect and the
-      // legal pages, which are drafts until the final legal texts land. Draft articles are never built.
+      // Leaves out the root language redirect, the 404 and the legal pages, which are drafts until
+      // the final legal texts land. Draft articles are never built.
       filter: (page) => {
         const path = new URL(page).pathname;
-        return (
-          path !== "/" && !path.startsWith("/404") && !path.includes("/legal/") && !/^\/\w+\/collaborate\/?$/.test(path)
-        );
+        return path !== "/" && !path.startsWith("/404") && !path.includes("/legal/");
       },
       // Same URL form as the canonical links: no trailing slash except the locale roots (/en/).
       // Research articles get their translations as alternates.

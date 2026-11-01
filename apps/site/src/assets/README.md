@@ -32,6 +32,11 @@ Add a row before publishing a new one (see CLAUDE.md, UI content rules).
 | `research/architecture-vue-probes.jpg` | Distributed architectures article | Baena et al. (2021), Sensors 21(10):3404, fig. 14 | CC BY 4.0 |
 | `research/lidar-faq-cover.jpg` | LiDAR in 10 questions article cover, Research card | Generated illustration (AI, supplied by the team) | Own |
 | `research/lidar-mounting-*.svg` | LiDAR in 10 questions article | Original diagram (NODES), own calculation from the Livox Mid-360 datasheet | Own |
+| `research/sensors-khanfor-rgb-point-cloud.png` | Non-intrusive sensors article cover, Research card | Khanfor et al. (2026), IEEE Internet of Things Magazine, fig. 2 (arXiv 2603.27663) | TODO: confirm reuse (IEEE copyright; arXiv preprint) |
+| `research/sensors-nagoya-*.png` | Non-intrusive sensors article | Hishida et al. (2026), Int. J. ITS Research | CC BY 4.0 |
+| `research/sensors-asu-pole.png` | Non-intrusive sensors article | Chen et al., ASU smart light poles (arXiv 2311.18077), fig. 1 | TODO: confirm reuse (arXiv licence) |
+| `research/sensors-stcrowd-occlusion.png` | Non-intrusive sensors article | Cong et al. (2022), STCrowd, CVPR (arXiv 2204.01026) | TODO: confirm reuse (licence not stated) |
+| `research/sensors-mmcounter-pipeline.png` | Non-intrusive sensors article | mmCounter, EWSN 2025, fig. 2 (arXiv 2512.10357) | TODO: confirm reuse (arXiv licence) |
 | `about/about-hero.webp` | About · page hero | Generated illustration (AI, supplied by the team). Shows realistic people with detection boxes: an explicit team-approved exception to the CLAUDE.md content rule | Own |
 | `home/home-hero.webp` | Home · hero | Illustration supplied by the team (1 Nov 2026); TODO: confirm source | TODO: rights confirmed by the team |
 | `about/about-context.webp` | About · context section | Generated illustration (AI, supplied by the team) | Own |

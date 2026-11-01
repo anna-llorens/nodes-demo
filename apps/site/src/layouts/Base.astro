@@ -28,18 +28,41 @@ interface Props {
   translations?: { locale: Locale; path: string }[] | undefined;
   /** Language switcher targets for pages outside the catalog. */
   languageHrefs?: Partial<Record<Locale, string>> | undefined;
+  /** Research articles: `og:type=article`, the article:* tags and their own share image. */
+  article?: ArticleMeta | undefined;
 }
-const { locale, page, noindex = false, title: pageTitle, description: pageDescription, translations, languageHrefs } =
-  Astro.props;
 
+export interface ArticleMeta {
+  /** ISO dates. */
+  published?: string | undefined;
+  modified?: string | undefined;
+  section?: string | undefined;
+  tags?: string[] | undefined;
+  /** Share image already generated at its final size, with an absolute URL. */
+  image?: { url: string; width: number; height: number; alt?: string | undefined } | undefined;
+}
+
+const {
+  locale,
+  page,
+  noindex = false,
+  title: pageTitle,
+  description: pageDescription,
+  translations,
+  languageHrefs,
+  article,
+} = Astro.props;
+
+// Catalog titles that already name the brand (`meta.<page>.title`) are used as they are.
+const withBrand = (text: string) => (text.includes("NODES") ? text : `${text} · NODES`);
 const title = pageTitle
   ? `${pageTitle} · NODES`
   : !page || page === "home"
     ? t(locale, "meta.title")
-    : `${t(locale, pages[page].titleKey)} · NODES`;
+    : withBrand(t(locale, pages[page].titleKey));
 const description = pageDescription ?? t(locale, page ? pages[page].descriptionKey : "meta.description");
-// One default share image for every page (1200×630, cropped from the home page asset).
-const ogImage = absoluteUrl("/og-default.jpg");
+// Articles share their cover; every other page the default image (1200×630, cropped from the home page asset).
+const ogImage = article?.image ?? { url: absoluteUrl("/og-default.jpg"), width: 1200, height: 630, alt: undefined };
 const paths = translations ?? (page ? locales.map((item) => ({ locale: item, path: pagePath(item, page) })) : []);
 const alternates = paths.map((item) => ({ locale: item.locale, href: absoluteUrl(item.path) }));
 const canonical = alternates.find((item) => item.locale === locale)?.href;
@@ -58,19 +81,25 @@ const xDefault = alternates.find((item) => item.locale === "en")?.href;
     {canonical && <link rel="canonical" href={canonical} />}
     {alternates.map((item) => <link rel="alternate" hreflang={item.locale} href={item.href} />)}
     {xDefault && <link rel="alternate" hreflang="x-default" href={xDefault} />}
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={article ? "article" : "website"} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:locale" content={locale === "es" ? "es_ES" : "en_GB"} />
     {canonical && <meta property="og:url" content={canonical} />}
     <meta property="og:site_name" content="NODES" />
-    <meta property="og:image" content={ogImage} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    <meta property="og:image" content={ogImage.url} />
+    <meta property="og:image:width" content={String(ogImage.width)} />
+    <meta property="og:image:height" content={String(ogImage.height)} />
+    {ogImage.alt && <meta property="og:image:alt" content={ogImage.alt} />}
+    {article?.published && <meta property="article:published_time" content={article.published} />}
+    {article?.modified && <meta property="article:modified_time" content={article.modified} />}
+    {article?.section && <meta property="article:section" content={article.section} />}
+    {article?.tags?.filter(Boolean).map((tag) => <meta property="article:tag" content={tag} />)}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image" content={ogImage.url} />
+    {ogImage.alt && <meta name="twitter:image:alt" content={ogImage.alt} />}
     <slot name="head" />
   </head>
   <body>

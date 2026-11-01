@@ -17,7 +17,7 @@ interface Props {
 }
 const { locale, page, languageHrefs } = Astro.props;
 
-const links = mainNav.map((id) => ({ href: pagePath(locale, id), label: t(locale, pages[id].titleKey), current: id === page }));
+const links = mainNav.map((id) => ({ href: pagePath(locale, id), label: t(locale, pages[id].navKey), current: id === page }));
 ---
 
 <header class="site-header" data-site-header>

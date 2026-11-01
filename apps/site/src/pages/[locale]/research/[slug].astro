@@ -1,10 +1,12 @@
 ---
 import { getCollection, render } from "astro:content";
-import { Image } from "astro:assets";
+import { getImage, Image } from "astro:assets";
 import Svg from "@nodes/ui/Svg.astro";
 import { ArrowLeft, ArrowRight, Calendar, FileText, Tag } from "@lucide/astro";
 import { isLocale, locales, t } from "../../../i18n";
-import Base from "../../../layouts/Base.astro";
+import Base, { type ArticleMeta } from "../../../layouts/Base.astro";
+import { absoluteUrl } from "../../../lib/env";
+import { jsonLd, organization } from "../../../lib/organization";
 import { pagePath } from "../../../lib/routes";
 import {
   articlePath,
@@ -31,7 +33,7 @@ const { locale } = Astro.params;
 if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
-const { title, subtitle, description, date, type, category, tags, draft, cover, coverAlt } = entry.data;
+const { title, subtitle, description, date, type, category, tags, author, draft, cover, coverAlt } = entry.data;
 const toc = headings.filter((heading) => heading.depth === 2);
 const published = date ? formatArticleDate(date, locale) : undefined;
 // Eyebrow: category label (Research filters, raw key as fallback) · type · short date.
@@ -53,9 +55,62 @@ const translations = draft ? undefined : await translationsOf(entry);
 const languageHrefs = Object.fromEntries(
   locales.map((item) => [item, translations?.find((tr) => tr.locale === item)?.path ?? pagePath(item, "research")]),
 );
+
+// Share image: the cover cropped to 1200×630 JPEG, the size and format social previews expect.
+const shareImage = cover && (await getImage({ src: cover, width: 1200, height: 630, fit: "cover", format: "jpg" }));
+const metaDescription = description ?? subtitle;
+const url = absoluteUrl(articlePath(entry));
+const article: ArticleMeta = {
+  // Same as published until the frontmatter has its own modified date.
+  published: date || undefined,
+  modified: date || undefined,
+  section: categoryOf(category),
+  tags,
+  image: shareImage
+    ? {
+        url: absoluteUrl(shareImage.src),
+        width: Number(shareImage.attributes["width"]),
+        height: Number(shareImage.attributes["height"]),
+        alt: coverAlt,
+      }
+    : undefined,
+};
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      headline: title,
+      description: metaDescription,
+      ...(article.image && { image: article.image.url }),
+      ...(date && { datePublished: date, dateModified: date }),
+      inLanguage: locale,
+      mainEntityOfPage: url,
+      author: { "@type": "Person", name: author },
+      publisher: organization(locale),
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: t(locale, "nav.home"), item: absoluteUrl(pagePath(locale, "home")) },
+        { "@type": "ListItem", position: 2, name: t(locale, "nav.research"), item: absoluteUrl(pagePath(locale, "research")) },
+        { "@type": "ListItem", position: 3, name: title, item: url },
+      ],
+    },
+  ],
+};
 ---
 
-<Base locale={locale} title={title} description={description ?? subtitle} noindex={draft} translations={translations} languageHrefs={languageHrefs}>
+<Base
+  locale={locale}
+  title={title}
+  description={metaDescription}
+  noindex={draft}
+  translations={translations}
+  languageHrefs={languageHrefs}
+  article={article}
+>
+  <script slot="head" type="application/ld+json" set:html={jsonLd(structuredData)} />
   <!-- Full-width dark header; the cover, when there is one, fills it behind a left gradient. -->
   <header class:list={["article-header", { "has-cover": cover }]}>
     {

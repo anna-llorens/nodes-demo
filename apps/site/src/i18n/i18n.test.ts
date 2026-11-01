@@ -14,6 +14,14 @@ describe("site translations", () => {
     const params = (text: string) => [...text.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
     for (const key of Object.keys(es) as (keyof typeof es)[]) expect(params(en[key]), key).toEqual(params(es[key]));
   });
+  it("keep page titles within 60 characters and descriptions within 155", () => {
+    for (const catalog of [es, en]) {
+      for (const [key, value] of Object.entries(catalog)) {
+        if (/^meta\.([^.]+\.)?title$/.test(key)) expect(value.length, key).toBeLessThanOrEqual(60);
+        if (/^meta\.([^.]+\.)?description$/.test(key)) expect(value.length, key).toBeLessThanOrEqual(155);
+      }
+    }
+  });
 });
 
 describe("t", () => {
