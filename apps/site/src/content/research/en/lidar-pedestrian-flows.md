@@ -1,6 +1,7 @@
 ---
 title: "LiDAR for pedestrian flow analysis"
-subtitle: "Technologies, capabilities and limitations in real-world settings."
+subtitle: "Technologies, capabilities and limitations of LiDAR sensors in real-world settings."
+description: "How a LiDAR sensor counts and tracks people without filming faces: what it measures, what studies show and its limits as a smart city people counter."
 slug: "lidar-pedestrian-flows"
 date: "2026-10-30"
 type: "Technology review"
@@ -13,7 +14,7 @@ cover: "../../../assets/research/lidar-point-cloud-plaza.jpg"
 coverAlt: "Point cloud of a square seen by a LiDAR sensor: people appear as silhouettes made of points"
 ---
 
-A LiDAR can count and track people without capturing faces or images, by day and by night, with position errors of a few centimetres. The best published results exceed 90 % tracking accuracy, but in very dense crowds, at long range or with dark clothing, performance drops. This article sums up what it measures, how the data is processed, what studies with real data show and where its limits are.
+A LiDAR sensor can count and track people without capturing faces or images, by day and by night, with position errors of a few centimetres. The best published results exceed 90 % tracking accuracy, but in very dense crowds, at long range or with dark clothing, performance drops. This article sums up what it measures, how the data is processed, what studies with real data show and where its limits are as a people counter for the smart city.
 
 ## What a LiDAR is
 

@@ -29,6 +29,8 @@ const research = defineCollection({
       .object({
         title: z.string(),
         subtitle: z.string(),
+        /** Meta description (155 characters at most); the subtitle is used when it is missing. */
+        description: z.string().max(155).optional(),
         slug: z.string(),
         /** ISO date; empty while the article is a draft. */
         date: z.string(),

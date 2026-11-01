@@ -1,6 +1,7 @@
 ---
 title: "El LiDAR en 10 preguntas"
 subtitle: "Lo que conviene saber antes de medir una multitud con sensores LiDAR: qué ven, qué no, si son seguros y qué hace falta para montarlos."
+description: "Qué ve un sensor LiDAR, si es seguro para los ojos y qué hace falta para montarlo en un evento: guía para el control de aforo y el plan de autoprotección."
 slug: "lidar-en-10-preguntas"
 date: "2026-10-30"
 type: "Guía"
@@ -13,7 +14,7 @@ cover: "../../../assets/research/lidar-faq-cover.jpg"
 coverAlt: "Ilustración de un sensor LiDAR en un poste sobre una plaza: cada persona aparece dentro de un volumen verde, sin rasgos reconocibles"
 ---
 
-Esta guía es para quien organiza un evento o gestiona un espacio público, no para ingenieros. Respondemos con datos de fabricantes, normas y estudios publicados, y decimos qué no hemos podido comprobar.
+Esta guía es para quien organiza un evento, prepara su plan de autoprotección o gestiona un espacio público y se plantea un sensor LiDAR para el control de aforo, no para ingenieros. Respondemos con datos de fabricantes, normas y estudios publicados, y decimos qué no hemos podido comprobar.
 
 ## 1. ¿Qué es un LiDAR y qué «ve»?
 

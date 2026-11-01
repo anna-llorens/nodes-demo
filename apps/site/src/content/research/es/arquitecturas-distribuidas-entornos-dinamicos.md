@@ -1,7 +1,7 @@
 ---
 title: "Arquitecturas distribuidas para entornos dinámicos"
-subtitle: "Sensores, comunicaciones y procesamiento local para medir multitudes en emplazamientos temporales."
-description: "Cómo montar la medición de multitudes en emplazamientos temporales: redes que se saturan en el pico, dos vías de salida independientes, energía, despliegue rápido, fusión de datos, estándares y seguridad."
+subtitle: "Sensores IoT, comunicaciones y edge computing para medir multitudes en emplazamientos temporales."
+description: "Arquitecturas IoT y edge computing para medir multitudes en eventos temporales de la smart city: redes saturadas, doble conexión, energía y estándares."
 slug: "arquitecturas-distribuidas-entornos-dinamicos"
 date: "2026-10-30"
 type: "Investigación técnica"
@@ -14,7 +14,7 @@ cover: "../../../assets/research/architecture-lidar-street.webp"
 coverAlt: "Nube de puntos de una calle con un arco monumental vista por un sensor LiDAR: las personas aparecen como siluetas de puntos de colores dentro de cajas de detección"
 ---
 
-Casi todo lo que se escribe sobre sensores en la ciudad inteligente supone una instalación fija: sensores en edificios, fibra en la calle, corriente de red y meses para ajustar el sistema. Los eventos en la calle, festivales, desfiles y maratones son lo contrario. El equipo llega en un camión, se monta en horas, funciona un día o un fin de semana y se desmonta. Y justo cuando el sistema más importa, en el pico de gente, la red móvil compartida es menos capaz de transportar sus datos. Este artículo analiza qué implica eso para la arquitectura completa: redes, energía, despliegue, fuentes de datos, estándares y seguridad.
+Casi todo lo que se escribe sobre sensores IoT en la smart city supone una instalación fija: sensores en edificios, fibra en la calle, corriente de red y meses para ajustar el sistema. Los eventos en la calle, festivales, desfiles y maratones son lo contrario. El equipo llega en un camión, se monta en horas, funciona un día o un fin de semana y se desmonta. Y justo cuando el sistema más importa, en el pico de gente, la red móvil compartida es menos capaz de transportar sus datos. Este artículo analiza qué implica eso para una arquitectura IoT completa, con edge computing en los nodos: redes, energía, despliegue, fuentes de datos, estándares y seguridad.
 
 ![Arquitectura de referencia para medir multitudes en emplazamientos temporales: sensores, nodos de borde, servidor MQTT local, conexión principal y secundaria, plataforma municipal](../../../assets/research/architecture-reference.jpg)
 

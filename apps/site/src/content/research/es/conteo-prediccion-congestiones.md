@@ -1,7 +1,7 @@
 ---
 title: "Del conteo a la predicción de congestiones"
-subtitle: "Densidad local, flujo y señales previas en multitudes."
-description: "Por qué contar personas no basta para anticipar una aglomeración peligrosa: densidad local, flujo por metro, presión de multitud y lo que enseñan Jamarat, Itaewon o Hillsborough."
+subtitle: "Densidad local, flujo y señales previas en aglomeraciones."
+description: "Por qué el control de aforo no basta para anticipar aglomeraciones: densidad local, flujo, presión de multitud y qué falta en el plan de autoprotección."
 slug: "conteo-prediccion-congestiones"
 date: "2026-10-30"
 type: "Análisis de investigación"
@@ -14,7 +14,7 @@ cover: "../../../assets/research/prediction-city-map.webp"
 coverAlt: "Personas caminando sobre un mapa de ciudad dibujado en el suelo de una plaza"
 ---
 
-Saber cuántas personas hay en un recinto no basta para anticipar una congestión peligrosa. Lo que la anticipa es medir, zona por zona y minuto a minuto, la densidad local (personas por m²), el flujo por metro de anchura y la variación de las velocidades. Un aforo correcto en el conjunto puede esconder un punto donde ya nadie puede moverse.
+Saber cuántas personas hay en un recinto no basta para anticipar una congestión peligrosa. Lo que la anticipa es medir, zona por zona y minuto a minuto, la densidad local (personas por m²), el flujo por metro de anchura y la variación de las velocidades. Un aforo correcto en el conjunto puede esconder un punto donde ya nadie puede moverse: el control de aforo que pide un plan de autoprotección no basta para anticipar aglomeraciones.
 
 ## Por qué contar no basta
 

@@ -1,6 +1,7 @@
 ---
 title: "LiDAR para el análisis de flujos peatonales"
-subtitle: "Tecnologías, capacidades y limitaciones en entornos reales."
+subtitle: "Tecnologías, capacidades y limitaciones del sensor LiDAR en entornos reales."
+description: "Cómo un sensor LiDAR cuenta y sigue personas sin captar caras: qué mide, qué dice la evidencia y sus límites como contador de personas en la smart city."
 slug: "lidar-flujos-peatonales"
 date: "2026-10-30"
 type: "Revisión tecnológica"
@@ -13,7 +14,7 @@ cover: "../../../assets/research/lidar-point-cloud-plaza.jpg"
 coverAlt: "Nube de puntos de una plaza vista por un sensor LiDAR: las personas aparecen como siluetas de puntos"
 ---
 
-Un LiDAR puede contar y seguir personas sin captar caras ni imágenes, de día y de noche, con errores de centímetros en la posición. Los mejores resultados publicados superan el 90 % de acierto en seguimiento, pero en multitudes muy densas, a distancia o con ropa oscura el rendimiento cae. Este artículo resume qué mide, cómo se procesa, qué dicen los estudios con datos reales y dónde están sus límites.
+Un sensor LiDAR puede contar y seguir personas sin captar caras ni imágenes, de día y de noche, con errores de centímetros en la posición. Los mejores resultados publicados superan el 90 % de acierto en seguimiento, pero en multitudes muy densas, a distancia o con ropa oscura el rendimiento cae. Este artículo resume qué mide, cómo se procesa, qué dicen los estudios con datos reales y dónde están sus límites como contador de personas en la smart city.
 
 ## Qué es un LiDAR
 
