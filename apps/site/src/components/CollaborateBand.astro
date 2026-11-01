@@ -1,26 +1,32 @@
 ---
 import { Image } from "astro:assets";
-import bandImage from "../../assets/research/research-hero.webp";
-import Button from "../../components/Button.astro";
-import { t, type Locale } from "../../i18n";
-import { pagePath } from "../../lib/routes";
+import bandImage from "../assets/research/research-hero.webp";
+import { t, type Locale } from "../i18n";
+import { pagePath } from "../lib/routes";
+import Button from "./Button.astro";
 
 /**
- * Closing "Collaborate" band: dark, with the Research hero image behind a left gradient, white
- * text and a button to Contact. The image is decorative here (the Research page describes it).
+ * Closing "Collaborate" band (About and Research): dark, with the Research hero image behind a
+ * left gradient, white text and a button to Contact. The image is decorative here (the Research
+ * hero describes it). Callers pass the already translated copy; the eyebrow is optional.
  */
 interface Props {
   locale: Locale;
+  /** Heading id, unique on the page. */
+  id: string;
+  eyebrow?: string;
+  title: string;
+  text: string;
 }
-const { locale } = Astro.props;
+const { locale, id, eyebrow, title, text } = Astro.props;
 ---
 
-<section class="collab" aria-labelledby="about-collab-title">
+<section class="collab" aria-labelledby={id}>
   <Image class="bg" src={bandImage} alt="" widths={[640, 1024, 1600, 2000]} sizes="100vw" />
   <div class="container text">
-    <p class="eyebrow">{t(locale, "about.collab.eyebrow")}</p>
-    <h2 id="about-collab-title">{t(locale, "about.collab.title")}</h2>
-    <p class="lead">{t(locale, "about.collab.text")}</p>
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    <h2 id={id}>{title}</h2>
+    <p class="lead">{text}</p>
     <Button href={pagePath(locale, "contact")} variant="outline" arrow>{t(locale, "about.collab.cta")}</Button>
   </div>
 </section>

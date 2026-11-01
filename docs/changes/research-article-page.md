@@ -73,7 +73,7 @@ cards stay visible. The edge card is filtered as IoT and edge although its label
 ## "Read more" on research cards
 
 Each published card on `/research` (`apps/site/src/sections/research/Cards.astro`) ends with
-"Read more" and the Lucide `ArrowRight`, styled like the featured article's "Read the full
+"Read more" and the Lucide `ArrowRight`, styled like the home page's featured article "Read the full
 article" link. It is a `span` with `aria-hidden`, not a second link: the stretched title link
 already covers the card, so screen readers keep one link per card. "Coming soon" cards do not
 show it because they have nowhere to go. Copy: `research.readMore` in `es.json` / `en.json`.
@@ -108,21 +108,40 @@ become question · details · image columns from 1024px.
 ## Research page order
 
 `/research` now runs: hero → "Latest publications" (chips and cards) → "Open questions" →
-"Featured research". The card list still leaves out the featured article while it is published,
-so that article appears only in the featured section further down.
+"Collaborate on research".
+
+## "Featured research" on the home page
+
+The Featured research block moved from `/research` to the home page, after "Research areas"
+([`sections/home/Featured.astro`](../../apps/site/src/sections/home/Featured.astro), heading id
+`home-featured-title`). It still shows the article of `featuredCard` (`lidar`) and its copy keeps
+the `research.featured.*` keys, so no texts changed. The Research card list no longer leaves that
+article out: all published articles are listed in their usual order, with "coming soon"
+cards last. The section menu lost its Featured link.
+
+## "Collaborate on research" band
+
+`/research` ends with the About page's Collaborate band, after "Open questions": same dark
+background with the Research hero image, the same "Get in touch" / "Contactar" button to Contact,
+and its own copy, "Collaborate on research" / "Colabora en la investigación" with a line on joint
+research, data initiatives and pilots (`research.collab.title` / `research.collab.text`). It has
+no eyebrow, which would repeat the title. The band moved from `sections/about/Collaborate.astro` to
+[`components/CollaborateBand.astro`](../../apps/site/src/components/CollaborateBand.astro); callers
+pass the heading id and translated copy, and About passes its existing `about.collab.*` texts, so
+it looks as before. The section menu has no link to the band. The image now appears twice on
+`/research` (hero and band), as the request asked.
 
 ## Research section menu
 
 Under the hero, `/research` has a section menu
 (`apps/site/src/sections/research/SectionNav.astro`) with in-page links labelled with each
-section's current eyebrow: Latest publications (`#publications`), Open questions
-(`#open-questions`), and Featured research (`#featured`). It follows
+section's current eyebrow: Latest publications (`#publications`) and Open questions
+(`#open-questions`). It follows
 the mockup's tab bar but not its labels (no "Overview", and Research areas now lives on the home
 page). A small script sets `aria-current` on the section in view (green text and underline);
 without JS the links still work. The menu sticks under the site header while scrolling (the page's
 `scroll-padding-top` grows so section headings clear both bars) and scrolls sideways on narrow
-screens. The Featured link is left out while that article is unpublished in the locale, because the
-section then renders nothing.
+screens.
 
 ## Navigation order
 

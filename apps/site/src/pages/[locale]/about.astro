@@ -1,12 +1,12 @@
 ---
 import heroImage from "../../assets/about/about-hero.webp";
 import Button from "../../components/Button.astro";
+import CollaborateBand from "../../components/CollaborateBand.astro";
 import PageHero from "../../components/PageHero.astro";
 import { isLocale, t } from "../../i18n";
 import Base from "../../layouts/Base.astro";
 import { localePaths } from "../../lib/static-paths";
 import Approach from "../../sections/about/Approach.astro";
-import Collaborate from "../../sections/about/Collaborate.astro";
 import Context from "../../sections/about/Context.astro";
 import Team from "../../sections/about/Team.astro";
 
@@ -30,5 +30,11 @@ if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
   <Approach locale={locale} />
   <Team locale={locale} />
   <Context locale={locale} />
-  <Collaborate locale={locale} />
+  <CollaborateBand
+    locale={locale}
+    id="about-collab-title"
+    eyebrow={t(locale, "about.collab.eyebrow")}
+    title={t(locale, "about.collab.title")}
+    text={t(locale, "about.collab.text")}
+  />
 </Base>

@@ -211,6 +211,8 @@
   "research.featured.cta": "Read the full article",
   "research.list.eyebrow": "Latest publications",
   "research.list.title": "Research and technical notes.",
+  "research.collab.title": "Collaborate on research",
+  "research.collab.text": "We work with academic and industry partners on joint research, data initiatives and real-world pilots.",
   "research.filters.all": "All",
   "research.filters.lidar": "LiDAR",
   "research.filters.crowd": "Crowd dynamics",

@@ -6,9 +6,9 @@ import { articleFor, articlePath, featuredCard } from "../../lib/research";
 import { ArrowRight } from "@lucide/astro";
 
 /**
- * "Featured research": the article of `featuredCard`, with its title, a short pitch, a link and
- * its cover on the right (below on mobile). Renders nothing while that article is not published
- * in this locale; the card list then keeps showing it instead.
+ * Home "Featured research": the article of `featuredCard`, with its title, a short pitch, a link
+ * and its cover on the right (below on mobile). Renders nothing while that article is not
+ * published in this locale. The article is also listed on Research like any other.
  */
 interface Props {
   locale: Locale;
@@ -19,11 +19,11 @@ const article = await articleFor(featuredCard, locale);
 
 {
   article && (
-    <section id="featured" class="section featured" aria-labelledby="research-featured-title">
+    <section id="featured" class="section featured" aria-labelledby="home-featured-title">
       <div class="container layout">
         <div class="text">
           <Eyebrow>{t(locale, "research.featured.eyebrow")}</Eyebrow>
-          <h2 id="research-featured-title">{article.data.title}</h2>
+          <h2 id="home-featured-title">{article.data.title}</h2>
           <p class="lead">{t(locale, "research.featured.text")}</p>
           <a class="more" href={articlePath(article)}>
             {t(locale, "research.featured.cta")}

@@ -19,7 +19,7 @@ export const cardIcons = {
   sensors: "icons/people-group",
 } as const;
 
-/** Card shown in "Featured research" on the Research page; it leaves the card list while published. */
+/** Article shown in "Featured research" on the home page; Research lists it like any other. */
 export const featuredCard = "lidar" satisfies keyof typeof cardIcons;
 
 /** Site-relative URL of an article, e.g. `/en/research/lidar-pedestrian-flows`. */

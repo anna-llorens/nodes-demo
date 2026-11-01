@@ -174,12 +174,13 @@ Between the hero and the card list, the Research page now has two sections from 
   is now [home/Research](../../apps/site/src/sections/home/Research.astro), keeps the
   `research.areas.*` copy and adds the "See research" button (`home.research.cta`). The old
   `home.research.*` eyebrow, title and card keys were removed.
-- [Featured](../../apps/site/src/sections/research/Featured.astro): the article of `featuredCard`
+- [Featured](../../apps/site/src/sections/home/Featured.astro) (now on the home page; see
+  [`research-article-page.md`](research-article-page.md)): the article of `featuredCard`
   in [research.ts](../../apps/site/src/lib/research.ts) (currently `lidar`), with its own title and
   cover, a short pitch from i18n and a link. The mockup's stats overlay (pedestrians, flow, density)
   and carousel arrows are left out: the figures would be invented and there is one featured article.
-- [Cards](../../apps/site/src/sections/research/Cards.astro) drops the featured card only while it
-  links to a published article in that locale, so the topic never disappears from the page.
+- [Cards](../../apps/site/src/sections/research/Cards.astro) used to drop the featured card while
+  it linked to a published article; since Featured moved to the home page, every card is listed.
 - Section titles use `--text-h2`; there is no global `h2` size.
 
 Validation: typecheck, lint, test and build pass; checked in the browser at 1440 px and 375 px, and
@@ -206,8 +207,9 @@ photo hero, "Our approach", founders, "Our context" and a dark "Collaborate" ban
 - [Context](../../apps/site/src/sections/about/Context.astro): R&D stage text and a link to
   Research. "Testing in real environments" became "preparing tests", since no real sensor is
   connected yet. The illustration's edges are masked so its off-white background blends in.
-- [Collaborate](../../apps/site/src/sections/about/Collaborate.astro): dark band over the Research
-  hero image with a left gradient, white text and a button to Contact.
+- [Collaborate](../../apps/site/src/components/CollaborateBand.astro): dark band over the Research
+  hero image with a left gradient, white text and a button to Contact. Now a shared component, also
+  used at the bottom of Research (see [`research-article-page.md`](research-article-page.md)).
 - About is now in the header (`mainNav`); the footer uses the same list.
 - Old `about.*` keys and the unused `team.eyebrow/title/lead/more` keys were removed.
 
