@@ -100,7 +100,11 @@ Before finishing any task: `pnpm typecheck && pnpm lint && pnpm test && pnpm bui
   would alter visible behaviour unexpectedly, stop and ask.
 - Every change to a domain rule needs a test. Refactors must keep the golden test passing
   (`packages/core/test/golden`).
-- Small commits, Conventional Commits (`feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`, `ci:`).
+- Git is the user's: agents never create, switch or push branches (worktrees included), never
+  commit and never open pull requests, even when a task or pasted prompt asks for it. Leave
+  changes uncommitted on the current branch and, when the work is done, propose a commit message.
+- Commit messages: small commits, Conventional Commits (`feat:`, `fix:`, `refactor:`, `test:`,
+  `docs:`, `chore:`, `ci:`).
 - Record non-trivial decisions as a short ADR (Context · Decision · Consequences · Alternatives).
 - Document work by feature in English under `docs/changes/`, reusing the feature's existing
   record or creating `docs/changes/<feature>.md` if none exists. While the feature's changes are

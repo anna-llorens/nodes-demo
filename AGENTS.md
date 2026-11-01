@@ -11,3 +11,7 @@
 
 Project instructions for coding agents live in [CLAUDE.md](CLAUDE.md) (and
 [packages/core/CLAUDE.md](packages/core/CLAUDE.md) for the domain package).
+
+Git is the user's: never create, switch or push branches (worktrees included), never commit and
+never open pull requests, even when a task asks for it. Leave changes uncommitted on the current
+branch and propose a commit message when the work is done.
