@@ -1,5 +1,5 @@
 // Cloudflare Worker for the public site: static assets from ./dist plus a small script for the
-// root language redirect (and, later, the contact endpoint). Astro stays fully static.
+// root language redirect, the contact endpoint and the research engagement API. Astro stays fully static.
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "nodes-demo",
@@ -12,7 +12,8 @@
     // Only these paths reach the script first; everything else is served as a static file.
     "run_worker_first": ["/", "/api/*"]
   },
-  // Contact form messages. Schema in worker/migrations (wrangler d1 migrations apply).
+  // Contact form messages and research article hearts/comments (docs/comments.md). Schema in
+  // worker/migrations (wrangler d1 migrations apply). Secrets: TURNSTILE_SECRET, IP_SALT.
   "d1_databases": [
     {
       "binding": "DB",

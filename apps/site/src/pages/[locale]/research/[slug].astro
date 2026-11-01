@@ -4,6 +4,7 @@ import { getImage, Image } from "astro:assets";
 import Svg from "@nodes/ui/Svg.astro";
 import { ArrowLeft, ArrowRight, Calendar, FileText, Tag } from "@lucide/astro";
 import { isLocale, locales, t } from "../../../i18n";
+import ArticleEngagement from "../../../components/ArticleEngagement.astro";
 import Base, { type ArticleMeta } from "../../../layouts/Base.astro";
 import { absoluteUrl } from "../../../lib/env";
 import { jsonLd, organization } from "../../../lib/organization";
@@ -33,7 +34,7 @@ const { locale } = Astro.params;
 if (!isLocale(locale)) throw new Error(`Unknown locale: ${locale}`);
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
-const { title, subtitle, description, date, type, category, tags, author, draft, cover, coverAlt } = entry.data;
+const { title, subtitle, description, date, type, category, tags, author, draft, cover, coverAlt, card } = entry.data;
 const toc = headings.filter((heading) => heading.depth === 2);
 const published = date ? formatArticleDate(date, locale) : undefined;
 // Eyebrow: category label (Research filters, raw key as fallback) · type · short date.
@@ -163,7 +164,12 @@ const structuredData = {
         </div>
       )
     }
-    <article class="prose"><Content /></article>
+    <!-- Share, hearts and comments sit under the text, before the aside's related articles. Drafts
+         have none: their card key is not in the build's list of published articles. -->
+    <div class="main-column">
+      <article class="prose"><Content /></article>
+      {!draft && card && <ArticleEngagement locale={locale} articleKey={card} title={title} url={url} />}
+    </div>
     <aside>
       <dl class="card details">
         {
@@ -549,7 +555,7 @@ const structuredData = {
       grid-area: aside;
       align-self: start;
     }
-    article {
+    .main-column {
       grid-area: article;
     }
     /* Always open on desktop: the summary is just the card title. */

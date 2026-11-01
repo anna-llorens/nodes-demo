@@ -1,10 +1,13 @@
 import { EmailMessage } from "cloudflare:email";
 import { LOCALE_COOKIE, pickLocale } from "../src/i18n/pick-locale";
 import { parseContactRequest, type ContactPayload } from "../src/lib/contact";
+import { handleEngagement } from "./engagement";
+import { base64Utf8, encodeHeader, headerValue, json } from "./http";
 
 /**
  * Site Worker. `/` redirects to `/es/` or `/en/` at the edge (ADR 0004: saved choice, browser
- * language, then country); `POST /api/contact` saves a contact message in D1 (ADR 0010); every
+ * language, then country); `POST /api/contact` saves a contact message in D1 (ADR 0010); `/api/research/:key/*` serves article hearts and
+ * comments (ADR 0012); every
  * other request is served from the static build. The client-side
  * redirect in `src/pages/index.astro` stays as a fallback for `astro dev` and other hosts.
  */
@@ -27,6 +30,7 @@ export default {
       });
     }
     if (url.pathname === "/api/contact") return handleContact(request, url, env);
+    if (url.pathname.startsWith("/api/research/")) return handleEngagement(request, url, env);
     if (url.pathname.startsWith("/api/")) return json({ ok: false, error: "not_found" }, 404);
     return env.ASSETS.fetch(request);
   },
@@ -93,26 +97,6 @@ function contactEmail(from: string, to: string, payload: ContactPayload): string
     "",
     base64Utf8(body).replace(/.{76}/g, "$&\r\n"),
   ].join("\r\n");
-}
-
-/** Strips line breaks so user input cannot add headers. */
-function headerValue(value: string): string {
-  return value.replace(/[\r\n]+/g, " ").trim();
-}
-
-/** RFC 2047 encoded word, so accents and "·" survive in the subject. */
-function encodeHeader(value: string): string {
-  return `=?UTF-8?B?${base64Utf8(headerValue(value))}?=`;
-}
-
-function base64Utf8(value: string): string {
-  let binary = "";
-  for (const byte of new TextEncoder().encode(value)) binary += String.fromCharCode(byte);
-  return btoa(binary);
-}
-
-function json(data: unknown, status = 200, headers: Record<string, string> = {}): Response {
-  return Response.json(data, { status, headers: { "Cache-Control": "no-store", ...headers } });
 }
 
 /** Value of one cookie from a `Cookie` header, or null. */

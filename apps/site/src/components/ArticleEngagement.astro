@@ -1,0 +1,486 @@
+---
+import Svg from "@nodes/ui/Svg.astro";
+import { Check, Heart, Link, Share2 } from "@lucide/astro";
+import Field from "./form/Field.astro";
+import { t, type Locale } from "../i18n";
+import { withLink } from "../i18n/with-link";
+import { ENGAGEMENT_API } from "../lib/engagement";
+import { turnstileSiteKey } from "../lib/env";
+import { pagePath } from "../lib/routes";
+
+/**
+ * Share, heart and comments block at the end of a research article (ADR 0012). Hearts and comments
+ * are keyed by the frontmatter `card`, so both translations share them. Everything here is an
+ * enhancement: the article renders normally without JS or when the API fails. Comments are shown
+ * with textContent only (plain text, no HTML). The form needs PUBLIC_TURNSTILE_SITE_KEY.
+ */
+interface Props {
+  locale: Locale;
+  articleKey: string;
+  title: string;
+  /** Canonical URL; relative while PUBLIC_SITE_URL is unset (the script resolves it). */
+  url: string;
+}
+const { locale, articleKey, title, url } = Astro.props;
+const siteKey = turnstileSiteKey();
+const privacy = withLink(t(locale, "article.engagement.privacy"));
+const messages = {
+  copied: t(locale, "article.engagement.copied"),
+  copyLink: t(locale, "article.engagement.copyLink"),
+  heartError: t(locale, "article.engagement.heartError"),
+  success: t(locale, "article.engagement.success"),
+  invalid: t(locale, "article.engagement.errorInvalid"),
+  captcha: t(locale, "article.engagement.errorCaptcha"),
+  rate_limited: t(locale, "article.engagement.errorRateLimited"),
+  generic: t(locale, "article.engagement.errorGeneric"),
+};
+const encoded = encodeURIComponent(url);
+---
+
+<section
+  class="engagement"
+  aria-labelledby="engagement-comments-title"
+  data-engagement
+  data-api={`${ENGAGEMENT_API}/${encodeURIComponent(articleKey)}`}
+  data-key={articleKey}
+  data-locale={locale}
+  data-title={title}
+  data-url={url}
+  data-site-key={siteKey}
+  data-messages={JSON.stringify(messages)}
+>
+  <div class="actions">
+    <button type="button" class="button button-outline" data-share hidden>
+      <Share2 aria-hidden="true" size={18} />
+      {t(locale, "article.engagement.share")}
+    </button>
+    <div class="share-fallback">
+      <button type="button" class="button button-outline" data-copy hidden>
+        <span class="icon" data-copy-icon><Link aria-hidden="true" size={18} /></span>
+        <span class="icon" data-copied-icon hidden><Check aria-hidden="true" size={18} /></span>
+        <span data-copy-label>{messages.copyLink}</span>
+      </button>
+      <a
+        class="button button-outline social"
+        data-share-linkedin
+        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encoded}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={t(locale, "article.engagement.shareLinkedin")}
+        title={t(locale, "article.engagement.shareLinkedin")}
+      >
+        <Svg name="social/linkedin" />
+      </a>
+      <a
+        class="button button-outline social"
+        data-share-x
+        href={`https://x.com/intent/post?text=${encodeURIComponent(title)}&url=${encoded}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={t(locale, "article.engagement.shareX")}
+        title={t(locale, "article.engagement.shareX")}
+      >
+        <Svg name="social/x" />
+      </a>
+    </div>
+    <button type="button" class="button button-outline heart" data-heart aria-pressed="false">
+      <Heart aria-hidden="true" size={18} />
+      <span class="visually-hidden">{t(locale, "article.engagement.heart")}</span>
+      <span data-heart-count></span>
+    </button>
+  </div>
+  <p class="status error" data-heart-error role="alert" hidden></p>
+
+  <h2 id="engagement-comments-title">{t(locale, "article.engagement.commentsTitle")}</h2>
+  <p class="status" data-comments-loading>{t(locale, "article.engagement.loading")}</p>
+  <p class="status" data-comments-error hidden>{t(locale, "article.engagement.loadError")}</p>
+  <p class="status" data-comments-empty hidden>{t(locale, "article.engagement.empty")}</p>
+  <ol class="comments" data-comments></ol>
+  <template data-comment-template>
+    <li class="comment">
+      <p class="comment-meta"><span class="comment-name"></span> · <time></time></p>
+      <p class="comment-body"></p>
+    </li>
+  </template>
+
+  {
+    siteKey && (
+      <form class="comment-form" novalidate data-comment-form>
+        <h3>{t(locale, "article.engagement.formTitle")}</h3>
+        <Field
+          id="comment-name"
+          name="name"
+          label={t(locale, "article.engagement.name")}
+          placeholder={t(locale, "article.engagement.namePlaceholder")}
+          autocomplete="name"
+          error={t(locale, "article.engagement.nameError")}
+        />
+        <Field
+          id="comment-body"
+          name="body"
+          multiline
+          label={t(locale, "article.engagement.body")}
+          placeholder={t(locale, "article.engagement.bodyPlaceholder")}
+          error={t(locale, "article.engagement.bodyError")}
+        />
+        {/* Honeypot: invisible to people and skipped by keyboard; bots that fill it get a fake success. */}
+        <div class="honeypot" aria-hidden="true">
+          <input type="text" name="website" tabindex="-1" autocomplete="off" />
+        </div>
+        <div class="turnstile" data-turnstile />
+        <button class="button button-primary" type="submit">
+          <span data-label="idle">{t(locale, "article.engagement.submit")}</span>
+          <span data-label="sending" hidden>{t(locale, "article.engagement.sending")}</span>
+        </button>
+        <p class="status" data-form-status role="status" hidden></p>
+        <p class="privacy">
+          {privacy.before}
+          <a href={pagePath(locale, "privacy")}>{t(locale, "article.engagement.privacyLink")}</a>
+          {privacy.after}
+        </p>
+      </form>
+    )
+  }
+</section>
+
+<script>
+  import { validateComment, type CommentField, type Engagement, type PublicComment } from "../lib/engagement";
+
+  const TURNSTILE_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=nodesTurnstileReady";
+
+  interface TurnstileApi {
+    render(element: HTMLElement, options: Record<string, unknown>): string;
+    reset(widget?: string): void;
+  }
+  type TurnstileWindow = Window & { turnstile?: TurnstileApi; nodesTurnstileReady?: () => void };
+
+  const root = document.querySelector<HTMLElement>("[data-engagement]");
+  if (root) {
+    const { api = "", key = "", title = "", siteKey = "" } = root.dataset;
+    const locale = root.dataset["locale"] === "en" ? "en" : "es";
+    const messages = JSON.parse(root.dataset["messages"] ?? "{}") as Record<string, string>;
+    const url = new URL(root.dataset["url"] ?? location.pathname, location.href).href;
+    const $ = <T extends HTMLElement>(selector: string) => root.querySelector<T>(selector);
+
+    // Storage can throw (private mode, blocked site data); a missing flag only means "not liked".
+    const storageKey = `nodes_hearted:${key}`;
+    const readLiked = () => {
+      try {
+        return localStorage.getItem(storageKey) === "1";
+      } catch {
+        return false;
+      }
+    };
+    const saveLiked = () => {
+      try {
+        localStorage.setItem(storageKey, "1");
+      } catch {
+        /* Not remembered; the server still ignores repeats for 24 h. */
+      }
+    };
+
+    // Share: the native sheet when available, otherwise copy link. LinkedIn and X links always show
+    // (also without JS), because native share sheets often do not offer them.
+    const shareButton = $<HTMLButtonElement>("[data-share]")!;
+    const copyButton = $<HTMLButtonElement>("[data-copy]")!;
+    $<HTMLAnchorElement>("[data-share-linkedin]")!.href =
+      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+    $<HTMLAnchorElement>("[data-share-x]")!.href =
+      `https://x.com/intent/post?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
+    if (typeof navigator.share === "function") {
+      shareButton.hidden = false;
+      shareButton.addEventListener("click", () => {
+        navigator.share({ title, url }).catch(() => {
+          /* Cancelled by the user or refused; nothing to do. */
+        });
+      });
+    } else if (navigator.clipboard) {
+      copyButton.hidden = false;
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      copyButton.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(url);
+        } catch {
+          return;
+        }
+        $("[data-copy-label]")!.textContent = messages["copied"] ?? "";
+        $("[data-copy-icon]")!.hidden = true;
+        $("[data-copied-icon]")!.hidden = false;
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          $("[data-copy-label]")!.textContent = messages["copyLink"] ?? "";
+          $("[data-copy-icon]")!.hidden = false;
+          $("[data-copied-icon]")!.hidden = true;
+        }, 2000);
+      });
+    }
+
+    // Hearts. The button is always shown; the count fills in once the API answers, and a click
+    // without the API shows the heart error.
+    const heartButton = $<HTMLButtonElement>("[data-heart]")!;
+    const heartCount = $<HTMLElement>("[data-heart-count]")!;
+    const heartError = $<HTMLElement>("[data-heart-error]")!;
+    const setLiked = (liked: boolean) => heartButton.setAttribute("aria-pressed", String(liked));
+    setLiked(readLiked());
+    heartButton.addEventListener("click", async () => {
+      if (heartButton.getAttribute("aria-pressed") === "true") return;
+      heartButton.disabled = true;
+      heartError.hidden = true;
+      try {
+        const response = await fetch(`${api}/heart`, { method: "POST" });
+        const result = (await response.json()) as { ok: boolean; hearts?: number };
+        if (!response.ok || !result.ok) throw new Error("heart failed");
+        heartCount.textContent = String(result.hearts ?? 0);
+        setLiked(true);
+        saveLiked();
+      } catch {
+        heartError.textContent = messages["heartError"] ?? "";
+        heartError.hidden = false;
+      } finally {
+        heartButton.disabled = false;
+      }
+    });
+
+    // Comments.
+    const list = $<HTMLOListElement>("[data-comments]")!;
+    const template = $<HTMLTemplateElement>("[data-comment-template]")!;
+    const empty = $<HTMLElement>("[data-comments-empty]")!;
+    const dateFormat = new Intl.DateTimeFormat(locale, { dateStyle: "medium" });
+    const renderComment = (comment: PublicComment) => {
+      const item = template.content.firstElementChild!.cloneNode(true) as HTMLElement;
+      item.querySelector(".comment-name")!.textContent = comment.name;
+      const time = item.querySelector("time")!;
+      time.dateTime = comment.created_at;
+      time.textContent = dateFormat.format(new Date(comment.created_at));
+      item.querySelector(".comment-body")!.textContent = comment.body;
+      return item;
+    };
+
+    fetch(`${api}/engagement`)
+      .then(async (response) => {
+        const result = (await response.json()) as { ok: boolean } & Engagement;
+        if (!response.ok || !result.ok) throw new Error("engagement failed");
+        heartCount.textContent = String(result.hearts);
+        list.replaceChildren(...result.comments.map(renderComment));
+        empty.hidden = result.comments.length > 0;
+      })
+      .catch(() => {
+        $("[data-comments-error]")!.hidden = false;
+      })
+      .finally(() => {
+        $("[data-comments-loading]")!.hidden = true;
+      });
+
+    const form = $<HTMLFormElement>("[data-comment-form]");
+    if (form && siteKey) {
+      const control = (name: string) => form.querySelector<HTMLInputElement | HTMLTextAreaElement>(`[name="${name}"]`)!;
+      const submit = form.querySelector<HTMLButtonElement>("button[type=submit]")!;
+      const status = form.querySelector<HTMLElement>("[data-form-status]")!;
+      const fields: CommentField[] = ["name", "body"];
+      const setError = (field: CommentField, invalid: boolean) => {
+        control(field).setAttribute("aria-invalid", String(invalid));
+        form.querySelector<HTMLElement>(`[data-error-for="${field}"]`)!.hidden = !invalid;
+      };
+      fields.forEach((field) => control(field).addEventListener("input", () => setError(field, false)));
+      const showStatus = (text: string, error: boolean) => {
+        status.textContent = text;
+        status.classList.toggle("error", error);
+        status.hidden = false;
+      };
+
+      // Turnstile loads only when the form comes near the viewport, so readers who never reach it
+      // do not contact Cloudflare's challenge script.
+      const win = window as TurnstileWindow;
+      let token = "";
+      let widget: string | undefined;
+      win.nodesTurnstileReady = () => {
+        widget = win.turnstile?.render(form.querySelector<HTMLElement>("[data-turnstile]")!, {
+          sitekey: siteKey,
+          language: locale,
+          callback: (value: string) => (token = value),
+          "expired-callback": () => (token = ""),
+          "error-callback": () => (token = ""),
+        });
+      };
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (!entries.some((entry) => entry.isIntersecting)) return;
+          observer.disconnect();
+          const script = document.createElement("script");
+          script.src = TURNSTILE_SRC;
+          script.async = true;
+          document.head.append(script);
+        },
+        { rootMargin: "400px" },
+      );
+      observer.observe(form);
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        status.hidden = true;
+        const values = { name: control("name").value, body: control("body").value };
+        const invalid = validateComment(values);
+        fields.forEach((field) => setError(field, invalid.includes(field)));
+        if (invalid.length > 0) {
+          control(invalid[0]!).focus();
+          return;
+        }
+        if (!token) {
+          showStatus(messages["captcha"] ?? "", true);
+          return;
+        }
+        submit.disabled = true;
+        form.setAttribute("aria-busy", "true");
+        form.querySelector<HTMLElement>('[data-label="idle"]')!.hidden = true;
+        form.querySelector<HTMLElement>('[data-label="sending"]')!.hidden = false;
+        try {
+          const response = await fetch(`${api}/comments`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify({ ...values, locale, token, website: control("website").value }),
+          });
+          const result = (await response.json()) as { ok: boolean; error?: string; comment?: PublicComment };
+          if (!response.ok || !result.ok) {
+            showStatus(messages[result.error ?? ""] ?? messages["generic"] ?? "", true);
+          } else {
+            if (result.comment) list.prepend(renderComment(result.comment));
+            empty.hidden = true;
+            form.reset();
+            showStatus(messages["success"] ?? "", false);
+          }
+        } catch {
+          showStatus(messages["generic"] ?? "", true);
+        } finally {
+          // A Turnstile token is single use.
+          token = "";
+          win.turnstile?.reset(widget);
+          submit.disabled = false;
+          form.removeAttribute("aria-busy");
+          form.querySelector<HTMLElement>('[data-label="idle"]')!.hidden = false;
+          form.querySelector<HTMLElement>('[data-label="sending"]')!.hidden = true;
+        }
+      });
+    }
+  }
+</script>
+
+<style>
+  .engagement {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-width: 70ch;
+    margin-top: var(--space-8);
+    padding-top: var(--space-8);
+    border-top: 1px solid var(--color-border);
+  }
+  .actions,
+  .share-fallback {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  /* Beats the display rules below (e.g. .icon) so `hidden` always hides. */
+  .engagement [hidden] {
+    display: none;
+  }
+  .icon {
+    display: inline-flex;
+  }
+  /* One row of equal-height controls: same border, radius and 44px height. */
+  .actions .button {
+    height: 44px;
+    padding: 0 var(--space-4);
+  }
+  .actions .social,
+  .actions .heart:has([data-heart-count]:empty) {
+    width: 44px;
+    padding: 0;
+  }
+  .social :global(svg) {
+    width: 20px;
+    height: 20px;
+  }
+  /* No empty gap while the count is unknown (API not loaded). */
+  [data-heart-count]:empty {
+    display: none;
+  }
+  .heart[aria-pressed="true"] {
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
+  .heart[aria-pressed="true"] :global(svg) {
+    fill: currentColor;
+  }
+  h2 {
+    margin: var(--space-4) 0 0;
+    font-size: 1.375rem;
+  }
+  h3 {
+    margin: 0;
+    font-size: 1.125rem;
+  }
+  .status {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+  .status.error {
+    color: var(--color-error);
+  }
+  .comments {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .comment {
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface-muted);
+  }
+  .comment p {
+    margin: 0;
+  }
+  .comment .comment-meta {
+    margin-bottom: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--text-small);
+  }
+  .comment-name {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+  .comment-body {
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+  .comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+  }
+  .comment-form .button {
+    align-self: flex-start;
+  }
+  .honeypot {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .turnstile:empty {
+    display: none;
+  }
+  .privacy {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-small);
+  }
+</style>

@@ -8,6 +8,7 @@ export const env = {
   linkedinUrl: read(import.meta.env.PUBLIC_LINKEDIN_URL),
   xUrl: read(import.meta.env.PUBLIC_X_URL),
   contactEndpoint: read(import.meta.env.PUBLIC_CONTACT_ENDPOINT),
+  turnstileSiteKey: read(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY),
 };
 
 /**
@@ -39,4 +40,15 @@ export function contactEndpoint() {
     console.warn("[site] PUBLIC_CONTACT_ENDPOINT is not set: the contact form will show the email fallback.");
   }
   return env.contactEndpoint;
+}
+
+let warnedTurnstile = false;
+
+/** Turnstile site key for the article comment form. Unset hides the form; a production build warns once. */
+export function turnstileSiteKey() {
+  if (!env.turnstileSiteKey && import.meta.env.PROD && !warnedTurnstile) {
+    warnedTurnstile = true;
+    console.warn("[site] PUBLIC_TURNSTILE_SITE_KEY is not set: research articles will not show the comment form.");
+  }
+  return env.turnstileSiteKey;
 }

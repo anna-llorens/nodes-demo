@@ -2,8 +2,8 @@ import { t, type Locale } from "../../i18n";
 
 /** Right end of the density scale, in people/m² ("6+"). */
 export const CROWD_SCALE_MAX = 6;
-/** Most figures the 5 × 5 m illustration draws (6 people/m² × 25 m²). */
-export const MAX_FIGURES = 150;
+/** Most figures the 5 × 5 m illustration draws (10 people/m² × 25 m², the critical reference). */
+export const MAX_FIGURES = 250;
 
 /** Translated strings the calculator script needs in the browser. */
 export const capacityCalculatorText = (locale: Locale) => ({

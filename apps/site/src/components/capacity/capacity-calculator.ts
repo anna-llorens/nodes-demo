@@ -69,10 +69,12 @@ function drawPeople(svg: SVGSVGElement, value: number) {
     v: (Math.floor(cell / cols) + 0.5 + (random() - 0.5) * 0.5) / cols,
   }));
   spots.sort((a, b) => a.v - b.v);
-  const size = Math.max(14, Math.min(34, 140 / cols));
+  // Figures keep a body-sized width (about 0.5 m of the 5 m floor) whatever the density, so a
+  // dense crowd fills the square shoulder to shoulder instead of showing thin, scattered figures.
+  const size = 40;
   layer.replaceChildren(...spots.map(({ u, v }) => {
     const p = project(u, v);
-    return figure(p.x, p.y, size * (0.75 + 0.25 * v));
+    return figure(p.x, p.y, size * (0.7 + 0.3 * v));
   }));
   return n;
 }
