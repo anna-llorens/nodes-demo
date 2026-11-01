@@ -126,7 +126,7 @@ const structuredData = {
         />
       )
     }
-    <div class="container header-text">
+    <div class="container wide header-text">
       <a class="back" href={pagePath(locale, "research")}>
         <ArrowLeft aria-hidden="true" size={18} />
         {t(locale, "article.back")}
@@ -138,12 +138,13 @@ const structuredData = {
     </div>
   </header>
 
-  <!-- The aside comes first so it sits between header and body on mobile; on desktop it is the
-       right column. -->
-  <div class="container layout">
-    <aside>
-      {
-        toc.length > 0 && (
+  <!-- On mobile the contents sit between header and body, and the aside (details, related) comes
+       after the body. From 1280px the contents are a sticky left column and the aside the right
+       column; between 1024px and 1279px both stack on the right. -->
+  <div class="container wide layout">
+    {
+      toc.length > 0 && (
+        <div class="toc-column">
           <details class="card toc" open>
             <summary id="article-toc-title">{t(locale, "article.toc.title")}</summary>
             <nav aria-labelledby="article-toc-title">
@@ -159,8 +160,11 @@ const structuredData = {
               </ol>
             </nav>
           </details>
-        )
-      }
+        </div>
+      )
+    }
+    <article class="prose"><Content /></article>
+    <aside>
       <dl class="card details">
         {
           published && (
@@ -221,8 +225,6 @@ const structuredData = {
         )
       }
     </aside>
-
-    <article class="prose"><Content /></article>
   </div>
 </Base>
 
@@ -364,7 +366,8 @@ const structuredData = {
     color: var(--color-text-muted, inherit);
   }
 
-  aside {
+  aside,
+  .toc-column {
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
@@ -531,17 +534,23 @@ const structuredData = {
     }
     .layout {
       grid-template-columns: minmax(0, 1fr) 320px;
-      gap: var(--space-12);
+      grid-template-areas:
+        "article toc"
+        "article aside";
+      grid-template-rows: auto 1fr;
+      column-gap: var(--space-12);
+      row-gap: var(--space-4);
+    }
+    .toc-column {
+      grid-area: toc;
     }
     /* Not sticky: with related articles the column is taller than the viewport. */
     aside {
-      grid-column: 2;
-      grid-row: 1;
+      grid-area: aside;
       align-self: start;
     }
     article {
-      grid-column: 1;
-      grid-row: 1;
+      grid-area: article;
     }
     /* Always open on desktop: the summary is just the card title. */
     summary {
@@ -550,6 +559,28 @@ const structuredData = {
     }
     summary::-webkit-details-marker {
       display: none;
+    }
+  }
+
+  /* Three columns: sticky contents, text, aside. The article page is wider than the site container
+     so the text column keeps its reading width. */
+  @media (min-width: 1280px) {
+    .wide {
+      max-width: 1400px;
+    }
+    .layout {
+      grid-template-columns: 260px minmax(0, 1fr) 320px;
+      grid-template-areas: "toc article aside";
+      grid-template-rows: auto;
+    }
+    /* Under the site header (72px + 1px border), scrolling on its own if it is taller than the
+       viewport. */
+    .toc-column {
+      position: sticky;
+      top: calc(73px + var(--space-6));
+      align-self: start;
+      max-height: calc(100vh - 73px - var(--space-12));
+      overflow-y: auto;
     }
   }
 </style>

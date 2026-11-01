@@ -19,9 +19,18 @@ Redesign of `apps/site/src/pages/[locale]/research/[slug].astro` after
   the upper third of the viewport); without JS the links still work.
 - **Details card**: date, type and topics with Lucide `Calendar`, `FileText`, `Tag`; topics as
   outlined pills.
-- **Mobile**: the aside is first in the DOM, so it sits between header and body; the TOC is a
-  `<details open>` that can collapse. On desktop the grid moves the aside to a sticky right column
-  and the summary is a plain title.
+- **Mobile**: the contents come first in the DOM, so they sit between header and body; the TOC is
+  a `<details open>` that can collapse. The aside (details card and related articles) comes after
+  the body, so readers reach it once they finish the text. On desktop the summary is a plain title
+  and the grid places each block by area, whatever the DOM order.
+- **Contents column**: from 1280px the page has three columns: the contents on the left (260px,
+  sticky under the site header, scrolling on its own if taller than the viewport), the text, and
+  the aside on the right (320px) with the details card and related articles, which are not
+  sticky. The article page widens to 1400px there, header text included so the title lines up with
+  the contents, because inside the 1120px site container the text column would shrink to about
+  420px. Between 1024px and 1279px three columns do not fit, so the contents stack above the
+  details card in the right column, as before. The contents are their own grid item, not part of
+  `<aside>`, so the grid can place them in either column.
 
 - **Research cards**: a card whose published article has a `cover` shows that image instead of
   the icon panel (`src/sections/research/Cards.astro`), in the same 16:8 frame, so the card, the
@@ -35,15 +44,18 @@ Redesign of `apps/site/src/pages/[locale]/research/[slug].astro` after
   on the soft-green panel), category eyebrow, title, short date and an arrow. Hidden when empty.
 - The card → icon map moved from `Cards.astro` to `cardIcons` in `src/lib/research.ts`, so the
   Research cards and the related rows share it.
-- The side column is no longer sticky on desktop: with the related block it can be taller than the
-  viewport.
+- The right column is not sticky on desktop: with the related block it can be taller than the
+  viewport. Only the contents column sticks, from 1280px.
 
 New i18n key: `article.related.title` (es "Artículos relacionados", en "Related articles").
 
 ## Validation
 
 `pnpm typecheck` and `pnpm build` in `apps/site` pass. Checked in the dev server at desktop and
-375 px widths.
+375 px widths. Contents column: site `typecheck`, `test` (41) and `build` (33 pages) pass; in the
+dev server at 1440px the contents sit at the left and stay 24px under the header while scrolling,
+at 1100px they stack above the details card on the right, and at 375px the order is contents,
+text, details, related with no horizontal scroll.
 
 ## Limitations
 
