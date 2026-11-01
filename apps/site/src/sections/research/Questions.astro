@@ -1,0 +1,167 @@
+---
+import { Image } from "astro:assets";
+import Svg from "@nodes/ui/Svg.astro";
+import { FlaskConical } from "@lucide/astro";
+import detectionImage from "../../assets/research/lidar-point-cloud-plaza.jpg";
+import decisionsImage from "../../assets/research/decision-venue-flows.webp";
+import deploymentImage from "../../assets/research/events-race-start.webp";
+import Eyebrow from "../../components/Eyebrow.astro";
+import { t, type Locale } from "../../i18n";
+
+/**
+ * "Open questions": the research questions that guide the work, numbered, each with a status
+ * badge, its methodology and experiment, and a decorative illustration. Rows stack on mobile;
+ * from 1024px each row shows question, details and image side by side.
+ */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const questions = [
+  { key: "detection", status: "investigating", image: detectionImage },
+  { key: "decisions", status: "investigating", image: decisionsImage },
+  { key: "deployment", status: "seekingCollaborators", image: deploymentImage },
+] as const;
+---
+
+<section id="open-questions" class="section" aria-labelledby="research-questions-title">
+  <div class="container">
+    <div class="head">
+      <Eyebrow>{t(locale, "research.questions.eyebrow")}</Eyebrow>
+      <h2 id="research-questions-title">{t(locale, "research.questions.title")}</h2>
+    </div>
+    <ol class="questions">
+      {
+        questions.map((question, index) => (
+          <li>
+            <div class="question">
+              <span class="num" aria-hidden="true">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <h3>{t(locale, `research.questions.${question.key}.title`)}</h3>
+            </div>
+            <div class="details">
+              <p class="status">{t(locale, `research.questions.status.${question.status}`)}</p>
+              <p class="detail">
+                <FlaskConical aria-hidden="true" size={24} />
+                <span>
+                  <strong>{t(locale, "research.questions.methodology")}</strong>{" "}
+                  {t(locale, `research.questions.${question.key}.methodology`)}
+                </span>
+              </p>
+              <p class="detail">
+                <Svg name="icons/chart" />
+                <span>
+                  <strong>{t(locale, "research.questions.experiment")}</strong>{" "}
+                  {t(locale, `research.questions.${question.key}.experiment`)}
+                </span>
+              </p>
+            </div>
+            <Image class="art" src={question.image} alt="" widths={[480, 800]} sizes="(min-width: 1024px) 25vw, 100vw" />
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .head {
+    display: grid;
+    gap: var(--space-3);
+    margin-bottom: var(--space-8);
+  }
+  h2,
+  h3,
+  p {
+    margin: 0;
+  }
+  h2 {
+    font-size: var(--text-h2);
+  }
+  .questions {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  li {
+    display: grid;
+    gap: var(--space-5);
+    padding-block: var(--space-8);
+  }
+  li:first-child {
+    padding-top: 0;
+  }
+  li + li {
+    border-top: 1px solid var(--color-border);
+  }
+  .question {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-5);
+  }
+  .num {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    font-size: 1.375rem;
+    font-weight: 700;
+  }
+  h3 {
+    max-width: 26ch;
+    padding-top: var(--space-2);
+    font-size: 1.375rem;
+  }
+  .details {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: var(--space-4);
+  }
+  .status {
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    font-size: var(--text-small);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .detail {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    color: var(--color-text-muted);
+  }
+  .detail :global(svg) {
+    flex: none;
+    width: 24px;
+    height: 24px;
+    color: var(--color-primary);
+  }
+  .detail strong {
+    color: var(--color-text);
+  }
+  .art {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 2 / 1;
+    object-fit: cover;
+    border-radius: var(--radius-card);
+  }
+
+  @media (min-width: 1024px) {
+    li {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 4fr) minmax(0, 3fr);
+      align-items: start;
+      gap: var(--space-8);
+    }
+  }
+</style>

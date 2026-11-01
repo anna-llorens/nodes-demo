@@ -1,152 +1,135 @@
 ---
-import Svg from "@nodes/ui/Svg.astro";
 import { Image } from "astro:assets";
+import appliedImage from "../../assets/research/area-applied.png";
+import crowdImage from "../../assets/research/area-crowd.png";
+import edgeImage from "../../assets/research/area-edge.png";
+import lidarImage from "../../assets/research/area-lidar.png";
 import Button from "../../components/Button.astro";
 import Eyebrow from "../../components/Eyebrow.astro";
 import { t, type Locale } from "../../i18n";
-import { articleFor, articlePath } from "../../lib/research";
 import { pagePath } from "../../lib/routes";
 
 /**
- * "What we are researching": two topic cards and a button to Research. A topic whose article is
- * published in this locale links to it (the title link covers the whole card) and shows the
- * article's `cover`; otherwise the card shows an icon panel.
+ * Home "Research areas": heading, lead and a button to Research, then four numbered area cards
+ * with a decorative illustration each. The cards do not link anywhere; Research has the articles.
  */
 interface Props {
   locale: Locale;
 }
 const { locale } = Astro.props;
-const topics = await Promise.all(
-  (
-    [
-      { key: "lidar", icon: "icons/point-cloud" },
-      { key: "prediction", icon: "icons/chart" },
-    ] as const
-  ).map(async (topic) => {
-    const article = await articleFor(topic.key, locale);
-    return { ...topic, href: article && articlePath(article), image: article?.data.cover };
-  }),
-);
+const areas = [
+  { key: "lidar", image: lidarImage },
+  { key: "crowd", image: crowdImage },
+  { key: "edge", image: edgeImage },
+  { key: "applied", image: appliedImage },
+] as const;
 ---
 
 <section class="section" aria-labelledby="home-research-title">
   <div class="container">
     <div class="head">
       <div>
-        <Eyebrow>{t(locale, "home.research.eyebrow")}</Eyebrow>
-        <h2 id="home-research-title">{t(locale, "home.research.title")}</h2>
+        <Eyebrow>{t(locale, "research.areas.eyebrow")}</Eyebrow>
+        <h2 id="home-research-title">{t(locale, "research.areas.title")}</h2>
       </div>
-      <Button href={pagePath(locale, "research")} variant="outline" arrow>{t(locale, "home.research.cta")}</Button>
+      <div class="aside">
+        <p class="lead">{t(locale, "research.areas.lead")}</p>
+        <Button href={pagePath(locale, "research")} variant="outline" arrow>{t(locale, "home.research.cta")}</Button>
+      </div>
     </div>
-    <ul class="cards">
+    <ol class="areas">
       {
-        topics.map((topic) => (
+        areas.map((area, index) => (
           <li>
-            <article class:list={{ linked: topic.href }}>
-              {topic.image ? (
-                <Image class="photo" src={topic.image} alt="" widths={[480, 800, 1200]} sizes="(min-width: 768px) 50vw, 100vw" />
-              ) : (
-                <span class="panel"><Svg name={topic.icon} /></span>
-              )}
-              <h3>
-                {topic.href ? (
-                  <a href={topic.href}>{t(locale, `home.research.${topic.key}.title`)}</a>
-                ) : (
-                  t(locale, `home.research.${topic.key}.title`)
-                )}
-              </h3>
-              <p>{t(locale, `home.research.${topic.key}.text`)}</p>
-            </article>
+            <Image class="art" src={area.image} alt="" widths={[384, 768]} sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw" />
+            <div class="body">
+              <p class="num">{String(index + 1).padStart(2, "0")} /</p>
+              <h3>{t(locale, `research.areas.${area.key}.title`)}</h3>
+              <p>{t(locale, `research.areas.${area.key}.text`)}</p>
+            </div>
           </li>
         ))
       }
-    </ul>
+    </ol>
   </div>
 </section>
 
 <style>
   .head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    justify-content: space-between;
+    display: grid;
     gap: var(--space-4);
     margin-bottom: var(--space-8);
   }
-  h2 {
+  h2,
+  p {
     margin: 0;
   }
-  .cards {
+  h2 {
+    margin-top: var(--space-3);
+    font-size: var(--text-h2);
+  }
+  .aside {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-5);
+  }
+  .lead {
+    max-width: 48ch;
+    color: var(--color-text-muted);
+  }
+  .areas {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
     gap: var(--space-6);
   }
-  article {
-    height: 100%;
+  li {
     overflow: hidden;
     border-radius: var(--radius-card);
     background: var(--color-surface);
     box-shadow: var(--shadow-card);
   }
-  /* Linked card: the title link stretches over the whole card. */
-  .linked {
-    position: relative;
-    outline: 2px solid transparent;
-    transition: outline-color 0.15s;
-  }
-  .linked:hover,
-  .linked:has(a:focus-visible) {
-    outline-color: var(--color-primary);
-  }
-  .linked h3 a {
-    color: inherit;
-    text-decoration: none;
-  }
-  .linked h3 a::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-  }
-  .linked h3 a:focus-visible {
-    outline: none;
-  }
-  .panel {
-    display: grid;
-    place-items: center;
-    aspect-ratio: 16 / 7;
-    background: var(--color-primary-soft);
-    color: var(--color-primary);
-  }
-  /* Decorative card image, same frame as the icon panel. */
-  .photo {
+  /* The illustrations sit on white, so they blend into the card surface. */
+  .art {
     display: block;
     width: 100%;
     height: auto;
-    aspect-ratio: 16 / 7;
+    aspect-ratio: 3 / 2;
     object-fit: cover;
   }
-  .panel :global(svg) {
-    width: 72px;
-    height: 72px;
+  .body {
+    display: grid;
+    gap: var(--space-2);
+    padding: 0 var(--space-5) var(--space-6);
   }
-  h3,
-  p {
-    margin: 0;
-    padding-inline: var(--space-5);
+  .num {
+    color: var(--color-primary);
+    font-size: var(--text-small);
+    font-weight: 600;
   }
   h3 {
-    padding-top: var(--space-4);
+    margin: 0;
+    font-size: 1.125rem;
   }
-  p {
-    padding-block: var(--space-2) var(--space-5);
+  .body p:last-child {
     color: var(--color-text-muted);
   }
 
   @media (min-width: 768px) {
-    .cards {
+    .areas {
       grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (min-width: 1024px) {
+    .head {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: end;
+      gap: var(--space-12);
+    }
+    .areas {
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 </style>

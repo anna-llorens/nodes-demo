@@ -1,0 +1,105 @@
+---
+import { t, type Key, type Locale } from "../../i18n";
+
+/**
+ * Menu of the Research page's sections, right under the hero. Each item is an in-page link
+ * labelled with the section's eyebrow. A small script marks the section in view with
+ * `aria-current`; without JS the links still work and nothing is highlighted. It sticks under the
+ * site header while scrolling, and the row scrolls sideways on narrow screens instead of wrapping.
+ */
+interface Props {
+  locale: Locale;
+  /** Section ids in page order with the i18n key of their label. */
+  sections: { id: string; label: Key }[];
+}
+const { locale, sections } = Astro.props;
+---
+
+<nav class="section-nav" aria-label={t(locale, "research.sections.label")}>
+  <div class="container">
+    <ul>
+      {
+        sections.map((section) => (
+          <li>
+            <a href={`#${section.id}`} data-section={section.id}>
+              {t(locale, section.label)}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</nav>
+
+<script>
+  // Marks the link of the section that crosses the upper part of the viewport.
+  const links = [...document.querySelectorAll<HTMLAnchorElement>(".section-nav [data-section]")];
+  const targets = links
+    .map((link) => document.getElementById(link.dataset["section"] ?? ""))
+    .filter((target): target is HTMLElement => target !== null);
+  const list = document.querySelector<HTMLUListElement>(".section-nav ul");
+  const mark = (id: string) =>
+    links.forEach((link) => {
+      if (link.dataset["section"] !== id) return link.removeAttribute("aria-current");
+      link.setAttribute("aria-current", "true");
+      // On narrow screens, slides the row so the current link is visible.
+      list?.scrollTo({ left: link.offsetLeft - list.offsetLeft, behavior: "smooth" });
+    });
+  const observer = new IntersectionObserver(
+    (entries) => entries.forEach((entry) => entry.isIntersecting && mark(entry.target.id)),
+    { rootMargin: "-30% 0px -60% 0px" },
+  );
+  targets.forEach((target) => observer.observe(target));
+</script>
+
+<style>
+  /* Clears the header and this menu when jumping to a section. */
+  :global(html:has(.section-nav)) {
+    scroll-padding-top: 9.5rem;
+  }
+  /* Sticks right under the site header (64px bar + 1px border; 72px from 1024px). */
+  .section-nav {
+    position: sticky;
+    top: 65px;
+    z-index: 9;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+  }
+  ul {
+    display: flex;
+    gap: var(--space-8);
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    list-style: none;
+    scrollbar-width: none;
+  }
+  li {
+    flex: none;
+  }
+  a {
+    display: block;
+    padding-block: var(--space-5);
+    border-bottom: 2px solid transparent;
+    color: var(--color-text);
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  a:hover {
+    color: var(--color-primary);
+  }
+  a[aria-current="true"] {
+    border-bottom-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  @media (min-width: 1024px) {
+    .section-nav {
+      top: 73px;
+    }
+    ul {
+      gap: var(--space-12);
+    }
+  }
+</style>

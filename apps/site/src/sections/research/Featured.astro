@@ -19,7 +19,7 @@ const article = await articleFor(featuredCard, locale);
 
 {
   article && (
-    <section class="section featured" aria-labelledby="research-featured-title">
+    <section id="featured" class="section featured" aria-labelledby="research-featured-title">
       <div class="container layout">
         <div class="text">
           <Eyebrow>{t(locale, "research.featured.eyebrow")}</Eyebrow>

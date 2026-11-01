@@ -34,8 +34,8 @@ Validation: site typecheck, tests (36) and build pass.
   `applications#events|transport|spaces` (ids added in S3). Train and building use lucide (no asset).
 - [Project](../../apps/site/src/sections/home/Project.astro): `home.project.*` with
   `skyline-header.svg`; its link goes to About.
-- [Research](../../apps/site/src/sections/home/Research.astro): two topic cards on soft-green icon
-  panels (`point-cloud`, `chart`), not links; button to Research.
+- [Research](../../apps/site/src/sections/home/Research.astro): the "Research areas" section
+  (moved from the Research page, see below) with a "See research" button under its lead.
 
 Validation: site typecheck and build pass.
 
@@ -149,9 +149,6 @@ The LiDAR article is published in es and en. Decisions:
 - [Cards](../../apps/site/src/sections/research/Cards.astro): a card with a published article in
   the current locale links to it. The title link stretches over the card, so the markup and look
   stay; hover and keyboard focus outline the card. The date replaces "coming soon" in the same pill.
-- The home page's [Research](../../apps/site/src/sections/home/Research.astro) topics use the same
-  lookup: "LiDAR and spatial perception" links to the article in the current locale. Those cards
-  have no border, so hover and focus show an outline instead.
 - Article pages pass their translations to [Base](../../apps/site/src/layouts/Base.astro):
   canonical, `hreflang` es/en and `x-default` (English). The language switcher goes to the other
   translation, or to that locale's Research index when there is none.
@@ -169,11 +166,14 @@ the cards link with the date, and the sitemap lists both articles with their alt
 Between the hero and the card list, the Research page now has two sections from the
 "Research areas / Featured research" mockup:
 
-- [Areas](../../apps/site/src/sections/research/Areas.astro): heading, lead and four numbered area
-  cards (LiDAR and perception, crowd dynamics, edge intelligence, applied research), each with a
-  decorative AI illustration (`assets/research/area-*.png`). The cards do not link; the chips in the
-  list below already filter by topic. "Real-time processing" from the mockup became "local
-  processing" to avoid implying live data.
+- Research areas: heading, lead and four numbered area cards (LiDAR and perception, crowd
+  dynamics, edge intelligence, applied research), each with a decorative AI illustration
+  (`assets/research/area-*.png`). The cards do not link. "Real-time processing" from the mockup
+  became "local processing" to avoid implying live data. This section later moved to the home
+  page, replacing the "From NODES / What we are researching" block and its two article cards; it
+  is now [home/Research](../../apps/site/src/sections/home/Research.astro), keeps the
+  `research.areas.*` copy and adds the "See research" button (`home.research.cta`). The old
+  `home.research.*` eyebrow, title and card keys were removed.
 - [Featured](../../apps/site/src/sections/research/Featured.astro): the article of `featuredCard`
   in [research.ts](../../apps/site/src/lib/research.ts) (currently `lidar`), with its own title and
   cover, a short pitch from i18n and a link. The mockup's stats overlay (pedestrians, flow, density)
