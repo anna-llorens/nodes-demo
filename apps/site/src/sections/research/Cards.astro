@@ -2,14 +2,16 @@
 import { Image } from "astro:assets";
 import Svg from "@nodes/ui/Svg.astro";
 import SectionHeading from "../../components/SectionHeading.astro";
-import { ArrowRight } from "@lucide/astro";
+import { ArrowRight, Search } from "@lucide/astro";
 import eventsImage from "../../assets/research/events-race-start.webp";
 import { t, type Locale } from "../../i18n";
 import { articleFor, cardIcons, articlePath, formatArticleDate } from "../../lib/research";
 
 /**
- * "Latest publications" heading, topic chips and the research cards. The chips filter the cards by topic with a small
- * script; without JS every card stays visible and the chips do nothing. A card whose article is published in this
+ * "Latest publications" heading, topic chips, search and the research cards. The chips filter the cards by topic and
+ * the search box by words, together, with a small script; the search also looks in the articles' full text, from
+ * `search.json`, fetched on the first search. Without JS every card stays visible, the chips do nothing and the
+ * search box stays hidden. The `leadCard` article opens the list as a wide card. A card whose article is published in this
  * locale links to it (the title link covers the whole card), shows the publication date and ends
  * with a "Read more" cue in the style of the home page's featured article link;
  * the others keep the "coming soon" label. A published article's `cover` replaces the icon panel;
@@ -23,6 +25,8 @@ const filters = (["all", "lidar", "crowd", "iot", "prediction", "useCases"] as c
   key,
   label: t(locale, `research.filters.${key}`),
 }));
+// Article shown first, as a wide card, while it is published.
+const leadCard = "prediction" satisfies keyof typeof cardIcons;
 // Card images for topics that have no article yet; a published article's `cover` wins.
 const cardImages: Partial<Record<keyof typeof cardIcons, ImageMetadata>> = { events: eventsImage };
 // Topic of each card while it has no article; a published article's own `category` wins.
@@ -56,8 +60,10 @@ const cards = await Promise.all(
     };
   }),
 );
-// Published articles first, "coming soon" cards last; the sort is stable, so each group keeps its order.
-cards.sort((a, b) => Number(!a.href) - Number(!b.href));
+// Lead article first, then published articles, "coming soon" cards last; the sort is stable, so each group keeps
+// its order.
+const rank = (card: (typeof cards)[number]) => (!card.href ? 2 : card.key === leadCard ? 0 : 1);
+cards.sort((a, b) => rank(a) - rank(b));
 ---
 
 <section id="publications" class="section" aria-labelledby="research-list-title">
@@ -67,24 +73,44 @@ cards.sort((a, b) => Number(!a.href) - Number(!b.href));
       eyebrow={t(locale, "research.list.eyebrow")}
       title={t(locale, "research.list.title")}
     />
-    <ul class="chips">
-      {
-        filters.map((filter) => (
-          <li>
-            <button type="button" data-filter={filter.key} aria-pressed={filter.key === "all" ? "true" : "false"}>
-              {filter.label}
-            </button>
-          </li>
-        ))
-      }
-    </ul>
-    <ul class="cards">
+    <div class="toolbar">
+      <ul class="chips">
+        {
+          filters.map((filter) => (
+            <li>
+              <button type="button" data-filter={filter.key} aria-pressed={filter.key === "all" ? "true" : "false"}>
+                {filter.label}
+              </button>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="search" hidden>
+        <Search aria-hidden="true" size={20} />
+        <input
+          id="research-search"
+          type="search"
+          aria-label={t(locale, "research.search.label")}
+          placeholder={t(locale, "research.search.placeholder")}
+          aria-controls="research-cards"
+          autocomplete="off"
+          data-index={`/${locale}/research/search.json`}
+        />
+      </div>
+    </div>
+    <ul id="research-cards" class="cards">
       {
         cards.map((card) => (
-          <li data-topic={card.topic}>
+          <li data-topic={card.topic} data-card={card.key} class:list={{ lead: card.key === leadCard && card.href }}>
             <article class:list={{ linked: card.href }} aria-labelledby={`research-${card.key}`}>
               {card.cover ? (
-                <Image class="photo" src={card.cover} alt="" widths={[480, 800, 1200]} sizes="(min-width: 768px) 50vw, 100vw" />
+                <Image
+                  class="photo"
+                  src={card.cover}
+                  alt=""
+                  widths={[480, 800, 1200]}
+                  sizes={card.key === leadCard ? "(min-width: 768px) 45vw, 100vw" : "(min-width: 768px) 50vw, 100vw"}
+                />
               ) : (
                 <span class="panel"><Svg name={card.icon} /></span>
               )}
@@ -114,21 +140,62 @@ cards.sort((a, b) => Number(!a.href) - Number(!b.href));
         ))
       }
     </ul>
+    <p class="empty" role="status" hidden>{t(locale, "research.search.empty")}</p>
     <p class="note">{t(locale, "research.statusNote")}</p>
   </div>
 </section>
 
 <script>
-  // Shows only the cards of the pressed topic; "all" shows every card.
+  // Shows the cards of the pressed topic ("all" = every topic) that contain every word typed in the search box,
+  // ignoring case and accents. Words are matched against the card's text and, once `search.json` has loaded, the
+  // article's full text.
+  const normalize = (text: string) =>
+    text.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
   const buttons = [...document.querySelectorAll<HTMLButtonElement>("[data-filter]")];
   const items = [...document.querySelectorAll<HTMLLIElement>("[data-topic]")];
+  const search = document.querySelector<HTMLElement>(".search");
+  const input = document.querySelector<HTMLInputElement>("#research-search");
+  const empty = document.querySelector<HTMLElement>(".empty");
+  const cardTexts = new Map(items.map((item) => [item, normalize(item.textContent ?? "")]));
+  let articleTexts = new Map<string, string>();
+  let loading: Promise<void> | undefined;
+  let topic = "all";
+
+  const update = () => {
+    const words = normalize(input?.value ?? "").split(/\s+/).filter(Boolean);
+    let shown = 0;
+    items.forEach((item) => {
+      const text = `${cardTexts.get(item)} ${articleTexts.get(item.dataset["card"] ?? "") ?? ""}`;
+      const match = (topic === "all" || item.dataset["topic"] === topic) && words.every((word) => text.includes(word));
+      item.hidden = !match;
+      if (match) shown++;
+    });
+    if (empty) empty.hidden = shown > 0;
+  };
+  // Without the index (offline, failed fetch) the search still works on the card text.
+  const loadIndex = () =>
+    (loading ??= fetch(input?.dataset["index"] ?? "")
+      .then((response) => response.json() as Promise<{ card: string; text: string }[]>)
+      .then((entries) => {
+        articleTexts = new Map(entries.map((entry) => [entry.card, normalize(entry.text)]));
+      })
+      .catch(() => {}));
+
   buttons.forEach((button) =>
     button.addEventListener("click", () => {
-      const filter = button.dataset["filter"];
+      topic = button.dataset["filter"] ?? "all";
       buttons.forEach((other) => other.setAttribute("aria-pressed", String(other === button)));
-      items.forEach((item) => (item.hidden = filter !== "all" && item.dataset["topic"] !== filter));
+      update();
     }),
   );
+  if (search && input) {
+    search.hidden = false;
+    input.addEventListener("focus", loadIndex, { once: true });
+    input.addEventListener("input", () => {
+      update();
+      void loadIndex().then(update);
+    });
+  }
 </script>
 
 <style>
@@ -137,11 +204,53 @@ cards.sort((a, b) => Number(!a.href) - Number(!b.href));
     margin: 0;
     padding: 0;
   }
+  /* Chips and search on one row when they fit; the search drops below on narrow screens. */
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+    margin-block: var(--space-8);
+  }
   .chips {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
-    margin-block: var(--space-8);
+  }
+  .search {
+    display: flex;
+    flex: 1 1 16rem;
+    align-items: center;
+    gap: var(--space-2);
+    padding-inline: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+  }
+  .search[hidden] {
+    display: none;
+  }
+  .search:focus-within {
+    border-color: var(--color-primary);
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+  .search input {
+    flex: 1;
+    min-width: 0;
+    padding-block: var(--space-2);
+    border: 0;
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+    font-size: var(--text-small);
+  }
+  .search input:focus {
+    outline: none;
+  }
+  .empty {
+    color: var(--color-text-muted);
   }
   .chips button {
     font: inherit;
@@ -277,6 +386,30 @@ cards.sort((a, b) => Number(!a.href) - Number(!b.href));
   @media (min-width: 768px) {
     .cards {
       grid-template-columns: 1fr 1fr;
+    }
+    /* Lead article: full row, image left and text right. */
+    .lead {
+      grid-column: 1 / -1;
+    }
+    .lead article {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+    .lead .photo,
+    .lead .panel {
+      height: 100%;
+      aspect-ratio: auto;
+      min-height: 16rem;
+    }
+    .lead .body {
+      justify-content: center;
+      padding: var(--space-8);
+    }
+    .lead h3 {
+      font-size: 1.5rem;
+    }
+    .lead .meta {
+      margin-top: var(--space-2);
     }
   }
   @media (min-width: 1024px) {

@@ -1,0 +1,140 @@
+---
+import Svg from "@nodes/ui/Svg.astro";
+import { ArrowRight } from "@lucide/astro";
+import Eyebrow from "../../components/Eyebrow.astro";
+import { t, type Locale } from "../../i18n";
+
+/**
+ * "Our approach": first section of the Research page, right under the section menu. Heading on the
+ * left and lead on the right (stacked on mobile), then the four steps of the method, joined by
+ * arrows from 1024px. Icons reuse the closest assets: there are no search, layers or cube icons.
+ * Less padding than other sections, so the heading sits close to the menu as in the mockup.
+ */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const steps = [
+  { key: "explore", icon: "icons/lightbulb" },
+  { key: "experiment", icon: "icons/point-cloud" },
+  { key: "evaluate", icon: "icons/chart" },
+  { key: "apply", icon: "icons/map" },
+] as const;
+---
+
+<section id="overview" class="section overview" aria-labelledby="research-overview-title">
+  <div class="container">
+    <div class="head">
+      <div>
+        <Eyebrow>{t(locale, "research.overview.eyebrow")}</Eyebrow>
+        <h2 id="research-overview-title">{t(locale, "research.overview.title")}</h2>
+      </div>
+      <p class="lead">{t(locale, "research.overview.lead")}</p>
+    </div>
+    <ol class="steps">
+      {
+        steps.map((step, index) => (
+          <li>
+            <span class="icon">
+              <Svg name={step.icon} />
+            </span>
+            <div>
+              <h3>{t(locale, `research.overview.${step.key}.title`)}</h3>
+              <p>{t(locale, `research.overview.${step.key}.text`)}</p>
+            </div>
+            {index < steps.length - 1 && <ArrowRight aria-hidden="true" size={28} class="arrow" />}
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .overview {
+    padding-block: var(--section-gap-inner) var(--space-12);
+    background: var(--color-surface-muted);
+  }
+  .head {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .head > div {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  h2 {
+    margin: 0;
+    font-size: var(--text-h2);
+  }
+  .lead {
+    margin: 0;
+    max-width: 60ch;
+    color: var(--color-text-muted);
+    font-size: 1.125rem;
+  }
+  .steps {
+    display: grid;
+    gap: var(--space-6);
+    margin: var(--section-gap-inner) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-4);
+  }
+  .icon {
+    display: grid;
+    place-items: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
+  .icon :global(svg) {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+  h3 {
+    margin: 0 0 var(--space-1);
+    color: var(--color-text);
+    font-size: 1.125rem;
+  }
+  li p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-small);
+  }
+  li :global(.arrow) {
+    display: none;
+    color: var(--color-primary);
+  }
+
+  @media (min-width: 1024px) {
+    .head {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      align-items: center;
+      gap: var(--space-12);
+    }
+    /* Divider between heading and lead. */
+    .lead {
+      padding-left: var(--space-12);
+      border-left: 1px solid var(--color-border);
+    }
+    .steps {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-6);
+    }
+    li {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+    }
+    li :global(.arrow) {
+      display: block;
+    }
+  }
+</style>

@@ -61,6 +61,25 @@ text, details, related with no horizontal scroll.
 
 - Topic pills show the raw tag slugs (`flujos-peatonales`), as before.
 
+## Publication search and lead article
+
+- **Search box** next to the topic chips (on its own row on narrow screens), after the mockup's
+  search field; the mockup's topic and content-type dropdowns were not added, the chips stay. It
+  filters the cards together with the pressed chip: a card shows when it is in the topic and
+  contains every typed word, ignoring case and accents ("prediccion" finds "predicción"). Words
+  are matched against the card text and the article's full text (title, subtitle, description,
+  tags and body as plain text) from a per-locale index,
+  [`research/search.json`](../../apps/site/src/pages/[locale]/research/search.json.ts), built
+  statically and fetched on the first focus or keystroke (about 130–140 KB per locale before
+  compression). Until it loads, or if it fails, the search uses the card text only. With no
+  match, "No publications match your search." is announced (`role="status"`). Without JS the box
+  stays hidden. Copy: `research.search.*`.
+- **Lead article**: "From counting to predicting congestion" (`leadCard = "prediction"` in
+  [`Cards.astro`](../../apps/site/src/sections/research/Cards.astro)) opens the list as a full-row
+  card from 768px, image left and text right; on mobile it is a normal card. It still follows the
+  chips and the search, and goes back among the others if it is ever unpublished.
+- The index JSON is not in the sitemap (only pages are).
+
 ## Research topic filters
 
 The chips on `/research` (`src/sections/research/Cards.astro`) are now buttons with
@@ -107,12 +126,32 @@ become question · details · image columns from 1024px.
 
 ## Research page order
 
-`/research` now runs: hero → "Latest publications" (chips and cards) → "Open questions" →
-"Collaborate on research".
+`/research` now runs: hero → "Our approach" (overview) → "Latest publications" (chips and cards)
+→ "Open questions" → "Collaborate on research".
+
+## "Our approach" overview
+
+New first section of `/research`, right under the section menu
+([`sections/research/Overview.astro`](../../apps/site/src/sections/research/Overview.astro)),
+after the mockup's "Overview" tab: eyebrow "Our approach" / "Nuestro enfoque", title "From
+research to real solutions." / "De la investigación a soluciones reales.", a lead beside the title
+behind a thin divider (stacked on mobile), and four steps (Explore, Experiment, Evaluate, Apply)
+joined by arrows from 1024px. Spanish copy is the mockup's; English is a translation. Keys:
+`research.overview.*`, with `research.overview.nav` ("Overview" / "Visión general") as its menu
+label, since the eyebrow would not read as a menu item.
+
+- **Icons**: the repo has no search, layers or cube icons, so the steps reuse the closest assets:
+  `lightbulb` (Explore), `point-cloud` (Experiment), `chart` (Evaluate) and `map` (Apply), on
+  soft-green circles. The arrows are Lucide `ArrowRight`, hidden on mobile.
+- **Spacing**: as in the mockup, the heading sits close to the menu: 48px top padding on desktop
+  (`--section-gap-inner`) and `--space-12` at the bottom, instead of the usual section padding.
+  The background is `--color-surface-muted`.
+- The lead says "validate their impact in real settings"; it describes the method, while no real
+  sensor is connected yet.
 
 ## "Featured research" on the home page
 
-The Featured research block moved from `/research` to the home page, after "Research areas"
+The Featured research block moved from `/research` to the home page, right after the sectors block ("Events and crowds" and the other tiles)
 ([`sections/home/Featured.astro`](../../apps/site/src/sections/home/Featured.astro), heading id
 `home-featured-title`). It still shows the article of `featuredCard` (`lidar`) and its copy keeps
 the `research.featured.*` keys, so no texts changed. The Research card list no longer leaves that
@@ -135,10 +174,9 @@ it looks as before. The section menu has no link to the band. The image now appe
 
 Under the hero, `/research` has a section menu
 (`apps/site/src/sections/research/SectionNav.astro`) with in-page links labelled with each
-section's current eyebrow: Latest publications (`#publications`) and Open questions
-(`#open-questions`). It follows
-the mockup's tab bar but not its labels (no "Overview", and Research areas now lives on the home
-page). A small script sets `aria-current` on the section in view (green text and underline);
+section's current eyebrow: Overview (`#overview`, its own label), Latest publications
+(`#publications`) and Open questions (`#open-questions`). It follows
+the mockup's tab bar but not all its labels (Research areas now lives on the home page). A small script sets `aria-current` on the section in view (green text and underline);
 without JS the links still work. The menu sticks under the site header while scrolling (the page's
 `scroll-padding-top` grows so section headings clear both bars) and scrolls sideways on narrow
 screens.

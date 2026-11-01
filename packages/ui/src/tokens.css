@@ -67,7 +67,7 @@
     --text-h1: 3.5rem;
     --text-h2: 2.5rem;
     --space-12: 5rem;
-    --section-padding: 8rem;     /* 128px top and bottom */
+    --section-padding: 3rem;     /* 128px top and bottom */
     --section-gap-inner: 3rem;
   }
 }
