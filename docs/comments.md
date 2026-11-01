@@ -9,7 +9,8 @@ Data lives in the D1 database `nodes-contact` (binding `DB`), tables:
 - `comments` (`id`, `article_key`, `locale`, `name`, `body`, `created_at`, `ip_hash`)
 - `reactions` (`article_key`, `hearts`)
 - `rate_log` (`ip_hash`, `action`, `created_at`): rate limiting; rows older than 7 days are
-  deleted automatically.
+  deleted automatically. For hearts `ip_hash` holds `<ip_hash>:<browser id>` (one heart per
+  browser per article per day).
 
 `article_key` is the article's frontmatter `card` (for example `lidar`), shared by the ES and EN
 versions.

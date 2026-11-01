@@ -2,7 +2,9 @@ import { EmailMessage } from "cloudflare:email";
 import {
   COMMENT_LIST_LIMIT,
   COMMENTS_PER_HOUR,
+  HEARTS_PER_IP_PER_DAY,
   isArticleKey,
+  isBrowserId,
   parseCommentRequest,
   type CommentPayload,
   type Engagement,
@@ -20,7 +22,7 @@ const DAY = 24 * HOUR;
 /**
  * Hearts and comments of research articles (ADR 0012), keyed by the frontmatter `card`:
  * - GET  /api/research/:key/engagement → hearts + latest comments (never ip_hash)
- * - POST /api/research/:key/heart      → +1, ignored if the same ip_hash hearted it in 24 h
+ * - POST /api/research/:key/heart      → +1, ignored if the same browser hearted it in 24 h
  * - POST /api/research/:key/comments   → honeypot, validation, Turnstile, 3/hour, insert, email
  * Unknown keys get 404. All SQL uses prepared statements.
  */
@@ -44,7 +46,7 @@ export async function handleEngagement(request: Request, url: URL, env: Engageme
     return json({ ok: false, error: "unavailable" }, 503);
   }
   const ipHash = await hashIp(request.headers.get("CF-Connecting-IP") ?? "", env.IP_SALT);
-  return action === "heart" ? heart(env, key, ipHash) : comment(request, url, env, key, ipHash);
+  return action === "heart" ? heart(request, env, key, ipHash) : comment(request, url, env, key, ipHash);
 }
 
 async function readEngagement(env: Env, key: string): Promise<Engagement> {
@@ -60,25 +62,45 @@ async function readEngagement(env: Env, key: string): Promise<Engagement> {
   };
 }
 
-/** One heart per ip_hash per article in 24 h; a repeat answers OK with the unchanged count. */
-async function heart(env: Env, key: string, ipHash: string): Promise<Response> {
+/**
+ * One heart per browser per article in 24 h: the rate key is ip_hash + the browser's random id, so
+ * people sharing a network count separately. Without a valid id (no storage) the key is the
+ * ip_hash alone. At most HEARTS_PER_IP_PER_DAY per ip_hash and article, whatever the ids, so a
+ * script inventing ids cannot inflate the count. A repeat answers OK with the unchanged count.
+ */
+async function heart(request: Request, env: Env, key: string, ipHash: string): Promise<Response> {
+  let browser: unknown;
+  try {
+    browser = ((await request.json()) as { browser?: unknown }).browser;
+  } catch {
+    browser = undefined;
+  }
   const action = `heart:${key}`;
-  const recent = await env.DB.prepare(
-    "SELECT 1 FROM rate_log WHERE ip_hash = ? AND action = ? AND created_at > ? LIMIT 1",
-  )
-    .bind(ipHash, action, since(DAY))
-    .first();
-  if (!recent) {
+  const who = isBrowserId(browser) ? `${ipHash}:${browser}` : ipHash;
+  const [mine, fromIp] = await env.DB.batch<{ n: number }>([
+    env.DB.prepare("SELECT COUNT(*) AS n FROM rate_log WHERE ip_hash = ? AND action = ? AND created_at > ?").bind(
+      who,
+      action,
+      since(DAY),
+    ),
+    env.DB.prepare(
+      // `ip_hash` alone or any `ip_hash:<id>`: ";" is the character after ":", so the range holds
+      // every id. A range, not LIKE: D1 rejects LIKE patterns this long, and the index applies.
+      "SELECT COUNT(*) AS n FROM rate_log WHERE (ip_hash = ? OR (ip_hash > ? AND ip_hash < ?)) AND action = ? AND created_at > ?",
+    ).bind(ipHash, `${ipHash}:`, `${ipHash};`, action, since(DAY)),
+  ]);
+  const counted = (mine?.results[0]?.n ?? 0) === 0 && (fromIp?.results[0]?.n ?? 0) < HEARTS_PER_IP_PER_DAY;
+  if (counted) {
     await env.DB.batch([
       env.DB.prepare(
         "INSERT INTO reactions (article_key, hearts) VALUES (?, 1) ON CONFLICT (article_key) DO UPDATE SET hearts = hearts + 1",
       ).bind(key),
-      logAction(env, ipHash, action),
+      logAction(env, who, action),
       pruneRateLog(env),
     ]);
   }
   const row = await env.DB.prepare("SELECT hearts FROM reactions WHERE article_key = ?").bind(key).first<{ hearts: number }>();
-  return json({ ok: true, hearts: row?.hearts ?? 0, counted: !recent });
+  return json({ ok: true, hearts: row?.hearts ?? 0, counted });
 }
 
 async function comment(request: Request, url: URL, env: EngagementEnv, key: string, ipHash: string): Promise<Response> {

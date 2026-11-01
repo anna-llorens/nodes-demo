@@ -5,7 +5,9 @@
 See [ADR 0012](../decisions/0012-research-article-engagement.md). In short: same Worker, D1
 database and email binding as the contact form. Keyed by the frontmatter `card` (shared by ES/EN).
 Comments are published at once and moderated by deleting rows. Turnstile + honeypot + per-`ip_hash`
-limits (3 comments/hour, 1 heart/article/24 h). The `ip_hash` is a salted SHA-256 of the IP.
+limits (3 comments/hour). Hearts: 1 per article per 24 h per browser (anonymous random id in
+localStorage + `ip_hash`), capped at 20 per `ip_hash` and article per day; the first version
+limited per `ip_hash` only, so two people on one wifi counted as one. The `ip_hash` is a salted SHA-256 of the IP.
 
 ## Behavior
 

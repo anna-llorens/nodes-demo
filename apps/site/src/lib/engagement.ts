@@ -15,6 +15,13 @@ export const COMMENT_LIST_LIMIT = 50;
 /** Comments allowed per ip_hash in a rolling hour. */
 export const COMMENTS_PER_HOUR = 3;
 
+/** Hearts allowed per ip_hash per article in 24 h, across browsers (caps scripted fake ids). */
+export const HEARTS_PER_IP_PER_DAY = 20;
+
+/** Shape of a browser id sent with a heart (`crypto.randomUUID()`). */
+export const isBrowserId = (value: unknown): value is string =>
+  typeof value === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(value);
+
 /** Shape of an article key (frontmatter `card`); the Worker also checks it against the build. */
 export const isArticleKey = (value: string) => /^[A-Za-z0-9_-]{1,64}$/.test(value);
 

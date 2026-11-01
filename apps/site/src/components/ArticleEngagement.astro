@@ -164,6 +164,20 @@ const encoded = encodeURIComponent(url);
 
     // Storage can throw (private mode, blocked site data); a missing flag only means "not liked".
     const storageKey = `nodes_hearted:${key}`;
+    // Anonymous random id of this browser, so hearts are limited per browser and not per IP (two
+    // people on one wifi both count). Without storage none is sent and the server limits by IP.
+    const browserId = (() => {
+      try {
+        let id = localStorage.getItem("nodes_browser_id");
+        if (!id) {
+          id = crypto.randomUUID();
+          localStorage.setItem("nodes_browser_id", id);
+        }
+        return id;
+      } catch {
+        return "";
+      }
+    })();
     const readLiked = () => {
       try {
         return localStorage.getItem(storageKey) === "1";
@@ -227,7 +241,11 @@ const encoded = encodeURIComponent(url);
       heartButton.disabled = true;
       heartError.hidden = true;
       try {
-        const response = await fetch(`${api}/heart`, { method: "POST" });
+        const response = await fetch(`${api}/heart`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ browser: browserId }),
+        });
         const result = (await response.json()) as { ok: boolean; hearts?: number };
         if (!response.ok || !result.ok) throw new Error("heart failed");
         heartCount.textContent = String(result.hearts ?? 0);
