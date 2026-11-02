@@ -26,13 +26,13 @@ export type PageId = keyof typeof pages;
 export const pagePath = (locale: Locale, page: PageId) => `/${locale}/${pages[page].path}`;
 
 /**
- * Main navigation, in order; the footer reuses it. Technology is hidden for now (its page is not
+ * Main (header) navigation, in order. Technology is hidden for now (its page is not
  * built); restore it at the commented position together with its `getStaticPaths`.
  */
-export const mainNav: PageId[] = ["home", "research", "applications", "capacityCalculator", /* "technology", */ "demo", "about", "contact"];
+export const mainNav: PageId[] = ["home", "research", "applications", "capacityCalculator", /* "technology", */ "demo", "contact"];
 
-/** Footer navigation: the same links as the header. */
-export const footerNav: PageId[] = mainNav;
+/** Footer navigation: the header links plus About, which lives only in the footer. */
+export const footerNav: PageId[] = ["home", "research", "applications", "capacityCalculator", "demo", "about", "contact"];
 
 /** Footer legal links, with their labels. */
 export const legalNav = [
