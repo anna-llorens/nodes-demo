@@ -15,8 +15,9 @@ operations: leave changes uncommitted and propose a commit message.
 1. **Find the new articles.** `git status` on `apps/site/src/content/research/` and
    `apps/site/src/assets/research/`. If unclear which article is meant, ask.
 2. **Check the frontmatter** against the `research` schema in `apps/site/src/content.config.ts`:
-   `title`, `subtitle`, `description` (≤ 155 chars), `slug` (English slug for `en`, matching the
-   file name), `date` (ISO, or empty while draft), `type`, `category`, `tags`, `author`, `draft`,
+   `title`, `subtitle`, `description` (≤ 155 chars), `slug` (one English slug shared by both
+   locales, so the URLs differ only in `/es/` or `/en/`; ADR 0013; also the file name in both
+   locale folders), `date` (ISO, or empty while draft), `type`, `category`, `tags`, `author`, `draft`,
    `card`. Both locales share the same `card` key so translations are paired. Fix only
    formatting; ask before changing wording.
 3. **Preview image**, if given:

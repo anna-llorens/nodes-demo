@@ -200,3 +200,12 @@ screens.
 
 Research now sits right after Home in the header and footer (`mainNav` in
 `apps/site/src/lib/routes.ts`): Home, Research, Applications, Demo, About NODES, Contact.
+
+## Shared slug for new articles
+
+From 2026-11-02 new articles use one English slug in both locales (ADR 0013). First case:
+"Wifi y Bluetooth cuentan móviles, no personas" / "Wi-Fi and Bluetooth count phones, not people"
+at `/es|en/research/wifi-bluetooth-count-phones-not-people`, card `wifiBluetooth` in the LiDAR
+filter, with its chart in `src/assets/research/sensors-wifi-error-per-point-{es,en}.svg`. The
+Spanish source had no subtitle line, so the Spanish card description is its subtitle; the English
+subtitle is the italic standfirst of the source and its meta description is the card description.

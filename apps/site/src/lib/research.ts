@@ -18,6 +18,7 @@ export const cardIcons = {
   lidarFaq: "icons/lidar-sensor",
   sensors: "icons/people-group",
   selfProtection: "icons/shield",
+  wifiBluetooth: "icons/people-count",
 } as const;
 
 /** Article shown in "Featured research" on the home page; Research lists it like any other. */
