@@ -9,6 +9,8 @@ tags: ["sensores", "wifi", "bluetooth", "conteo-de-personas", "calibración"]
 author: "Anna Llorens Roig"
 draft: false
 card: "wifiBluetooth"
+cover: "../../../assets/research/sensors-wifi-bluetooth-cover.webp"
+coverAlt: "Personas caminando por una plaza vista desde arriba, con iconos de wifi y Bluetooth enlazados a dos peatones y un recuadro que resalta a cinco personas"
 ---
 
 Para saber cuánta gente pasa por un lugar y a qué hora, organizadores de eventos, centros comerciales y autoridades utilizan desde hace años sensores que captan las señales wifi y Bluetooth de los móviles: pequeñas cajas en farolas, fachadas o techos, sin cámaras, que se instalan rápido y cuestan poco. Están en calles comerciales, estaciones y terminales de aeropuerto, y en España se han desplegado por ejemplo en destinos turísticos como [Córdoba](https://www.eldebate.com/espana/la-voz-de-cordoba/actualidad/20250219/hacia-nuevo-modelo-gestion-turistica-cordoba_271588_amp.html), [Guardamar del Segura](https://alicanteplaza.es/alicanteplaza/guardamar-adjudicapor-180000-euros-un-sistema-para-contabilizar-y-monitorizar-a-los-turistas) o [Altea](https://alicanteplaza.es/alicanteplaza/altea-implantara-un-sistema-de-control-de-aforo-en-sus-playas-y-el-casco-antiguo).

@@ -208,4 +208,5 @@ From 2026-11-02 new articles use one English slug in both locales (ADR 0013). Fi
 at `/es|en/research/wifi-bluetooth-count-phones-not-people`, card `wifiBluetooth` in the LiDAR
 filter, with its chart in `src/assets/research/sensors-wifi-error-per-point-{es,en}.svg`. The
 Spanish source had no subtitle line, so the Spanish card description is its subtitle; the English
-subtitle is the italic standfirst of the source and its meta description is the card description.
+subtitle is the italic standfirst of the source and its meta description is the card description. Its cover, `sensors-wifi-bluetooth-cover.webp`, is an AI illustration
+of the team's own (recorded in `src/assets/README.md`).

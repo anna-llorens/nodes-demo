@@ -5,8 +5,8 @@ Collected while doing Step 1 (monorepo and domain extraction). Not in scope ther
 - [ ] **Formatting pass** as a separate PR: run `pnpm format` once, then add `pnpm format:check`
       to CI.
 - [ ] **Check the origin and licence of all photos** (`apps/web/src/assets`).
-- [ ] **Photos of people**: the marathon and node photos may show people; content rules allow
-      none with detection overlays and prefer none at all. Replace or crop as needed.
+- [ ] **Photos of people**: the marathon and node photos may show people; record their source,
+      author and licence, or replace them.
 - [ ] **40 m ring label**: the map draws the 40 m nominal-range ring dashed but only the legend
       names it ("alcance nominal"); the content rules want it labelled "nominal" on the map.
 - [ ] **Spanish code comments** remain in `apps/web` files that the refactor did not rewrite

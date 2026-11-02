@@ -10,6 +10,8 @@ tags: ["sensors", "wi-fi", "bluetooth", "people-counting", "calibration"]
 author: "Anna Llorens Roig"
 draft: false
 card: "wifiBluetooth"
+cover: "../../../assets/research/sensors-wifi-bluetooth-cover.webp"
+coverAlt: "People walking across a square seen from above, with Wi-Fi and Bluetooth icons linked to two pedestrians and a frame highlighting five people"
 ---
 
 To find out how many people pass through a place and when, event organisers, shopping centres and authorities have for years used sensors that pick up phones' Wi-Fi and Bluetooth signals: small boxes on lampposts, façades or ceilings, with no cameras, that are quick to install and cheap. They sit in shopping streets, stations and airport terminals, and in Spain they have been deployed in tourist destinations such as [Córdoba](https://www.eldebate.com/espana/la-voz-de-cordoba/actualidad/20250219/hacia-nuevo-modelo-gestion-turistica-cordoba_271588_amp.html), [Guardamar del Segura](https://alicanteplaza.es/alicanteplaza/guardamar-adjudicapor-180000-euros-un-sistema-para-contabilizar-y-monitorizar-a-los-turistas) and [Altea](https://alicanteplaza.es/alicanteplaza/altea-implantara-un-sistema-de-control-de-aforo-en-sus-playas-y-el-casco-antiguo).

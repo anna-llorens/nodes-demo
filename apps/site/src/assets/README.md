@@ -42,3 +42,4 @@ Add a row before publishing a new one (see CLAUDE.md, UI content rules).
 | `home/home-hero.webp` | Home · hero | Illustration supplied by the team (1 Nov 2026); TODO: confirm source | TODO: rights confirmed by the team |
 | `about/about-context.webp` | About · context section | Generated illustration (AI, supplied by the team) | Own |
 | `about/anna-llorens.webp` | About · team, research article author card | Portrait of Anna Llorens Roig, supplied by her | Own (the person pictured) |
+| `research/sensors-wifi-bluetooth-cover.webp` | Wi-Fi and Bluetooth article cover, Research card | Generated illustration (AI, supplied by the team) | Own |
