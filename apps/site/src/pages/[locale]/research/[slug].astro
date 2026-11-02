@@ -168,7 +168,7 @@ const structuredData = {
          have none: their card key is not in the build's list of published articles. -->
     <div class="main-column">
       <article class="prose"><Content /></article>
-      {!draft && card && <ArticleEngagement locale={locale} articleKey={card} title={title} url={url} />}
+      {!draft && card && <ArticleEngagement locale={locale} articleKey={card} title={title} url={url} author={author} />}
     </div>
     <aside>
       <dl class="card details">

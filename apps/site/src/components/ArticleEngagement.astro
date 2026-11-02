@@ -1,7 +1,9 @@
 ---
 import Svg from "@nodes/ui/Svg.astro";
+import { Image } from "astro:assets";
 import { Check, Heart, Link, Share2 } from "@lucide/astro";
 import Field from "./form/Field.astro";
+import { team } from "../config/team";
 import { t, type Locale } from "../i18n";
 import { withLink } from "../i18n/with-link";
 import { ENGAGEMENT_API } from "../lib/engagement";
@@ -20,8 +22,11 @@ interface Props {
   title: string;
   /** Canonical URL; relative while PUBLIC_SITE_URL is unset (the script resolves it). */
   url: string;
+  /** Frontmatter author; the card under Share shows only when it matches a team member. */
+  author?: string;
 }
-const { locale, articleKey, title, url } = Astro.props;
+const { locale, articleKey, title, url, author } = Astro.props;
+const authorMember = team.find((member) => t(locale, `team.${member.id}.name`) === author);
 const siteKey = turnstileSiteKey();
 const privacy = withLink(t(locale, "article.engagement.privacy"));
 const messages = {
@@ -90,6 +95,28 @@ const encoded = encodeURIComponent(url);
     </button>
   </div>
   <p class="status error" data-heart-error role="alert" hidden></p>
+
+  {
+    authorMember && author && (
+      <div class="author">
+        {authorMember.photo ? (
+          <Image class="author-photo" src={authorMember.photo} alt="" widths={[64, 128]} sizes="64px" />
+        ) : (
+          <span class="author-photo">
+            <Svg name="illustrations/avatar-person" />
+          </span>
+        )}
+        <div>
+          <p class="author-name">{author}</p>
+          {authorMember.linkedinUrl && (
+            <a href={authorMember.linkedinUrl} rel="noopener" target="_blank" aria-label={t(locale, "team.linkedin", { name: author })}>
+              {t(locale, "article.author.linkedin")}
+            </a>
+          )}
+        </div>
+      </div>
+    )
+  }
 
   <h2 id="engagement-comments-title">{t(locale, "article.engagement.commentsTitle")}</h2>
   <p class="status" data-comments-loading>{t(locale, "article.engagement.loading")}</p>
@@ -405,6 +432,44 @@ const encoded = encodeURIComponent(url);
   }
   .icon {
     display: inline-flex;
+  }
+  .author {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    background: var(--color-surface-muted);
+  }
+  .author p {
+    margin: 0;
+  }
+  .author-photo {
+    flex: none;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    overflow: hidden;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: 50% 20%;
+    background: var(--color-primary-soft);
+    color: var(--color-primary-line);
+  }
+  .author-photo :global(svg) {
+    width: 78%;
+    height: auto;
+  }
+  .author-name {
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+  .author a {
+    color: var(--color-text);
+    font-weight: 500;
   }
   /* One row of equal-height controls: same border, radius and 44px height. */
   .actions .button {

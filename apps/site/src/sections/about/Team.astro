@@ -1,12 +1,13 @@
 ---
 import Svg from "@nodes/ui/Svg.astro";
+import { Image } from "astro:assets";
 import Eyebrow from "../../components/Eyebrow.astro";
 import { team } from "../../config/team";
 import { t, type Locale } from "../../i18n";
 
 /**
  * "The people behind NODES": heading with a lead beside it, then one card per founder with an
- * illustrated avatar (no photos), name, role, bio and LinkedIn when set.
+ * photo when the team has one (illustrated avatar otherwise), name, role, bio and LinkedIn when set.
  */
 interface Props {
   locale: Locale;
@@ -29,9 +30,13 @@ const { locale } = Astro.props;
           const name = t(locale, `team.${member.id}.name`);
           return (
             <li class="member">
-              <span class="avatar">
-                <Svg name="illustrations/avatar-person" />
-              </span>
+              {member.photo ? (
+                <Image class="avatar photo" src={member.photo} alt={t(locale, "team.photoAlt", { name })} widths={[256, 480, 720]} sizes="(min-width: 640px) 360px, 8rem" />
+              ) : (
+                <span class="avatar">
+                  <Svg name="illustrations/avatar-person" />
+                </span>
+              )}
               <div class="body">
                 <h3>{name}</h3>
                 <p class="role">{t(locale, `team.${member.id}.role`)}</p>
@@ -95,6 +100,12 @@ const { locale } = Astro.props;
     background: var(--color-primary-soft);
     color: var(--color-primary-line);
   }
+  .photo {
+    height: auto;
+    max-width: 100%;
+    object-fit: cover;
+    object-position: 50% 20%;
+  }
   .avatar :global(svg) {
     width: 78%;
     height: auto;
@@ -140,6 +151,10 @@ const { locale } = Astro.props;
     }
     .avatar {
       width: auto;
+    }
+    /* An img's auto width is its intrinsic width; keep it inside the column. */
+    .photo {
+      width: 100%;
     }
   }
   @media (min-width: 1024px) {

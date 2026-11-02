@@ -1,3 +1,6 @@
+import type { ImageMetadata } from "astro";
+import annaPhoto from "../assets/about/anna-llorens.webp";
+
 /**
  * Founders shown on the About page. Names, roles and bios come
  * from i18n (`team.<id>.*`); this file holds only what is not translated. Links are personal
@@ -7,9 +10,11 @@ export interface TeamMember {
   /** Key prefix in the i18n files: `team.<id>.name`, `.role`, `.text`. */
   id: "anna" | "sarolta";
   linkedinUrl?: string;
+  /** Portrait used on About and in the article author card; members without one get the avatar. */
+  photo?: ImageMetadata;
 }
 
 export const team: readonly TeamMember[] = [
-  { id: "anna", linkedinUrl: "https://www.linkedin.com/in/anna-llorens-44111596/" },
+  { id: "anna", linkedinUrl: "https://www.linkedin.com/in/anna-llorens-44111596/", photo: annaPhoto },
   { id: "sarolta" },
 ];
