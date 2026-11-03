@@ -131,6 +131,15 @@ const { locale } = Astro.props;
       /* The illustration has its own tinted background: fade its left edge into the page. */
       mask-image: linear-gradient(to right, transparent, black 20%);
     }
+    /* Dark theme: the photo's light haze would sit under the light text, so fade it out further. */
+    :global(:root[data-theme="dark"]) .hero-art {
+      mask-image: linear-gradient(to right, transparent 15%, black 55%);
+    }
+  }
+  @media (min-width: 1024px) and (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme="light"])) .hero-art {
+      mask-image: linear-gradient(to right, transparent 15%, black 55%);
+    }
     .scroll-hint {
       display: none;
     }

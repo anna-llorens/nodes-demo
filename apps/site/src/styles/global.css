@@ -78,7 +78,7 @@ a {
 
 .button-primary {
   background: var(--color-primary);
-  color: var(--color-text-inverse);
+  color: var(--color-on-primary);
 }
 
 .button-primary:hover {

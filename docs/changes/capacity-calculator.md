@@ -80,4 +80,5 @@ Decision: [ADR 0011](../decisions/0011-site-uses-core-capacity.md).
 ## Limitations
 
 - No automated browser test for the client script.
-- The prototype's dark theme was not carried over, because the site has no dark theme.
+- The prototype's dark theme was not carried over. The site now has its own dark theme
+  ([site-dark-mode.md](site-dark-mode.md)); the calculator follows it through the tokens.

@@ -73,6 +73,17 @@ const xDefault = alternates.find((item) => item.locale === "en")?.href;
 <html lang={locale}>
   <head>
     <meta charset="utf-8" />
+    <!-- Before anything paints: apply the saved theme (ThemeToggle). Without one, or without
+         JavaScript, tokens.css follows the system theme (ADR 0014). -->
+    <script is:inline>
+      try {
+        const theme = localStorage.getItem("nodes-theme");
+        if (theme === "light" || theme === "dark") document.documentElement.dataset.theme = theme;
+      } catch {
+        // Storage blocked: follow the system theme.
+      }
+    </script>
+    <meta name="color-scheme" content="light dark" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <Favicons />

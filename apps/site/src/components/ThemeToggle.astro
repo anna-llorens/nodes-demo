@@ -1,0 +1,88 @@
+---
+import { Moon, Sun } from "@lucide/astro";
+import { t, type Locale } from "../i18n";
+
+/**
+ * Light/dark switch (ADR 0014). Until it is used the site follows the system theme; a click
+ * forces the other theme and saves it in localStorage (`nodes-theme`), which Base.astro applies
+ * before paint. aria-pressed is true while the dark theme shows. The icon (moon in light, sun
+ * in dark) follows the theme through CSS, so it is right before the script runs.
+ */
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+---
+
+<button class="theme-toggle" type="button" aria-pressed="false" aria-label={t(locale, "theme.dark")} data-theme-toggle>
+  <Moon class="icon-moon" aria-hidden="true" />
+  <Sun class="icon-sun" aria-hidden="true" />
+</button>
+
+<script>
+  const STORAGE_KEY = "nodes-theme"; // Also read by the inline script in Base.astro.
+  const root = document.documentElement;
+  const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
+  const buttons = document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]");
+
+  const isDark = () => (root.dataset["theme"] ? root.dataset["theme"] === "dark" : systemDark.matches);
+  const sync = () => {
+    for (const button of buttons) button.setAttribute("aria-pressed", String(isDark()));
+  };
+  const apply = (theme: string | null) => {
+    if (theme === "light" || theme === "dark") root.dataset["theme"] = theme;
+    else delete root.dataset["theme"];
+    sync();
+  };
+
+  for (const button of buttons) {
+    button.addEventListener("click", () => {
+      const theme = isDark() ? "light" : "dark";
+      apply(theme);
+      try {
+        localStorage.setItem(STORAGE_KEY, theme);
+      } catch {
+        // Storage blocked: the choice lasts until the page changes.
+      }
+    });
+  }
+  systemDark.addEventListener("change", sync);
+  // Another tab changed the theme.
+  window.addEventListener("storage", (event) => {
+    if (event.key === STORAGE_KEY) apply(event.newValue);
+  });
+  sync();
+</script>
+
+<style>
+  .theme-toggle {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-button);
+    background: var(--color-surface);
+    color: var(--color-text);
+    cursor: pointer;
+  }
+  .theme-toggle:hover {
+    border-color: var(--color-primary);
+  }
+  .icon-sun,
+  :global(:root[data-theme="dark"]) .icon-moon {
+    display: none;
+  }
+  :global(:root[data-theme="dark"]) .icon-sun {
+    display: block;
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme="light"])) .icon-moon {
+      display: none;
+    }
+    :global(:root:not([data-theme="light"])) .icon-sun {
+      display: block;
+    }
+  }
+</style>

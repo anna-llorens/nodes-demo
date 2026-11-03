@@ -5,7 +5,11 @@ Vector recreations made from the approved mockups (not exact extractions). Alrea
 - The three brand greens the sources used (#2F9E7A, #159B78, #168B68) are `currentColor`, so
   each asset takes the colour of its CSS context. Set `color: var(--color-primary)` (icons) or
   `var(--color-primary-decor)` (illustrations).
-- Light tints (backgrounds of illustrations and of the status icons) are kept as they came.
+- Light tints (backgrounds of illustrations and of the status icons) are kept as they came, as
+  the fallback of a `--color-illustration-wash-1|2|3` token (`style="fill: var(--color-illustration-wash-2, #E7F5EF)"`).
+  The site's dark theme sets those tokens (ADR 0014); anywhere else (light site, the demo,
+  `<img>` use) the tint stays exactly as drawn. A new asset with a light tint follows the same
+  pattern: 1 for backdrops, 2 for main tints, 3 for strong tints and strokes.
 - Icons and social icons have no fixed width/height: size them with CSS.
 - `illustrations/use-case-town-hall.svg` had a missing `</g>`; fixed.
 

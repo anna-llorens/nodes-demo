@@ -4,10 +4,11 @@ import { t, type Locale } from "../i18n";
 import { mainNav, pagePath, pages, type PageId } from "../lib/routes";
 import LanguageSwitcher from "./LanguageSwitcher.astro";
 import Logo from "./Logo.astro";
+import ThemeToggle from "./ThemeToggle.astro";
 
 /**
- * Sticky header. Desktop: logo · centred nav · language links.
- * Mobile: logo · language links · menu button opening the nav.
+ * Sticky header. Desktop: logo · centred nav · language links · theme toggle.
+ * Mobile: logo · language links · theme toggle · menu button opening the nav.
  */
 interface Props {
   locale: Locale;
@@ -34,6 +35,7 @@ const links = mainNav.map((id) => ({ href: pagePath(locale, id), label: t(locale
 
     <div class="actions">
       <LanguageSwitcher locale={locale} page={page} hrefs={languageHrefs} />
+      <ThemeToggle locale={locale} />
       <button
         class="menu-button"
         type="button"

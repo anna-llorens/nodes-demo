@@ -342,6 +342,8 @@ const encoded = encodeURIComponent(url);
         widget = win.turnstile?.render(form.querySelector<HTMLElement>("[data-turnstile]")!, {
           sitekey: siteKey,
           language: locale,
+          // The theme forced by ThemeToggle; without one, Turnstile follows the system like the page.
+          theme: document.documentElement.dataset["theme"] ?? "auto",
           callback: (value: string) => (token = value),
           "expired-callback": () => (token = ""),
           "error-callback": () => (token = ""),

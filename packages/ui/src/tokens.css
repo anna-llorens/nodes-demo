@@ -1,15 +1,23 @@
 /**
- * NODES design tokens (light theme).
- * Sampled from docs/design/reference/home-mobile-approved.png and adjusted for WCAG AA.
- * Contrast notes are against the background named in each comment.
+ * NODES design tokens, light and dark themes (ADR 0014).
+ * Light: sampled from docs/design/reference/home-mobile-approved.png and adjusted for WCAG AA.
+ * Dark: derived from the light tokens (same green brand, dark blue-teal neutrals); there is no
+ * dark mockup. Contrast notes are computed against the background named in each comment.
+ *
+ * The page follows the system theme; `data-theme="light" | "dark"` on <html> forces one (set
+ * before paint by apps/site/src/layouts/Base.astro). Every colour token needs a dark value in
+ * both dark blocks below, with the same values: apps/site/src/styles/tokens.test.ts checks it.
  */
 :root {
+  color-scheme: light;
+
   /* Brand */
   --color-primary: #237a5d;          /* buttons, links, step numbers. White text: 5.2:1 */
   --color-primary-hover: #1c6650;
   --color-primary-decor: #2a8b6b;    /* illustrations only. White text: 4.2:1, fails AA */
   --color-primary-soft: #e2f1ea;     /* badges, icon circles. Primary text on it: 4.5:1 */
   --color-primary-line: #a0ccbe;     /* outline buttons, illustration strokes */
+  --color-on-primary: #ffffff;       /* text and icons on primary fills (buttons, step numbers) */
 
   /* Neutrals */
   --color-bg: #f2f6f6;               /* page background */
@@ -67,6 +75,94 @@
   /* Section rhythm: generous on purpose. The mockups are compressed to fit one screenshot. */
   --section-padding: 4.5rem;   /* 72px top and bottom, mobile */
   --section-gap-inner: 2rem;   /* between a section's heading block and its content */
+}
+
+/* Dark theme. Neutrals are dark blue-teal tints around --color-bg. In dark, --color-primary is a
+   light green so it reads as text and links; text on primary fills uses --color-on-primary. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    /* Brand */
+    --color-primary: #5cc39c;          /* links, text. On bg: 8.5:1, on surface: 7.8:1 */
+    --color-primary-hover: #7dd3b2;
+    --color-primary-decor: #46a982;    /* illustrations only. On bg: 6.3:1 */
+    --color-primary-soft: #183a2f;     /* badges, icon circles. Primary text on it: 5.8:1 */
+    --color-primary-line: #2f6655;     /* outline buttons, illustration strokes */
+    --color-on-primary: #0e161a;       /* on primary: 8.5:1, on primary-hover: 10.3:1 */
+
+    /* Neutrals */
+    --color-bg: #0e161a;               /* page background */
+    --color-surface: #161f24;          /* cards, header */
+    --color-surface-muted: #121b1f;    /* soft cards */
+    --color-text: #eef2f4;             /* headings. On bg: 16.2:1 */
+    --color-text-body: #b7c0c4;        /* body. On bg: 9.9:1 */
+    --color-text-muted: #9aa3a8;       /* secondary. On surface-muted: 6.8:1, on surface: 6.5:1 */
+    --color-text-inverse: #ffffff;     /* text on dark bands */
+    --color-surface-inverse: #1d2a30;  /* dark bands, a step above bg (1.2:1). White text: 14.7:1 */
+    --color-text-inverse-muted: #c5d0d6; /* secondary text on surface-inverse: 9.4:1 */
+    --color-border: #263136;
+    --color-border-strong: #8a979d;    /* form control borders. On surface: 5.6:1, on surface-inverse: 4.9:1 */
+    --color-error: #f2867a;            /* field errors. On surface: 6.7:1 */
+
+    /* Density bands. Low, medium and high already read on dark (on surface: 6.7, 11 and
+       6.9:1); critical is lighter so it does too. */
+    --color-density-low: oklch(0.7 0.15 150);
+    --color-density-medium: oklch(0.86 0.16 95);
+    --color-density-high: oklch(0.74 0.17 55);
+    --color-density-critical: oklch(0.68 0.19 27);  /* on surface: 5.3:1 */
+
+    /* Crowd risk levels. Text and markers on surface: 7.8, 7.7, 6.8 and 6.9:1. */
+    --color-status-ok: #5fc48a;
+    --color-status-warn: #e2a54a;
+    --color-status-risk: #f08a62;
+    --color-status-critical: #ff8088;
+
+    /* Illustration washes: the light tints baked into the shared SVGs, darkened. In light they
+       are not set, so each SVG keeps its exact baked colour through the var() fallback. */
+    --color-illustration-wash-1: #13222a; /* backdrops. Primary strokes on it: 7.6:1 */
+    --color-illustration-wash-2: #182b35; /* main tints. Primary on it: 6.8:1 */
+    --color-illustration-wash-3: #223b48; /* strong tints and strokes. Primary on it: 5.5:1 */
+  }
+}
+
+/* Forced dark: the same values as the block above (tokens.test.ts keeps them identical). */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-primary: #5cc39c;
+  --color-primary-hover: #7dd3b2;
+  --color-primary-decor: #46a982;
+  --color-primary-soft: #183a2f;
+  --color-primary-line: #2f6655;
+  --color-on-primary: #0e161a;
+
+  --color-bg: #0e161a;
+  --color-surface: #161f24;
+  --color-surface-muted: #121b1f;
+  --color-text: #eef2f4;
+  --color-text-body: #b7c0c4;
+  --color-text-muted: #9aa3a8;
+  --color-text-inverse: #ffffff;
+  --color-surface-inverse: #1d2a30;
+  --color-text-inverse-muted: #c5d0d6;
+  --color-border: #263136;
+  --color-border-strong: #8a979d;
+  --color-error: #f2867a;
+
+  --color-density-low: oklch(0.7 0.15 150);
+  --color-density-medium: oklch(0.86 0.16 95);
+  --color-density-high: oklch(0.74 0.17 55);
+  --color-density-critical: oklch(0.68 0.19 27);
+
+  --color-status-ok: #5fc48a;
+  --color-status-warn: #e2a54a;
+  --color-status-risk: #f08a62;
+  --color-status-critical: #ff8088;
+
+  --color-illustration-wash-1: #13222a;
+  --color-illustration-wash-2: #182b35;
+  --color-illustration-wash-3: #223b48;
 }
 
 @media (min-width: 1024px) {

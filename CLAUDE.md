@@ -81,6 +81,10 @@ Before finishing any task: `pnpm typecheck && pnpm lint && pnpm test && pnpm bui
   token colour. Never cut images out of the mockups; lucide only for small UI glyphs with no
   asset (chevron, arrow, menu, close, check). Colours come from tokens: no raw hex outside
   `packages/ui/src/tokens.css`.
+- The site has light and dark themes (ADR 0014): every new colour token needs a dark value in
+  both dark blocks of `tokens.css`. Text and icons on a `--color-primary` fill use
+  `--color-on-primary`. Light tints in SVG assets use the `--color-illustration-wash-N` pattern
+  with the original hex as fallback.
 
 - A "simulation / data not measured" label is visible on every screen while data is simulated.
 - No "live" labels on simulated data.
