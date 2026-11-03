@@ -23,9 +23,9 @@ Redesign of `apps/site/src/pages/[locale]/research/[slug].astro` after
   a `<details open>` that can collapse. The aside (details card and related articles) comes after
   the body, so readers reach it once they finish the text. On desktop the summary is a plain title
   and the grid places each block by area, whatever the DOM order.
-- **Contents column**: from 1280px the page has three columns: the contents on the left (260px,
+- **Contents column**: from 1280px the page has three columns: the contents on the left (240px,
   sticky under the site header, scrolling on its own if taller than the viewport), the text, and
-  the aside on the right (320px) with the details card and related articles, which are not
+  the aside on the right (300px) with the details card and related articles, which are not
   sticky. The article page widens to 1400px there, header text included so the title lines up with
   the contents, because inside the 1120px site container the text column would shrink to about
   420px. Between 1024px and 1279px three columns do not fit, so the contents stack above the
@@ -210,3 +210,19 @@ filter, with its chart in `src/assets/research/sensors-wifi-error-per-point-{es,
 Spanish source had no subtitle line, so the Spanish card description is its subtitle; the English
 subtitle is the italic standfirst of the source and its meta description is the card description. Its cover, `sensors-wifi-bluetooth-cover.webp`, is an AI illustration
 of the team's own (recorded in `src/assets/README.md`).
+
+## Wider text column on large screens
+
+Long articles felt too long to scroll. From 1280px the text column is wider: the contents column
+is 240px instead of 260px, the aside 300px instead of 320px, the column gaps 32px instead of 80px,
+and the text cap 80ch instead of 70ch. At 1440px and wider the column goes from 620px to 756px:
+about 80 characters per line instead of 69, still inside the comfortable reading range. The Wi-Fi
+and Bluetooth article body is about 10% shorter (3,196px → 2,879px); images grow with the column,
+so the saving is smaller than the width gain. Below 1280px nothing changes.
+
+Trade-off: a wider measure was the alternative to cutting text; going further (about 840px, ~93
+characters per line) was rejected because long paragraphs get harder to follow.
+
+- File: [research/[slug].astro](../../apps/site/src/pages/[locale]/research/[slug].astro).
+- Checked in the browser at 1440px (widths, no horizontal scroll) and with the measuring script at
+  375px and 1920px; site `test`, `build` and `lint` pass.

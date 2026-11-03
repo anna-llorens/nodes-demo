@@ -568,16 +568,21 @@ const structuredData = {
     }
   }
 
-  /* Three columns: sticky contents, text, aside. The article page is wider than the site container
-     so the text column keeps its reading width. */
+  /* Three columns: sticky contents, text, aside. The article page is wider than the site container,
+     and the side columns and gaps are narrower than on tablets, so the text column gets about
+     760px (~84 characters per line) at 1440px: long articles read shorter. */
   @media (min-width: 1280px) {
     .wide {
       max-width: 1400px;
     }
     .layout {
-      grid-template-columns: 260px minmax(0, 1fr) 320px;
+      grid-template-columns: 240px minmax(0, 1fr) 300px;
       grid-template-areas: "toc article aside";
       grid-template-rows: auto;
+      column-gap: var(--space-8);
+    }
+    article {
+      max-width: 80ch;
     }
     /* Under the site header (72px + 1px border), scrolling on its own if it is taller than the
        viewport. */
